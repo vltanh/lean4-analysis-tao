@@ -1,7 +1,8 @@
-import Mathlib.Tactic
+import Mathlib.Tactic.ByContra
 
 import Lean4AnalysisTao.C02_NaturalNumbers.S01_PeanoAxioms
 
+-- Definition 2.2.1
 axiom MyNat.add : MyNat → MyNat → MyNat
 infixl:65 " + " => MyNat.add
 
@@ -28,15 +29,15 @@ theorem MyNat.add_succ :
   ∀ (n m : MyNat), n + m++ = (n + m)++ := by
   have hbase : ∀ (m : MyNat), 𝟘 + m++ = (𝟘 + m)++ := by
     intro m
-    rw [MyNat.zero_add]
-    rw [MyNat.zero_add]
+    rw [MyNat.zero_add m]
+    rw [MyNat.zero_add (m++)]
   have hind : ∀ {n : MyNat},
     (∀ (m : MyNat), n + m++ = (n + m)++) →
     ∀ (m : MyNat), n++ + m++ = (n++ + m)++ := by
     intro n hn
     intro m
-    rw [MyNat.succ_add]
-    rw [MyNat.succ_add]
+    rw [MyNat.succ_add n m]
+    rw [MyNat.succ_add n (m++)]
     rw [hn m]
   exact MyNat.induction hbase hind
 
@@ -45,15 +46,15 @@ theorem MyNat.add_comm :
   ∀ (n m : MyNat), n + m = m + n := by
   have hbase : ∀ (m : MyNat), 𝟘 + m = m + 𝟘 := by
     intro m
-    rw [MyNat.zero_add]
-    rw [MyNat.add_zero]
+    rw [MyNat.zero_add m]
+    rw [MyNat.add_zero m]
   have hind : ∀ {n : MyNat},
     (∀ (m : MyNat), n + m = m + n) →
     ∀ (m : MyNat), n++ + m = m + n++ := by
     intro n hn
     intro m
-    rw [MyNat.succ_add]
-    rw [MyNat.add_succ]
+    rw [MyNat.succ_add n m]
+    rw [MyNat.add_succ m n]
     rw [hn m]
   exact MyNat.induction hbase hind
 
@@ -67,16 +68,16 @@ theorem MyNat.add_left_cancel :
   ∀ {a b c : MyNat}, a + b = a + c → b = c := by
   have hbase : ∀ {b c : MyNat}, 𝟘 + b = 𝟘 + c → b = c := by
     intro b c h
-    rw [MyNat.zero_add] at h
-    rw [MyNat.zero_add] at h
+    rw [MyNat.zero_add b] at h
+    rw [MyNat.zero_add c] at h
     exact h
   have hind : ∀ {a : MyNat},
     (∀ {b c : MyNat}, a + b = a + c → b = c) →
     ∀ {b c : MyNat}, a++ + b = a++ + c → b = c := by
     intro a ha
     intro b c h
-    rw [MyNat.succ_add] at h
-    rw [MyNat.succ_add] at h
+    rw [MyNat.succ_add a b] at h
+    rw [MyNat.succ_add a c] at h
     exact ha (MyNat.succ_inj h)
   exact MyNat.induction hbase hind
 
@@ -89,20 +90,20 @@ theorem MyNat.pos_add {a : MyNat} (ha : a.is_positive) (b : MyNat) :
   (a + b).is_positive := by
   have : ∀ (b : MyNat), (a + b).is_positive := by
     have hbase : (a + 𝟘).is_positive := by
-      rw [MyNat.add_zero]
+      rw [MyNat.add_zero a]
       exact ha
     have hind : ∀ {b : MyNat},
       (a + b).is_positive →
       (a + b++).is_positive := by
       intro b hb
-      rw [MyNat.add_succ]
+      rw [MyNat.add_succ a b]
       exact MyNat.succ_ne_zero (a + b)
     exact MyNat.induction hbase hind
   exact this b
 
 theorem MyNat.pos_add' {a : MyNat} (ha : a.is_positive) (b : MyNat) :
   (b + a).is_positive := by
-  rw [MyNat.add_comm]
+  rw [MyNat.add_comm b a]
   exact MyNat.pos_add ha b
 
 -- Corollary 2.2.9
@@ -119,7 +120,7 @@ theorem MyNat.zero_zero_of_add_zero :
 
 -- Lemma 2.2.10
 theorem MyNat.unique_pred_of_pos {a : MyNat} (ha : a.is_positive) :
-  ∃ (b : MyNat), b++ = a ∧ (∃ (c : MyNat), c++ = a → b = c) := by
+  ∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c) := by
   sorry
 
 -- Definition 2.2.11
