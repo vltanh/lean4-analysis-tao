@@ -1,4 +1,6 @@
+import Mathlib.Tactic.Use
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Constructor
 
 import Lean4AnalysisTao.C02_NaturalNumbers.S01_PeanoAxioms
 
@@ -82,8 +84,8 @@ theorem MyNat.add_left_cancel :
   exact MyNat.induction hbase hind
 
 -- Definition 2.2.7
-def MyNat.is_positive : MyNat → Prop :=
-  fun n => n ≠ 𝟘
+def MyNat.is_positive (n : MyNat) : Prop :=
+  n ≠ 𝟘
 
 -- Proposition 2.2.8
 theorem MyNat.pos_add {a : MyNat} (ha : a.is_positive) (b : MyNat) :
@@ -108,7 +110,7 @@ theorem MyNat.pos_add' {a : MyNat} (ha : a.is_positive) (b : MyNat) :
 
 -- Corollary 2.2.9
 theorem MyNat.zero_zero_of_add_zero :
-  ∀ (a b : MyNat), a + b = 𝟘 → a = 𝟘 ∧ b = 𝟘 := by
+  ∀ {a b : MyNat}, a + b = 𝟘 → a = 𝟘 ∧ b = 𝟘 := by
   intro a b hab
   by_contra h
   rw [not_and_or] at h
@@ -248,7 +250,8 @@ theorem MyNat.order_trichotomy (a b : MyNat) :
 
 -- Proposition 2.2.14
 theorem MyNat.strong_induction {m₀ : MyNat} {P : MyNat → Prop}
-  (hind : ∀ (m : MyNat), m ≥ m₀ → ((∀ (m' : MyNat), m₀ ≤ m' → m' < m → P m') → P m)) :
+  (hind : ∀ {m : MyNat}, m ≥ m₀ →
+    ((∀ (m' : MyNat), m₀ ≤ m' → m' < m → P m') → P m)) :
   ∀ {m : MyNat}, m ≥ m₀ → P m := by
   sorry
 
@@ -256,14 +259,14 @@ section Exercises
 
 -- Exercise 2.2.6
 example {n : MyNat} {P : MyNat → Prop}
-  (hind : ∀ (m : MyNat), P m++ → P m) (hbase : P n) :
-  ∀ (m : MyNat), m ≤ n → P m := by
+  (hbase : P n) (hind : ∀ {m : MyNat}, P m++ → P m) :
+  ∀ {m : MyNat}, m ≤ n → P m := by
   sorry
 
 -- Exercise 2.2.7
 example {n : MyNat} {P : MyNat → Prop}
-  (hind : ∀ (m : MyNat), P m++ → P m) :
-  P n → (∀ (m : MyNat), m ≥ n → P m) := by
+  (hind : ∀ {m : MyNat}, P m → P m++) :
+  P n → (∀ {m : MyNat}, m ≥ n → P m) := by
   sorry
 
 end Exercises
