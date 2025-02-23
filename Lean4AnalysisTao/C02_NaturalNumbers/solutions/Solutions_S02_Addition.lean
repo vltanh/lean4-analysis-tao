@@ -474,12 +474,10 @@ example {n : MyNat} {P : MyNat → Prop}
   (hbase : P n) (hind : ∀ {m : MyNat}, P m++ → P m) :
   ∀ {m : MyNat}, m ≤ n → P m := by
   have : ∀ {n : MyNat},
-    P n → (∀ {m : MyNat}, P m++ → P m) →
-    (∀ (m : MyNat), m ≤ n → P m) := by
+    P n → ∀ {m : MyNat}, m ≤ n → P m := by
     have hbase :
-      P 𝟘 → (∀ {m : MyNat}, P m++ → P m) →
-        ∀ (m : MyNat), m ≤ 𝟘 → P m := by
-      intro hbase hind
+      P 𝟘 → ∀ {m : MyNat}, m ≤ 𝟘 → P m := by
+      intro hbase
       intro m hm
       have : m = 𝟘 := by
         rw [MyNat.le] at hm
@@ -490,12 +488,10 @@ example {n : MyNat} {P : MyNat → Prop}
       rw [this]
       exact hbase
     have hind : ∀ {n : MyNat},
-      (P n → (∀ {m : MyNat}, P m++ → P m) →
-        ∀ {m : MyNat}, m ≤ n → P m) →
-      (P n++ → (∀ {m : MyNat}, P m++ → P m) →
-        ∀ {m : MyNat}, m ≤ n++ → P m) := by
+      (P n → ∀ {m : MyNat}, m ≤ n → P m) →
+      (P n++ → ∀ {m : MyNat}, m ≤ n++ → P m) := by
       intro n hn
-      intro hbase hind
+      intro hbase
       intro m hm
       rcases MyNat.order_trichotomy m (n++) with (h1 | h2 | h3)
       · rcases h1 with ⟨hlt, hneq, hngt⟩
@@ -509,7 +505,7 @@ example {n : MyNat} {P : MyNat → Prop}
           use d
           rw [MyNat.succ_add m d] at hd
           exact MyNat.succ_inj hd
-        exact hn (hind hbase) hind this
+        exact hn (hind hbase) this
       · rcases h2 with ⟨hnlt, heq, hngt⟩
         rw [heq]
         exact hbase
@@ -520,14 +516,14 @@ example {n : MyNat} {P : MyNat → Prop}
         have : m = n++ := MyNat.ge_antisymm hge hm
         exact hne this
     exact MyNat.induction hbase hind
-  exact this hbase hind
+  intro m
+  exact this hbase
 
 -- Exercise 2.2.7
 example {n : MyNat} {P : MyNat → Prop}
   (hind : ∀ {m : MyNat}, P m → P m++) :
   P n → (∀ {m : MyNat}, m ≥ n → P m) := by
   intro hn
-  intro m hmn
   have : ∀ {m : MyNat}, m ≥ n → P m := by
     have hbase : 𝟘 ≥ n → P 𝟘 := by
       intro hn'
@@ -566,6 +562,7 @@ example {n : MyNat} {P : MyNat → Prop}
         have : P m := hm this
         exact hind this
     exact MyNat.induction hbase hind
+  intro m hmn
   exact this hmn
 
 end Exercises
