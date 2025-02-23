@@ -10,21 +10,22 @@ axiom MyNat.zero_mul :
 axiom MyNat.succ_mul :
   ∀ (n m : MyNat), (n++) * m = n * m + m
 
+-- Lemma 2.3.2
 theorem MyNat.mul_zero :
   ∀ (n : MyNat), n * 𝟘 = 𝟘 := by
   sorry
 
 theorem MyNat.mul_succ :
-  ∀ (n m : MyNat), n * (m++) = n * m + n := by
+  ∀ (n m : MyNat), n * m++ = n * m + n := by
   sorry
 
--- Lemma 2.3.2
-theorem MyNat.mul_comm (n m : MyNat) :
-  n * m = m * n := by
+theorem MyNat.mul_comm :
+  ∀ (n m : MyNat), n * m = m * n := by
   sorry
 
 -- Lemma 2.3.3
-theorem MyNat.mul_pos {n m : MyNat} (hn : n.is_positive) (hm : m.is_positive) :
+theorem MyNat.mul_pos {n m : MyNat}
+  (hn : n.is_positive) (hm : m.is_positive) :
   (n * m).is_positive := by
   sorry
 
@@ -60,8 +61,8 @@ theorem MyNat.mul_distrib' (a b c : MyNat) :
   rw [MyNat.mul_comm a c]
 
 -- Proposition 2.3.5
-theorem MyNat.mul_assoc (a b c : MyNat) :
-  (a * b) * c = a * (b * c) := by
+theorem MyNat.mul_assoc :
+  ∀ (a b c : MyNat), (a * b) * c = a * (b * c) := by
   sorry
 
 -- Proposition 2.3.6

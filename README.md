@@ -34,9 +34,9 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 
 ### Solutions to exercises
 
-- [ ] 2. Starting at the Beginning: The Natural Numbers
+- [x] 2. Starting at the Beginning: The Natural Numbers
     - [x] 2.2. Addition
-    - [ ] 2.3. Multiplication
+    - [x] 2.3. Multiplication
 - [ ] 3. Set Theory
     - [ ] 3.1. Fundamentals
     - [ ] 3.2. Russell's paradox
