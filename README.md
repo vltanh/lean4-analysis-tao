@@ -35,8 +35,7 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 ### Solutions to exercises
 
 - [ ] 2. Starting at the Beginning: The Natural Numbers
-    - [ ] 2.1. The Peano axioms
-    - [ ] 2.2. Addition
+    - [x] 2.2. Addition
     - [ ] 2.3. Multiplication
 - [ ] 3. Set Theory
     - [ ] 3.1. Fundamentals
