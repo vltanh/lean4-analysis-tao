@@ -10,12 +10,12 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 
 ### Main text
 
-- [x] 2. Starting at the Beginning: The Natural Numbers
-    - [x] 2.1. The Peano axioms
-    - [x] 2.2. Addition
-    - [x] 2.3. Multiplication
-- [ ] 3. Set Theory **(WIP)**
-    - [x] 3.1. Fundamentals
+- [x] 2. [Starting at the Beginning: The Natural Numbers](Lean4AnalysisTao/C02_NaturalNumbers)
+    - [x] 2.1. [The Peano axioms](Lean4AnalysisTao/C02_NaturalNumbers/S01_PeanoAxioms.lean)
+    - [x] 2.2. [Addition](Lean4AnalysisTao/C02_NaturalNumbers/S02_Addition.lean)
+    - [x] 2.3. [Multiplication](Lean4AnalysisTao/C02_NaturalNumbers/S03_Multiplication.lean)
+- [ ] 3. [Set Theory](Lean4AnalysisTao/C03_SetTheory)
+    - [x] 3.1. [Fundamentals](Lean4AnalysisTao/C03_SetTheory/S01_Fundamentals.lean)
     - [ ] 3.2. Russell's paradox
     - [ ] 3.3. Functions
     - [ ] 3.4. Images and Inverse Images
@@ -34,11 +34,11 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 
 ### Solutions to exercises
 
-- [x] 2. Starting at the Beginning: The Natural Numbers
-    - [x] 2.2. Addition
-    - [x] 2.3. Multiplication
-- [ ] 3. Set Theory **(WIP)**
-    - [x] 3.1. Fundamentals
+- [x] 2. [Starting at the Beginning: The Natural Numbers](Lean4AnalysisTao/C02_NaturalNumbers/solutions/)
+    - [x] 2.2. [Addition](Lean4AnalysisTao/C02_NaturalNumbers/solutions/Solutions_S02_Addition.lean)
+    - [x] 2.3. [Multiplication](Lean4AnalysisTao/C02_NaturalNumbers/solutions/Solutions_S03_Multiplication.lean)
+- [ ] 3. [Set Theory](Lean4AnalysisTao/C03_SetTheory/solutions/)
+    - [x] 3.1. [Fundamentals](Lean4AnalysisTao/C03_SetTheory/solutions/Solutions_S01_Fundamentals.lean)
     - [ ] 3.2. Russell's paradox
     - [ ] 3.3. Functions
     - [ ] 3.4. Images and Inverse Images
