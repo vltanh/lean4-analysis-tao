@@ -6,7 +6,7 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 
 ## Progress
 
-**(Updated on 2025-02-23)**
+**(Updated on 2025-02-24)**
 
 ### Main text
 
@@ -38,7 +38,7 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
     - [x] 2.2. Addition
     - [x] 2.3. Multiplication
 - [ ] 3. Set Theory **(WIP)**
-    - [ ] 3.1. Fundamentals **(WIP)**
+    - [x] 3.1. Fundamentals
     - [ ] 3.2. Russell's paradox
     - [ ] 3.3. Functions
     - [ ] 3.4. Images and Inverse Images
