@@ -452,18 +452,15 @@ theorem MySet.union_diff_superset
   A ∪ (X \ A) = X := by
   sorry
 
-theorem MySet.inter_diff_superset
-  (X A : MySet α) (hA : A ⊆ X) :
+theorem MySet.inter_diff (X A : MySet α) :
   A ∩ (X \ A) = ∅ := by
   sorry
 
-theorem MySet.superset_diff_union
-  (X A B : MySet α) (hA : A ⊆ X) (hB : B ⊆ X) :
+theorem MySet.diff_union (X A B : MySet α) :
   X \ (A ∪ B) = (X \ A) ∩ (X \ B) := by
   sorry
 
-theorem MySet.superset_diff_inter
-  (X A B : MySet α) (hA : A ⊆ X) (hB : B ⊆ X) :
+theorem MySet.diff_inter (X A B : MySet α) :
   X \ (A ∩ B) = (X \ A) ∪ (X \ B) := by
   sorry
 
@@ -661,14 +658,13 @@ example (A B A' B' : MySet α)
   sorry
 
 -- (b)
-example (A B A' B' : MySet α)
-  (hA : A' ⊆ A) (hB : B' ⊆ B) :
-  ¬ (A' \ B' ⊆ A \ B) := by
+example : ∃ (A B A' B' : MySet ℕ),
+  A' ⊆ A ∧ B' ⊆ B ∧ ¬ (A' \ B' ⊆ A \ B) := by
   sorry
 
 -- Exercise 3.1.13
-example (A : MySet α) (hA : MySet.nonempty A) :
-  ¬ (∃ (B : MySet α), B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
+example (A : MySet α) (hA : A.nonempty) :
+  ¬ (∃ (B : MySet α), B.nonempty ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
   sorry
 
 end Exercises
