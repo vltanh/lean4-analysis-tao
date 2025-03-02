@@ -2,22 +2,22 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Use
 
 -- Definition 3.1.1
-axiom MySet.mem.{u, v} {α : Type u} {γ : Type v} : γ → α → Prop
+axiom MySet.mem {α γ : Type} : γ → α → Prop
 notation:50 x:50 " ∈ " S:50 => MySet.mem S x
 notation:50 x:50 " ∉ " S:50 => ¬ (x ∈ S)
 
 -- Axiom 3.1
-axiom MySet.{u} (α : Type u) : Type u
+axiom MySet (α : Type) : Type
 
 -- Axiom 3.2
-axiom MySet.ext.{u, v} {α : Type u} {γ : Type v} {A B : γ} :
+axiom MySet.ext {α γ : Type} {A B : γ} :
   A = B ↔ (∀ (x : α), x ∈ A ↔ x ∈ B)
 
 -- Axiom 3.3
-axiom MySet.empty.{u} {γ : Type u} : γ
+axiom MySet.empty {γ : Type} : γ
 notation:max "∅" => MySet.empty
 
-axiom MySet.not_mem_empty.{u} {α γ : Type u} :
+axiom MySet.not_mem_empty {α γ : Type} :
   ∀ {x : α}, x ∉ (∅ : γ)
 
 def MySet.nonempty (S : MySet α) : Prop :=
@@ -38,19 +38,16 @@ theorem MySet.single_choice {A : MySet α} (h : A.nonempty) :
   exact h this
 
 -- Axiom 3.4
-axiom MySet.singleton.{u, v} {α : Type u} {γ : Type v} (a : α) : γ
+axiom MySet.singleton {α γ : Type} (a : α) : γ
 notation:max "⦃" a:max "⦄" => MySet.singleton a
 
-axiom MySet.mem_singleton.{u, v} {α : Type u} {γ : Type v} (a : α) :
+axiom MySet.mem_singleton {α γ : Type} (a : α) :
   ∀ (y : α), y ∈ (⦃a⦄ : γ) ↔ y = a
 
--- axiom MySet.mem_union.{u, v} {γ : Type v} (A B : γ) :
---   ∀ {α : Type u} (x : α), x ∈ A ∪ B ↔ x ∈ A ∨ x ∈ B
-
-axiom MySet.pair.{u, v} {α : Type u} {γ : Type v} (a b : α) : γ
+axiom MySet.pair {α γ : Type} (a b : α) : γ
 notation:max "⦃" a:max ", " b:max "⦄" => MySet.pair a b
 
-axiom MySet.mem_pair.{u, v} {α : Type u} {γ : Type v} (a b : α) :
+axiom MySet.mem_pair {α γ : Type} (a b : α) :
   ∀ (y : α), y ∈ (⦃a, b⦄ : γ) ↔ y = a ∨ y = b
 
 -- Remarks 3.1.8
@@ -154,11 +151,11 @@ example :
   exact this h'
 
 -- Axiom 3.5
-axiom MySet.union.{v} {γ : Type v} (A B : γ) : γ
+axiom MySet.union {γ : Type} (A B : γ) : γ
 infixl:65 " ∪ " => MySet.union
 
-axiom MySet.mem_union.{u, v} {γ : Type v} (A B : γ) :
-  ∀ {α : Type u} (x : α), x ∈ A ∪ B ↔ x ∈ A ∨ x ∈ B
+axiom MySet.mem_union {γ : Type} (A B : γ) :
+  ∀ {α : Type} (x : α), x ∈ A ∪ B ↔ x ∈ A ∨ x ∈ B
 
 -- Remark 3.1.11
 example (A A' B : MySet α) (h : A = A') :
@@ -261,7 +258,7 @@ theorem MySet.empty_union (A : MySet α) :
   rw [MySet.union_empty]
 
 -- Definition 3.1.14
-def MySet.subset.{u} {α : Type u} (A B : MySet α) :=
+def MySet.subset {α : Type} (A B : MySet α) :=
   ∀ (x : α), x ∈ A → x ∈ B
 infix:50 " ⊆ " => MySet.subset
 notation A:50 " ⊊ " B:50 => A ⊆ B ∧ A ≠ B
@@ -321,10 +318,10 @@ theorem MySet.proper_ss_of_proper_ss_of_proper_ss (A B C : MySet α) :
     exact hBC.right this
 
 -- Axiom 3.6
-axiom MySet.spec.{u, v} {α : Type u} {γ : Type v} (A : γ) (P : α → Prop) : γ
+axiom MySet.spec {α γ : Type} (A : γ) (P : α → Prop) : γ
 notation "⦃" S:max " | " P:max "⦄" => MySet.spec S P
 
-axiom MySet.mem_spec.{u} {α : Type u} (A : MySet α) (P : α → Prop) :
+axiom MySet.mem_spec {α : Type} (A : MySet α) (P : α → Prop) :
   ∀ (y : α), y ∈ MySet.spec A P ↔ y ∈ A ∧ P y
 
 theorem MySet.spec_ss {A : MySet α} {P : α → Prop} :
@@ -488,7 +485,7 @@ example :
 end Example_3_1_21
 
 -- Definition 3.1.22
-noncomputable def MySet.inter.{u} {α : Type u} (S₁ S₂ : MySet α) : MySet α :=
+noncomputable def MySet.inter {α : Type} (S₁ S₂ : MySet α) : MySet α :=
   ⦃ S₁ | fun x => (x : α) ∈ S₂ ⦄
 infixl:70 " ∩ " => MySet.inter
 
@@ -510,7 +507,7 @@ example : MySet.disjoint (∅ : MySet α) ∅ := by
   rw [and_self (x ∈ ∅)]
 
 -- Definition 3.1.26
-noncomputable def MySet.diff.{u} {α : Type u} (A B : MySet α) : MySet α :=
+noncomputable def MySet.diff {α : Type} (A B : MySet α) : MySet α :=
   ⦃ A | fun x => (x : α) ∉ B ⦄
 infix:70 " \\ " => MySet.diff
 
@@ -745,7 +742,7 @@ theorem MySet.diff_inter (X A B : MySet α) :
         exact Or.inr hxB
 
 -- Axiom 3.7
-axiom MySet.replace.{u, v} {α : Type u} {β : Type v}
+axiom MySet.replace {α β : Type}
   (A : MySet α) {P : α → β → Prop}
   (hP : ∀ (x : α), x ∈ A →
     (∃ (y : β), (P x y ∧ (∀ (z : β), P x z → z = y)))) :
@@ -753,7 +750,7 @@ axiom MySet.replace.{u, v} {α : Type u} {β : Type v}
 notation
   "⦃" A:max " ← " hP:max "⦄" => MySet.replace A hP
 
-axiom MySet.mem_replace.{u, v} {α : Type u} {β : Type v}
+axiom MySet.mem_replace {α β : Type}
   (A : MySet α) {P : α → β → Prop}
   (hP : ∀ (x : α), x ∈ A →
     (∃ (y : β), (P x y ∧ (∀ (z : β), P x z → z = y)))) :
@@ -880,16 +877,41 @@ example :
 end Example_3_1_31
 
 -- Axiom 3.8
-axiom MySet.nat.{u} :
-  ∃ (ν : Type u) (N : MySet ν) (zero : ν) (succ : ν → ν),
-    (zero ∈ N)
-    ∧ (∀ (n : ν), n ∈ N → succ n ∈ N)
-    ∧ (∀ (n : ν), n ∈ N → succ n ≠ zero)
-    ∧ (∀ (n : ν), n ∈ N → (∀ (m : ν), m ∈ N → succ n = succ m → n = m))
-    ∧ (∀ (P : ν → Prop),
-        P zero →
-        (∀ (n : ν), n ∈ N → P n → P (succ n)) →
-        (∀ (n : ν), n ∈ N → P n))
+axiom MySet.Nat.set : MySet ℕ
+
+axiom MySet.Nat.is_nat :
+  ∀ (n : ℕ), n ∈ MySet.Nat.set
+
+-- axiom MySet.Nat.type : Type
+
+-- axiom MySet.Nat.set : MySet MySet.Nat.type
+
+-- axiom MySet.Nat.zero : MySet.Nat.type
+
+-- axiom MySet.Nat.succ : MySet.Nat.type → MySet.Nat.type
+
+-- axiom MySet.Nat.zero_is_nat :
+--   MySet.Nat.zero ∈ MySet.Nat.set
+
+-- axiom MySet.Nat.succ_is_nat :
+--   ∀ (n : MySet.Nat.type),
+--     n ∈ MySet.Nat.set → MySet.Nat.succ n ∈ MySet.Nat.set
+
+-- axiom MySet.Nat.succ_ne_zero :
+--   ∀ (n : MySet.Nat.type),
+--     n ∈ MySet.Nat.set → MySet.Nat.succ n ≠ MySet.Nat.zero
+
+-- axiom MySet.Nat.succ_inj :
+--   ∀ (n : MySet.Nat.type), n ∈ MySet.Nat.set →
+--     ∀ (m : MySet.Nat.type), m ∈ MySet.Nat.set →
+--       MySet.Nat.succ n = MySet.Nat.succ m → n = m
+
+-- axiom MySet.Nat.induction :
+--   ∀ (P : MySet.Nat.type → Prop),
+--     P MySet.Nat.zero →
+--     (∀ (n : MySet.Nat.type), n ∈ MySet.Nat.set →
+--       P n → P (MySet.Nat.succ n)) →
+--     (∀ (n : MySet.Nat.type), n ∈ MySet.Nat.set → P n)
 
 section Exercises
 
@@ -1231,8 +1253,8 @@ example (A B : MySet α) :
       · exact Or.inr ⟨h, hxA⟩
 
 -- Exercise 3.1.11
-example {α : Type u}
-  (hrep : ∀ (A : MySet α) {β : Type u} (P : α → β → Prop),
+example {α : Type}
+  (hrep : ∀ (A : MySet α) {β : Type} (P : α → β → Prop),
     (∀ (x : α), x ∈ A →
       (∃ (y : β), P x y ∧ (∀ (z : β), P x z → y = z))) →
     (∃ (S : MySet β),
