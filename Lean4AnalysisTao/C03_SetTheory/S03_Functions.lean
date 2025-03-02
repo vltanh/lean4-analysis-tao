@@ -1,5 +1,6 @@
+import Mathlib.Data.Nat.Defs
+
 import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
-import Mathlib
 
 -- Definition 3.3.1
 structure MyFun (α β : Type) where
@@ -14,17 +15,18 @@ noncomputable def MyFun.eval (f : MyFun α β) :
   (x : α) → x ∈ f.domain → β :=
   fun x hx => (f.isValidProp x hx).choose
 
+theorem MyFun.eval_codomain (f : MyFun α β) {x : α} (hx : x ∈ f.domain) :
+  f.eval x hx ∈ f.codomain := by
+  exact (f.isValidProp x hx).choose_spec.left
+
 theorem MyFun.def {α β : Type} (f : MyFun α β) :
   ∀ {x : α} {y : β}, (hx : x ∈ f.domain) → y ∈ f.codomain →
     (y = f.eval x hx ↔ f.prop x y) := by
   intro x y hx hy
-  have : f.eval x hx ∈ f.codomain ∧ f.prop x (f.eval x hx) := by
-    have := (f.isValidProp x hx).choose_spec
-    dsimp [MyFun.eval]
-    constructor
-    · exact this.left
-    · exact this.right.left
-  rcases this with ⟨hfxY, hPxfx⟩
+  have hfxY : f.eval x hx ∈ f.codomain :=
+    MyFun.eval_codomain f hx
+  have hPxfx : f.prop x (f.eval x hx) := by
+    exact (f.isValidProp x hx).choose_spec.right.left
   constructor
   · intro hyfx
     rw [hyfx]
@@ -36,21 +38,35 @@ theorem MyFun.def {α β : Type} (f : MyFun α β) :
     rw [← hy'fx]
     exact hy'x.symm
 
-def MyFun.from_fun {α β : Type} (X : MySet α) {Y : MySet β}
-  (hY : ∀ (y : β), y ∈ Y) (f : α → β) :
+def MyFun.from_fun {α β : Type} {X : MySet α} {Y : MySet β}
+  {f : (x : α) → x ∈ X → β} (h : ∀ {x : α} (hx : x ∈ X), f x hx ∈ Y) :
   MyFun α β where
   domain := X
   codomain := Y
-  prop := fun x y => y = f x
+  prop := fun x y => by
+    by_cases hx : x ∈ X
+    · exact y = f x hx
+    · exact False
   isValidProp := by
     intro x hx
-    use f x
+    use f x hx
     constructor
-    · exact hY (f x)
+    · exact h hx
     · constructor
       · dsimp only [prop]
+        rw [dif_pos hx]
       · intro y' hy' hP
+        rw [dif_pos hx] at hP
         exact hP.symm
+
+theorem MyFun.from_fun.eval {α β : Type} {X : MySet α} {Y : MySet β}
+  {f : (x : α) → x ∈ X → β} (h : ∀ {x : α} (hx : x ∈ X), f x hx ∈ Y)
+  {x : α} (hx : x ∈ X) : (MyFun.from_fun h).eval x hx = f x hx := by
+  have : f x hx = (MyFun.from_fun h).eval x hx := by
+    rw [MyFun.def (MyFun.from_fun h) hx (h hx)]
+    dsimp only [MyFun.from_fun]
+    rw [dif_pos hx]
+  exact this.symm
 
 -- Example 3.3.3
 namespace Example_3_3_3
@@ -153,7 +169,7 @@ end Example_3_3_3_b
 
 end Example_3_3_3
 
-example (f : MyFun α β) {x x' : α}
+theorem MyFun.substitute (f : MyFun α β) {x x' : α}
   (hx : x ∈ f.domain) (hx' : x' ∈ f.domain) :
   x = x' → f.eval x hx = f.eval x' hx' := by
   -- sorry
@@ -192,7 +208,7 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
       constructor
       · exact MySet.Nat.is_nat 7
       · constructor
-        · dsimp only [prop]
+        · dsimp only [MyFun.prop]
         · intro y' hy' hP
           exact hP.symm
   }
@@ -227,12 +243,12 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
     rw [this hx']
 
 -- Definition 3.3.8
-axiom MyFun.eq {α β : Type} (f g : MyFun α β) :
-  f = g ↔
-    f.domain = g.domain
-    ∧ f.codomain = g.codomain
-    ∧ ∀ {x : α} (hxf : x ∈ f.domain) (hxg : x ∈ g.domain),
-      f.eval x hxf = g.eval x hxg
+def MyFun.eq {α β : Type} (f g : MyFun α β) :=
+  f.domain = g.domain
+  ∧ f.codomain = g.codomain
+  ∧ ∀ {x : α} (hxf : x ∈ f.domain) (hxg : x ∈ g.domain),
+    f.eval x hxf = g.eval x hxg
+notation f " ≃ " g => MyFun.eq f g
 
 -- Example 3.3.10
 namespace Example_3_3_10
@@ -241,16 +257,21 @@ noncomputable def X : MySet ℕ := MySet.Nat.set
 
 noncomputable def Y : MySet ℕ := MySet.Nat.set
 
+lemma aux : ∀ (f : ℕ → ℕ) {x : ℕ}, x ∈ X → f x ∈ Y := by
+  intro f x hx
+  dsimp only [Y]
+  exact MySet.Nat.is_nat (f x)
+
 def _f : ℕ → ℕ := fun n => n ^ 2 + 2 * n + 1
 
-noncomputable def f : MyFun ℕ ℕ := MyFun.from_fun X MySet.Nat.is_nat _f
+noncomputable def f : MyFun ℕ ℕ := MyFun.from_fun (aux _f)
 
 def _g : ℕ → ℕ := fun n => (n + 1) ^ 2
 
-noncomputable def g : MyFun ℕ ℕ := MyFun.from_fun X MySet.Nat.is_nat _g
+noncomputable def g : MyFun ℕ ℕ := MyFun.from_fun (aux _g)
 
-example : f = g := by
-  rw [MyFun.eq f g]
+example : f ≃ g := by
+  dsimp only [MyFun.eq]
   constructor
   · rfl
   · constructor
@@ -265,6 +286,10 @@ example : f = g := by
         dsimp only [_f]
         dsimp only [MyFun.from_fun] at hQxy'
         dsimp only [_g] at hQxy'
+        dsimp only [f] at hxf
+        dsimp only [MyFun.from_fun] at hxf
+        rw [dif_pos hxf]
+        rw [dif_pos hxf] at hQxy'
         rw [hQxy']
         rw [Nat.pow_two]
         rw [Nat.mul_add]
@@ -301,10 +326,10 @@ noncomputable def empty_fun (X : MySet β) : MyFun α β where
 
 example : ∀ (X : MySet β),
   ∀ (g : MyFun α β), g.domain = ∅ → g.codomain = X →
-    g = empty_fun X := by
+    g ≃ empty_fun X := by
   intro X
   intro g hgdom hgcodom
-  rw [MyFun.eq]
+  dsimp only [MyFun.eq]
   constructor
   · dsimp only [empty_fun]
     rw [hgdom]
@@ -318,30 +343,37 @@ example : ∀ (X : MySet β),
 -- Definition 3.3.13
 noncomputable def MyFun.comp {α β γ : Type}
   (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain) :
-  MyFun α γ := sorry
-  -- (by
-  --   intro x hx
+  MyFun α γ := by
+  have aux : ∀ {x : α} (hx : x ∈ f.domain), f.eval x hx ∈ g.domain := by
+    intro x hx
+    rw [← hfg]
+    exact f.eval_codomain hx
+  let gf : (x : α) → x ∈ f.domain → γ :=
+    fun x h => g.eval (f.eval x h) (aux h)
+  have aux' : ∀ {x : α} (hx : x ∈ f.domain), gf x hx ∈ g.codomain := by
+    intro x hx
+    exact g.eval_codomain (aux hx)
+  exact MyFun.from_fun aux'
 
-  --   have hfxgdom : f.eval x hx ∈ g.domain := by
-  --     rcases f.isValidProp x hx with ⟨y, hy, hPxy, hy!⟩
-  --     rw [← f.def hx hy] at hPxy
-  --     rw [← hPxy]
-  --     rw [← hfg]
-  --     exact hy
+theorem MyFun.comp.eval {α β γ : Type}
+  (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain)
+  {x : α} (hxf : x ∈ f.domain) (hfxg : f.eval x hxf ∈ g.domain)
+  (hfgx : x ∈ (f.comp g hfg).domain) :
+  (f.comp g hfg).eval x hfgx = g.eval (f.eval x hxf) hfxg := by
+  dsimp only [MyFun.comp]
+  rw [MyFun.from_fun.eval]
 
-  --   have : g.eval (f.eval x hx) hfxgdom ∈ g.codomain := by
-  --     rcases g.isValidProp (f.eval x hx) hfxgdom with ⟨y, hy, hPxy, hy!⟩
-  --     rw [← g.def hfxgdom hy] at hPxy
-  --     rw [← hPxy]
-  --     exact hy
+theorem MyFun.comp.eval.domain {α β γ : Type}
+  (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain) :
+  (f.comp g hfg).domain = f.domain := by
+  dsimp only [MyFun.comp]
+  dsimp only [MyFun.from_fun]
 
-  --   have : ∀ {x : α}, x ∈ f.domain
-
-  --   let _g_f : α → γ := fun x => g.eval (f.eval x (by sorry)) (by sorry)
-  --   have : _g_f x ∈ g.codomain := by sorry
-  --   exact this
-  -- )
-notation g " ∘ " f => MyFun.comp f g
+theorem MyFun.comp.eval.codomain {α β γ : Type}
+  (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain) :
+  (f.comp g hfg).codomain = g.codomain := by
+  dsimp only [MyFun.comp]
+  dsimp only [MyFun.from_fun]
 
 -- Example 3.3.14
 namespace Example_3_3_14
@@ -350,14 +382,92 @@ def _f : ℕ → ℕ := fun n => 2 * n
 
 def _g : ℕ → ℕ := fun n => n + 3
 
-def _h : ℕ → ℕ := fun n => 2 * n + 3
-
-def _k : ℕ → ℕ := fun n => 2 * n + 6
-
 noncomputable def X : MySet ℕ := MySet.Nat.set
 
 noncomputable def Y : MySet ℕ := MySet.Nat.set
 
 noncomputable def Z : MySet ℕ := MySet.Nat.set
 
+lemma aux : ∀ (f : ℕ → ℕ) (X : MySet ℕ)
+  {x : ℕ}, x ∈ X → f x ∈ Y := by
+  intro f X x hx
+  exact MySet.Nat.is_nat (f x)
+
+noncomputable def f : MyFun ℕ ℕ := MyFun.from_fun (aux _f X)
+
+noncomputable def g : MyFun ℕ ℕ := MyFun.from_fun (aux _g Y)
+
+noncomputable def gf : MyFun ℕ ℕ := MyFun.comp f g rfl
+
+example (x : ℕ) : gf.eval x (MySet.Nat.is_nat x) = 2 * x + 3 := by
+  dsimp only [gf]
+  dsimp only [MyFun.comp]
+  rw [MyFun.from_fun.eval]
+  dsimp only [g]
+  rw [MyFun.from_fun.eval]
+  dsimp only [f]
+  rw [MyFun.from_fun.eval]
+  dsimp only [_f]
+  dsimp only [_g]
+
+noncomputable def fg : MyFun ℕ ℕ := MyFun.comp g f rfl
+
+example (x : ℕ) : fg.eval x (MySet.Nat.is_nat x) = 2 * x + 6 := by
+  dsimp only [fg]
+  dsimp only [MyFun.comp]
+  rw [MyFun.from_fun.eval]
+  dsimp only [f]
+  rw [MyFun.from_fun.eval]
+  dsimp only [g]
+  rw [MyFun.from_fun.eval]
+  dsimp only [_f]
+  dsimp only [_g]
+  rw [Nat.mul_add]
+
 end Example_3_3_14
+
+-- Lemma 3.3.15
+theorem MyFun.comp_assoc {α β γ δ : Type}
+  (f : MyFun γ δ) (g : MyFun β γ) (h : MyFun α β)
+  (hgh : h.codomain = g.domain) (hfg : g.codomain = f.domain) :
+  (h.comp g hgh).comp f hfg ≃ h.comp (g.comp f hfg) hgh := by
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [MyFun.comp]
+    dsimp only [MyFun.from_fun]
+  · constructor
+    · dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+    · intro x hxh hxg
+      dsimp only [MyFun.comp] at hxh
+      dsimp only [MyFun.from_fun] at hxh
+
+      have hf_gh : (h.comp g hgh).codomain = f.domain := by
+        rw [MyFun.comp.eval.codomain]
+        exact hfg
+      have hghxf : (h.comp g hgh).eval x hxh ∈ f.domain := by
+        rw [← hfg]
+        rw [← MyFun.comp.eval.codomain h g hgh]
+        exact MyFun.eval_codomain (h.comp g hgh) hxh
+      rw [MyFun.comp.eval (h.comp g hgh) f hf_gh hxh hghxf]
+
+      have hhxg : h.eval x hxh ∈ g.domain := by
+        rw [← hgh]
+        exact MyFun.eval_codomain h hxh
+      have hg_hxf : g.eval (h.eval x hxh) hhxg ∈ f.domain := by
+        rw [← hfg]
+        exact MyFun.eval_codomain g hhxg
+      have : (h.comp g hgh).eval x hxh = g.eval (h.eval x hxh) hhxg := by
+        rw [MyFun.comp.eval h g hgh hxh hhxg hxh]
+      rw [MyFun.substitute f hghxf hg_hxf this]
+
+      have hfg_h : h.codomain = (g.comp f hfg).domain := by
+        rw [MyFun.comp.eval.domain]
+        exact hgh
+      have hhxfg: h.eval x hxh ∈ (g.comp f hfg).domain := by
+        rw [MyFun.comp.eval.domain]
+        rw [← hgh]
+        exact MyFun.eval_codomain h hxh
+      rw [MyFun.comp.eval h (g.comp f hfg) hfg_h hxh hhxfg]
+
+      rw [MyFun.comp.eval g f hfg hhxg hg_hxf]
