@@ -2,21 +2,21 @@ import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
 
 namespace Axiom_3_9
 
-axiom MySet.univ_spec.{u} {α : Type u} (P : α → Prop) : MySet α
+axiom MySet.univ_spec {α : Type} (P : α → Prop) : MySet α
 notation:max "⦃|" P:max "⦄" => MySet.univ_spec P
 
-axiom MySet.mem_univ_spec.{u} {α : Type u} (P : α → Prop) (x : α) :
+axiom MySet.mem_univ_spec {α : Type} (P : α → Prop) (x : α) :
   x ∈ ⦃|P⦄ ↔ P x
 
 namespace Example
 
-noncomputable def P {γ : Type u} : γ → Prop :=
-  fun x => ∃ (α : Type u), (γ = MySet α) ∧ x ∉ x
+noncomputable def P {γ : Type} : γ → Prop :=
+  fun x => ∃ (α : Type), (γ = MySet α) ∧ x ∉ x
 
-example (h : γ = MySet ℕ) : P (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : γ) := by
+example : P (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet ℕ) := by
   use ℕ
   constructor
-  · exact h
+  · rfl
   · intro h'
     rw [MySet.mem_union (⦃2⦄ ∪ ⦃3⦄) ⦃4⦄ (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄)] at h'
     rw [MySet.mem_union ⦃2⦄ ⦃3⦄ (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄)] at h'
@@ -31,7 +31,7 @@ end Example
 end Axiom_3_9
 
 -- Axiom 3.10
-axiom MySet.regularity.{u} {α : Type u} :
+axiom MySet.regularity {α : Type} :
   ∀ (A : MySet α), A.nonempty →
   (∃ (x : MySet α), x ∈ A ∧ MySet.disjoint x A)
-  ∨ (∃ (ν : Type u) (x : ν), x ∈ A ∧ ν ≠ MySet α)
+  ∨ (∃ (ν : Type) (x : ν), x ∈ A ∧ ν ≠ MySet α)

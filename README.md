@@ -6,7 +6,7 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 
 ## Progress
 
-**(Updated on 2025-02-27)**
+**(Updated on 2025-03-02)**
 
 ### Main text
 
@@ -16,8 +16,8 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
     - [x] 2.3. [Multiplication](Lean4AnalysisTao/C02_NaturalNumbers/S03_Multiplication.lean)
 - [ ] 3. [Set Theory](Lean4AnalysisTao/C03_SetTheory)
     - [x] 3.1. [Fundamentals](Lean4AnalysisTao/C03_SetTheory/S01_Fundamentals.lean)
-    - [ ] 3.2. [Russell's paradox](Lean4AnalysisTao/C03_SetTheory/S02_RussellParadox.lean)
-    - [ ] 3.3. Functions
+    - [ ] 3.2. [Russell's Paradox](Lean4AnalysisTao/C03_SetTheory/S02_RussellParadox.lean)
+    - [ ] 3.3. [Functions](Lean4AnalysisTao/C03_SetTheory/S03_Functions.lean)
     - [ ] 3.4. Images and Inverse Images
     - [ ] 3.5. Cartesian Products
     - [ ] 3.6. Cardinality of Sets
@@ -39,7 +39,7 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
     - [x] 2.3. [Multiplication](Lean4AnalysisTao/C02_NaturalNumbers/solutions/Solutions_S03_Multiplication.lean)
 - [ ] 3. [Set Theory](Lean4AnalysisTao/C03_SetTheory/solutions/)
     - [x] 3.1. [Fundamentals](Lean4AnalysisTao/C03_SetTheory/solutions/Solutions_S01_Fundamentals.lean)
-    - [ ] 3.2. Russell's paradox
+    - [ ] 3.2. Russell's Paradox
     - [ ] 3.3. Functions
     - [ ] 3.4. Images and Inverse Images
     - [ ] 3.5. Cartesian Products
