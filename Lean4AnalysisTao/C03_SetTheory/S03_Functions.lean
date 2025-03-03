@@ -111,15 +111,11 @@ end Example_3_3_3_a
 
 namespace Example_3_3_3_b
 
-noncomputable def α := ℕ
+noncomputable def X : MySet ℕ := MySet.Nat.set \ ⦃0⦄
 
-noncomputable def β := ℕ
+noncomputable def Y : MySet ℕ := MySet.Nat.set
 
-noncomputable def X : MySet α := MySet.Nat.set \ ⦃0⦄
-
-noncomputable def Y : MySet β := MySet.Nat.set
-
-noncomputable def f : MyFun α β where
+noncomputable def f : MyFun ℕ ℕ where
   domain := X
   codomain := Y
   prop := fun x y => Nat.succ y = x
@@ -471,3 +467,211 @@ theorem MyFun.comp_assoc {α β γ δ : Type}
       rw [MyFun.comp.eval h (g.comp f hfg) hfg_h hxh hhxfg]
 
       rw [MyFun.comp.eval g f hfg hhxg hg_hxf]
+
+-- Definition 3.3.17
+def MyFun.isInjective {α β : Type} (f : MyFun α β) :=
+  ∀ {x x' : α} (hx : x ∈ f.domain) (hx' : x' ∈ f.domain),
+    x ≠ x' → f.eval x hx ≠ f.eval x' hx'
+
+def MyFun.isInjective' {α β : Type} (f : MyFun α β) :=
+  ∀ {x x' : α} (hx : x ∈ f.domain) (hx' : x' ∈ f.domain),
+    f.eval x hx = f.eval x' hx' → x = x'
+
+theorem MyFun.isInjective_iff {α β : Type} (f : MyFun α β) :
+  f.isInjective ↔ f.isInjective' := by
+  constructor
+  · intro h
+    dsimp only [MyFun.isInjective] at h
+    dsimp only [MyFun.isInjective']
+    intro x x' hx hx' hff'
+    by_contra h'
+    exact h hx hx' h' hff'
+  · intro h
+    dsimp only [MyFun.isInjective'] at h
+    dsimp only [MyFun.isInjective]
+    intro x x' hx hx' hxx' hff'
+    exact hxx' (h hx hx' hff')
+
+-- Example 3.3.18
+namespace Example_3_3_18
+
+def _f : ℕ → ℕ := fun n => n ^ 2
+
+noncomputable def X : MySet ℕ := MySet.Nat.set
+
+noncomputable def Y : MySet ℕ := MySet.Nat.set
+
+lemma aux : ∀ (f : ℕ → ℕ) (X : MySet ℕ)
+  {x : ℕ}, x ∈ X → f x ∈ Y := by
+  intro f X x hx
+  exact MySet.Nat.is_nat (f x)
+
+noncomputable def f : MyFun ℕ ℕ :=
+  MyFun.from_fun (aux _f X)
+
+example : f.isInjective := by
+  intro x x' hx hx' hxx'
+  dsimp only [f]
+  rw [MyFun.from_fun.eval]
+  rw [MyFun.from_fun.eval]
+  dsimp only [_f]
+  intro hx2x'2
+  rw [Nat.lt_or_gt] at hxx'
+  rcases hxx' with (hlt | hgt)
+  · rw [← Nat.mul_self_lt_mul_self_iff] at hlt
+    rw [← Nat.pow_two] at hlt
+    rw [← Nat.pow_two] at hlt
+    rw [Nat.lt_iff_le_and_ne] at hlt
+    exact hlt.right hx2x'2
+  · rw [← Nat.mul_self_lt_mul_self_iff] at hgt
+    rw [← Nat.pow_two] at hgt
+    rw [← Nat.pow_two] at hgt
+    rw [Nat.lt_iff_le_and_ne] at hgt
+    exact hgt.right hx2x'2.symm
+
+end Example_3_3_18
+
+-- Definition 3.3.20
+def MyFun.isSurjective {α β : Type} (f : MyFun α β) :=
+  ∀ (y : β), y ∈ f.codomain →
+    ∃ (x : α) (hx : x ∈ f.domain), f.eval x hx = y
+
+-- Example 3.3.21
+namespace Example_3_3_21
+
+noncomputable def X : MySet ℕ := MySet.Nat.set
+
+def _f : ℕ → ℕ := fun n => n ^ 2
+
+def P : ℕ → ℕ → Prop := fun x y => y = x ^ 2
+
+lemma hP : ∀ (x : ℕ), x ∈ X →
+  (∃ (y : ℕ), P x y ∧ (∀ (z : ℕ), P x z → z = y)) := by
+  intro x hx
+  use _f x
+  constructor
+  · dsimp only [P]
+    dsimp only [_f]
+  · intro z hP
+    dsimp only [P] at hP
+    dsimp only [_f]
+    exact hP
+
+noncomputable def Y : MySet ℕ := ⦃ MySet.Nat.set ← hP ⦄
+
+lemma aux : ∀ {x : ℕ}, x ∈ X → _f x ∈ Y := by
+  intro x hx
+  dsimp only [Y]
+  rw [MySet.mem_replace]
+  use x
+  constructor
+  · dsimp only [P]
+    exact MySet.Nat.is_nat x
+  · dsimp only [P]
+    dsimp only [_f]
+
+noncomputable def f : MyFun ℕ ℕ := MyFun.from_fun aux
+
+example : f.isSurjective := by
+  dsimp only [MyFun.isSurjective]
+  intro y hy
+  dsimp only [f] at hy
+  dsimp only [MyFun.from_fun] at hy
+  dsimp only [Y] at hy
+  rw [MySet.mem_replace] at hy
+  rcases hy with ⟨x, hx, hPxy⟩
+  dsimp only [P] at hPxy
+  use x, hx
+  dsimp only [f]
+  rw [MyFun.from_fun.eval]
+  dsimp only [_f]
+  exact hPxy.symm
+
+end Example_3_3_21
+
+-- Definition 3.3.23
+def MyFun.isBijective {α β : Type} (f : MyFun α β) :=
+  f.isInjective ∧ f.isSurjective
+
+-- Example 3.3.25
+namespace Example_3_3_25
+
+noncomputable def X : MySet ℕ := MySet.Nat.set
+
+noncomputable def Y : MySet ℕ := MySet.Nat.set \ ⦃0⦄
+
+def _f : ℕ → ℕ := fun n => n.succ
+
+lemma aux : ∀ {x : ℕ}, x ∈ X → _f x ∈ Y := by
+  intro x hx
+  dsimp only [Y]
+  dsimp only [_f]
+  rw [MySet.diff]
+  rw [MySet.mem_spec]
+  constructor
+  · exact MySet.Nat.is_nat (x.succ)
+  · intro h
+    rw [MySet.mem_singleton] at h
+    exact Nat.succ_ne_zero x h
+
+noncomputable def f : MyFun ℕ ℕ := MyFun.from_fun aux
+
+example : f.isBijective := by
+  dsimp only [MyFun.isBijective]
+  constructor
+  · dsimp only [MyFun.isInjective]
+    intro x x' hx hx' hxx'
+    dsimp only [f]
+    rw [MyFun.from_fun.eval]
+    rw [MyFun.from_fun.eval]
+    dsimp only [_f]
+    exact Nat.succ_ne_succ.mpr hxx'
+  · dsimp only [MyFun.isSurjective]
+    intro y hy
+    dsimp only [f] at hy
+    dsimp only [MyFun.from_fun] at hy
+    dsimp only [Y] at hy
+    rw [MySet.diff] at hy
+    rw [MySet.mem_spec] at hy
+    rcases hy with ⟨hy, hny⟩
+    rw [MySet.mem_singleton] at hny
+    rcases Nat.exists_eq_succ_of_ne_zero hny with ⟨x, hx⟩
+    use x, MySet.Nat.is_nat x
+    dsimp only [f]
+    rw [MyFun.from_fun.eval]
+    dsimp only [_f]
+    exact hx.symm
+
+end Example_3_3_25
+
+-- Remark 3.3.27
+theorem MyFun.exists_unique_of_bijective {α β : Type} (f : MyFun α β)
+  (h : f.isBijective) :
+  ∀ (y : β), y ∈ f.codomain →
+    ∃ (x : α) (hx : x ∈ f.domain), f.eval x hx = y ∧
+      ∀ (x' : α) (hx' : x' ∈ f.domain), f.eval x' hx' = y → x = x' := by
+  intro y hy
+  dsimp only [MyFun.isBijective] at h
+  rcases h with ⟨hinj, hsurj⟩
+  dsimp only [MyFun.isSurjective] at hsurj
+  rcases hsurj y hy with ⟨x, hx, hxy⟩
+  use x, hx, hxy
+  intro x' hx' hxy'
+  rw [MyFun.isInjective_iff] at hinj
+  dsimp only [MyFun.isInjective'] at hinj
+  rw [← hxy'] at hxy
+  exact hinj hx hx' hxy
+
+def MyFun.inv {α β : Type} (f : MyFun α β) (h : f.isBijective) :
+  MyFun β α := by
+  let X : MySet β := f.codomain
+  let Y : MySet α := f.domain
+  let finv (y : β) (hy : y ∈ X) : α :=
+    (MyFun.exists_unique_of_bijective f h y hy).choose
+  let aux : ∀ {y : β} (hy : y ∈ X), finv y hy ∈ Y := by
+    intro y hy
+    dsimp only [Y]
+    dsimp only [finv]
+    rcases (MyFun.exists_unique_of_bijective f h y hy).choose_spec with ⟨hx, h⟩
+    exact hx
+  exact MyFun.from_fun aux
