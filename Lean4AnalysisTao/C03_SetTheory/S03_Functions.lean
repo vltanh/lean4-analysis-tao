@@ -168,25 +168,7 @@ end Example_3_3_3
 theorem MyFun.substitute (f : MyFun α β) {x x' : α}
   (hx : x ∈ f.domain) (hx' : x' ∈ f.domain) :
   x = x' → f.eval x hx = f.eval x' hx' := by
-  -- sorry
-  intro hxx'
-  rcases f.isValidProp x hx with ⟨y, hy, hPxy, hy!⟩
-  rcases f.isValidProp x' hx' with ⟨y', hy', hPx'y', hy'!⟩
-  have hPxy' : f.prop x y' := by
-      rw [hxx']
-      exact hPx'y'
-  have hyy' : y = y' := hy! y' hy' hPxy'
-  have hy' : y' = f.eval x hx := by
-    exact (f.def hx hy').mpr hPxy'
-  have hy : y = f.eval x' hx' := by
-    have hPx'y : f.prop x' y := by
-      rw [← hxx']
-      exact hPxy
-    have := f.def hx' hy
-    exact this.mpr hPx'y
-  rw [← hy]
-  rw [← hy']
-  exact hyy'.symm
+  sorry
 
 -- Example 3.3.5
 example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
@@ -352,7 +334,7 @@ noncomputable def MyFun.comp {α β γ : Type}
   exact MyFun.from_fun aux'
 
 theorem MyFun.comp.eval {α β γ : Type}
-  (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain)
+  {f : MyFun α β} {g : MyFun β γ} (hfg : f.codomain = g.domain)
   {x : α} (hxf : x ∈ f.domain) (hfxg : f.eval x hxf ∈ g.domain)
   (hfgx : x ∈ (f.comp g hfg).domain) :
   (f.comp g hfg).eval x hfgx = g.eval (f.eval x hxf) hfxg := by
@@ -445,7 +427,7 @@ theorem MyFun.comp_assoc {α β γ δ : Type}
         rw [← hfg]
         rw [← MyFun.comp.eval.codomain h g hgh]
         exact MyFun.eval_codomain (h.comp g hgh) hxh
-      rw [MyFun.comp.eval (h.comp g hgh) f hf_gh hxh hghxf]
+      rw [MyFun.comp.eval hf_gh hxh hghxf]
 
       have hhxg : h.eval x hxh ∈ g.domain := by
         rw [← hgh]
@@ -454,7 +436,7 @@ theorem MyFun.comp_assoc {α β γ δ : Type}
         rw [← hfg]
         exact MyFun.eval_codomain g hhxg
       have : (h.comp g hgh).eval x hxh = g.eval (h.eval x hxh) hhxg := by
-        rw [MyFun.comp.eval h g hgh hxh hhxg hxh]
+        rw [MyFun.comp.eval hgh hxh hhxg hxh]
       rw [MyFun.substitute f hghxf hg_hxf this]
 
       have hfg_h : h.codomain = (g.comp f hfg).domain := by
@@ -464,9 +446,9 @@ theorem MyFun.comp_assoc {α β γ δ : Type}
         rw [MyFun.comp.eval.domain]
         rw [← hgh]
         exact MyFun.eval_codomain h hxh
-      rw [MyFun.comp.eval h (g.comp f hfg) hfg_h hxh hhxfg]
+      rw [MyFun.comp.eval hfg_h hxh hhxfg]
 
-      rw [MyFun.comp.eval g f hfg hhxg hg_hxf]
+      rw [MyFun.comp.eval hfg hhxg hg_hxf]
 
 -- Definition 3.3.17
 def MyFun.isInjective {α β : Type} (f : MyFun α β) :=
@@ -675,3 +657,284 @@ def MyFun.inv {α β : Type} (f : MyFun α β) (h : f.isBijective) :
     rcases (MyFun.exists_unique_of_bijective f h y hy).choose_spec with ⟨hx, h⟩
     exact hx
   exact MyFun.from_fun aux
+
+-- theorem MyFun.inv_domain {α β : Type} {f : MyFun α β} (hf : f.isBijective)
+--   {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+--   fi.codomain = f.domain := by
+--   rw [hfi]
+--   dsimp only [MyFun.inv]
+--   dsimp only [MyFun.from_fun]
+
+-- theorem MyFun.inv_codomain {α β : Type} {f : MyFun α β} (hf : f.isBijective)
+--   {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+--   fi.domain = f.codomain := by
+--   rw [hfi]
+--   dsimp only [MyFun.inv]
+--   dsimp only [MyFun.from_fun]
+
+namespace Exercises
+
+-- Exercise 3.3.1
+example :
+  ∀ (f : MyFun α β), f ≃ f := by
+  sorry
+
+example :
+  ∀ (f g : MyFun α β), (f ≃ g) → (g ≃ f) := by
+  sorry
+
+example :
+  ∀ (f g h : MyFun α β), (f ≃ g) → (g ≃ h) → (f ≃ h) := by
+  sorry
+
+example (f f' : MyFun α β) (g g' : MyFun β γ)
+  (hfg : f.codomain = g.domain) (hf'g' : f'.codomain = g'.domain) :
+  (f ≃ f') → (g ≃ g') → (f.comp g hfg ≃ f'.comp g' hf'g') := by
+  sorry
+
+-- Exercise 3.3.2
+example (f : MyFun α β) (g : MyFun β γ)
+  (hfg : f.codomain = g.domain) :
+  f.isInjective → g.isInjective → (f.comp g hfg).isInjective := by
+  sorry
+
+example (f : MyFun α β) (g : MyFun β γ)
+  (hfg : f.codomain = g.domain) :
+  f.isSurjective → g.isSurjective → (f.comp g hfg).isSurjective := by
+  sorry
+
+-- Exercise 3.3.3
+-- TODO: When is the empty function into a given set X injective? surjective? bijective?
+
+-- Exercise 3.3.4
+example (f f' : MyFun α β) (g : MyFun β γ)
+  (hfg : f.codomain = g.domain) (hf'g : f'.codomain = g.domain) :
+  (f.comp g hfg ≃ f'.comp g hf'g) → g.isInjective → f ≃ f' := by
+  sorry
+
+-- TODO: Is the same statement true if g is not injective?
+
+example (f : MyFun α β) (g g' : MyFun β γ)
+  (hfg : f.codomain = g.domain) (hfg' : f.codomain = g'.domain) :
+  (f.comp g hfg ≃ f.comp g' hfg') → f.isSurjective → f ≃ f' := by
+  sorry
+
+-- Exercise 3.3.5
+example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain) :
+  (f.comp g hfg).isInjective → f.isInjective := by
+  sorry
+
+-- TODO: Is it true that g must also be injective?
+
+example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain) :
+  (f.comp g hfg).isSurjective → g.isSurjective := by
+  sorry
+
+-- TODO: Is it true that f must also be surjective?
+
+-- Exercise 3.3.6
+namespace Exercise_3_3_6
+
+lemma aux₁ {f : MyFun α β} (hf : f.isBijective)
+  {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+  f.codomain = fi.domain := by
+  sorry
+
+example (f : MyFun α β) (hf : f.isBijective)
+  {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+  ∀ (x : α) (hx : x ∈ f.domain),
+    (f.comp fi (aux₁ hf hfi)).eval x hx = x := by
+  sorry
+
+lemma aux₂ {f : MyFun α β} (hf : f.isBijective)
+  {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+  fi.codomain = f.domain := by
+  sorry
+
+example (f : MyFun α β) (hf : f.isBijective)
+  {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+  ∀ (y : β) (hy : y ∈ fi.domain),
+    (fi.comp f (aux₂ hf hfi)).eval y hy = y := by
+  sorry
+
+lemma aux {f : MyFun α β} (hf : f.isBijective)
+  {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+  fi.isBijective := by
+  sorry
+
+example (f : MyFun α β) (hf : f.isBijective)
+  {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
+  fi.inv (aux hf hfi) ≃ f := by
+  sorry
+
+end Exercise_3_3_6
+
+-- Exercise 3.3.7
+namespace Exercise_3_3_7
+
+lemma aux₁ {f : MyFun α β} {g : MyFun β γ} (hfg : f.codomain = g.domain)
+  (hf : f.isBijective) (hg : g.isBijective) :
+  (f.comp g hfg).isBijective := by
+  sorry
+
+lemma aux₂ {f : MyFun α β} {g : MyFun β γ} (hfg : f.codomain = g.domain)
+  (hf : f.isBijective) (hg : g.isBijective) :
+  (g.inv hg).codomain = (f.inv hf).domain := by
+  sorry
+
+example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain)
+  (hf : f.isBijective) (hg : g.isBijective) :
+  (f.comp g hfg).inv (aux₁ hfg hf hg) ≃
+    (g.inv hg).comp (f.inv hf) (aux₂ hfg hf hg) := by
+  sorry
+
+end Exercise_3_3_7
+
+-- Exercise 3.3.8
+namespace Exercise_3_3_8
+
+def ι {X Y : MySet α} (hXY : X ⊆ Y) : MyFun α α := by
+  let f : α → α := fun x => x
+  let h : ∀ {x : α} (hx : x ∈ X), f x ∈ Y := by
+    intro x hx
+    exact hXY x hx
+  exact MyFun.from_fun h
+
+lemma aux {α : Type} (X : MySet α) : X ⊆ X := by
+  sorry
+
+def ι_id (X : MySet α) := ι (aux X)
+
+-- (a)
+namespace Exercise_3_3_8_a
+
+lemma aux₁ {X Y Z : MySet α} (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
+  (ι hYZ).codomain = (ι hXY).domain := by
+  sorry
+
+lemma aux₂ {X Y Z : MySet α} (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
+  X ⊆ Z := by
+  sorry
+
+example {X Y Z : MySet α} (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
+  (ι hYZ).comp (ι hXY) (aux₁ hXY hYZ) ≃ ι (aux₂ hXY hYZ) := by
+  sorry
+
+end Exercise_3_3_8_a
+
+-- (b)
+namespace Exercise_3_3_8_b
+
+lemma aux₁ {A : MySet α} {B : MySet β} {f : MyFun α β}
+  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
+  (ι_id A).codomain = f.domain := by
+  sorry
+
+example (A : MySet α) (B : MySet β) (f : MyFun α β)
+  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
+  f ≃ (ι_id A).comp f (aux₁ hfdom hfcodom) := by
+  sorry
+
+lemma aux₂ {A : MySet α} {B : MySet β} {f : MyFun α β}
+  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
+  f.codomain = (ι_id B).domain := by
+  sorry
+
+example (A : MySet α) (B : MySet β) (f : MyFun α β)
+  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
+  f ≃ f.comp (ι_id B) (aux₂ hfdom hfcodom) := by
+  sorry
+
+end Exercise_3_3_8_b
+
+-- (c)
+namespace Exercise_3_3_8_c
+
+lemma aux₁ {f : MyFun α β} (hf : f.isBijective) :
+  (f.inv hf).codomain = f.domain := by
+  sorry
+
+example {A : MySet α} {B : MySet β} {f : MyFun α β}
+  (hfdom : f.domain = A) (hfcodom : f.codomain = B)
+  (hf : f.isBijective) :
+  (f.inv hf).comp f (aux₁ hf) ≃ ι_id B := by
+  sorry
+
+lemma aux₂ {f : MyFun α β} (hf : f.isBijective) :
+  f.codomain = (f.inv hf).domain := by
+  sorry
+
+example {A : MySet α} {B : MySet β} {f : MyFun α β}
+  (hfdom : f.domain = A) (hfcodom : f.codomain = B)
+  (hf : f.isBijective) :
+  f.comp (f.inv hf) (aux₂ hf) ≃ ι_id A := by
+  sorry
+
+end Exercise_3_3_8_c
+
+-- (d)
+namespace Exercise_3_3_8_d
+
+lemma aux₁ {α : Type} (X Y : MySet α) :
+  X ⊆ X ∪ Y := by
+  sorry
+
+lemma aux₂ {α : Type} (X Y : MySet α) :
+  Y ⊆ X ∪ Y := by
+  sorry
+
+lemma aux₃ {α : Type} (X Y : MySet α) (h : MyFun α β) :
+  (ι (aux₁ X Y)).codomain = h.domain := by
+  sorry
+
+lemma aux₄ {α : Type} (X Y : MySet α) (h : MyFun α β) :
+  (ι (aux₂ X Y)).codomain = h.domain := by
+  sorry
+
+example {X Y : MySet α} {Z : MySet β}
+  (hXY : MySet.disjoint X Y)
+  (f : MyFun α β) (hfdom : f.domain = X) (hfcodom : f.codomain = Z)
+  (g : MyFun α β) (hgdom : g.domain = Y) (hgcodom : g.codomain = Z) :
+  ∃ (h : MyFun α β), h.domain = X ∪ Y ∧ h.codomain = Z ∧
+    ((ι (aux₁ X Y)).comp h (aux₃ X Y h) ≃ f) ∧
+    ((ι (aux₂ X Y)).comp h (aux₄ X Y h) ≃ g) ∧
+    (∀ (h' : MyFun α β), h'.domain = X ∪ Y → h'.codomain = Z →
+      ((ι (aux₁ X Y)).comp h' (aux₃ X Y h') ≃ f) →
+      ((ι (aux₂ X Y)).comp h' (aux₄ X Y h') ≃ g) → h' ≃ h) := by
+  sorry
+
+end Exercise_3_3_8_d
+
+-- (e)
+namespace Exercise_3_3_8_e
+
+open Exercise_3_3_8_d
+
+lemma aux₅ {X Y : MySet α}
+  {f : MyFun α β} (hfdom : f.domain = X) :
+  x ∈ X ∩ Y → x ∈ f.domain := by
+  sorry
+
+lemma aux₆ {X Y : MySet α}
+  {g : MyFun α β} (hgdom : g.domain = Y) :
+  x ∈ X ∩ Y → x ∈ g.domain := by
+  sorry
+
+example {X Y : MySet α} {Z : MySet β}
+  (f : MyFun α β) (hfdom : f.domain = X) (hfcodom : f.codomain = Z)
+  (g : MyFun α β) (hgdom : g.domain = Y) (hgcodom : g.codomain = Z)
+  (hfg : ∀ (x : α) (hx : x ∈ X ∩ Y),
+    f.eval x (aux₅ hfdom hx) = g.eval x (aux₆ hgdom hx)) :
+  ∃ (h : MyFun α β), h.domain = X ∪ Y ∧ h.codomain = Z ∧
+    ((ι (aux₁ X Y)).comp h (aux₃ X Y h) ≃ f) ∧
+    ((ι (aux₂ X Y)).comp h (aux₄ X Y h) ≃ g) ∧
+    (∀ (h' : MyFun α β), h'.domain = X ∪ Y → h'.codomain = Z →
+      ((ι (aux₁ X Y)).comp h' (aux₃ X Y h') ≃ f) →
+      ((ι (aux₂ X Y)).comp h' (aux₄ X Y h') ≃ g) → h' ≃ h) := by
+  sorry
+
+end Exercise_3_3_8_e
+
+end Exercise_3_3_8
+
+end Exercises
