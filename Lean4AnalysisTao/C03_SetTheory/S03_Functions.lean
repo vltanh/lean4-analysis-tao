@@ -716,8 +716,10 @@ example (f f' : MyFun α β) (g : MyFun β γ)
 
 example (f : MyFun α β) (g g' : MyFun β γ)
   (hfg : f.codomain = g.domain) (hfg' : f.codomain = g'.domain) :
-  (f.comp g hfg ≃ f.comp g' hfg') → f.isSurjective → f ≃ f' := by
+  (f.comp g hfg ≃ f.comp g' hfg') → f.isSurjective → g ≃ g' := by
   sorry
+
+-- TODO: Is the same statement true if f is not surjective?
 
 -- Exercise 3.3.5
 example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain) :
