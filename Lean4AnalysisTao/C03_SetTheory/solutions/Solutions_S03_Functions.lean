@@ -168,7 +168,24 @@ end Example_3_3_3
 theorem MyFun.substitute (f : MyFun α β) {x x' : α}
   (hx : x ∈ f.domain) (hx' : x' ∈ f.domain) :
   x = x' → f.eval x hx = f.eval x' hx' := by
-  sorry
+  intro hxx'
+  rcases f.isValidProp x hx with ⟨y, hy, hPxy, hy!⟩
+  rcases f.isValidProp x' hx' with ⟨y', hy', hPx'y', hy'!⟩
+  have hPxy' : f.prop x y' := by
+      rw [hxx']
+      exact hPx'y'
+  have hyy' : y = y' := hy! y' hy' hPxy'
+  have hy' : y' = f.eval x hx := by
+    exact (f.def hx hy').mpr hPxy'
+  have hy : y = f.eval x' hx' := by
+    have hPx'y : f.prop x' y := by
+      rw [← hxx']
+      exact hPxy
+    have := f.def hx' hy
+    exact this.mpr hPx'y
+  rw [← hy]
+  rw [← hy']
+  exact hyy'.symm
 
 -- Example 3.3.5
 example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
@@ -677,31 +694,136 @@ namespace Exercises
 -- Exercise 3.3.1
 example :
   ∀ (f : MyFun α β), f ≃ f := by
-  sorry
+  intro f
+  dsimp only [MyFun.eq]
+  constructor
+  · rfl
+  · constructor
+    · rfl
+    · intro x hxf hxg
+      dsimp only [MyFun.eval]
 
 example :
   ∀ (f g : MyFun α β), (f ≃ g) → (g ≃ f) := by
-  sorry
+  intro f g h
+  dsimp only [MyFun.eq] at h
+  rcases h with ⟨hdom, hcodom, hfg⟩
+  dsimp only [MyFun.eq]
+  constructor
+  · exact hdom.symm
+  · constructor
+    · exact hcodom.symm
+    · intro x hxg hxf
+      exact (hfg hxf hxg).symm
 
 example :
   ∀ (f g h : MyFun α β), (f ≃ g) → (g ≃ h) → (f ≃ h) := by
-  sorry
+  intro f g h hfg hgh
+  dsimp only [MyFun.eq] at hfg
+  rcases hfg with ⟨hdomfg, hcodomfg, hfg⟩
+  dsimp only [MyFun.eq] at hgh
+  rcases hgh with ⟨hdomgh, hcodomgh, hgh⟩
+  dsimp only [MyFun.eq]
+  constructor
+  · rw [hdomfg]
+    exact hdomgh
+  · constructor
+    · rw [hcodomfg]
+      exact hcodomgh
+    · intro x hxf hxh
+      have hxg : x ∈ g.domain := by
+        rw [← hdomfg]
+        exact hxf
+      rw [hfg hxf hxg]
+      exact hgh hxg hxh
 
 example (f f' : MyFun α β) (g g' : MyFun β γ)
   (hfg : f.codomain = g.domain) (hf'g' : f'.codomain = g'.domain) :
   (f ≃ f') → (g ≃ g') → (f.comp g hfg ≃ f'.comp g' hf'g') := by
-  sorry
+  intro hff' hgg'
+  dsimp only [MyFun.eq] at hff'
+  rcases hff' with ⟨hdomff', hcodomff', hff'⟩
+  dsimp only [MyFun.eq] at hgg'
+  rcases hgg' with ⟨hdomgg', hcodomgg', hgg'⟩
+  dsimp only [MyFun.eq]
+  constructor
+  · rw [MyFun.comp.eval.domain]
+    rw [MyFun.comp.eval.domain]
+    exact hdomff'
+  · constructor
+    · rw [MyFun.comp.eval.codomain]
+      rw [MyFun.comp.eval.codomain]
+      exact hcodomgg'
+    · intro x hxf hxf'
+      dsimp only [MyFun.comp]
+      rw [MyFun.from_fun.eval]
+      rw [MyFun.from_fun.eval]
+      dsimp only [MyFun.comp] at hxf
+      dsimp only [MyFun.from_fun] at hxf
+      dsimp only [MyFun.comp] at hxf'
+      dsimp only [MyFun.from_fun] at hxf'
+      have hfxg : f.eval x hxf ∈ g.domain := by
+        rw [← hfg]
+        exact f.eval_codomain hxf
+      have hfxg' : f.eval x hxf ∈ g'.domain := by
+        rw [← hf'g']
+        rw [← hcodomff']
+        exact f.eval_codomain hxf
+      have hfxfx' : f.eval x hxf = f'.eval x hxf' := hff' hxf hxf'
+      have hgfxg'fx :
+        g.eval (f.eval x hxf) hfxg = g'.eval (f.eval x hxf) hfxg' :=
+        hgg' hfxg hfxg'
+      rw [hgfxg'fx]
+      have hf'xg' : f'.eval x hxf' ∈ g'.domain := by
+        rw [← hf'g']
+        exact f'.eval_codomain hxf'
+      exact g'.substitute hfxg' hf'xg' hfxfx'
 
 -- Exercise 3.3.2
 example (f : MyFun α β) (g : MyFun β γ)
   (hfg : f.codomain = g.domain) :
   f.isInjective → g.isInjective → (f.comp g hfg).isInjective := by
-  sorry
+  intro hf hg
+  dsimp only [MyFun.isInjective] at hf
+  dsimp only [MyFun.isInjective] at hg
+  dsimp only [MyFun.isInjective]
+  intro x x' hxgfdom hx'gfdom hxx'
+  dsimp only [MyFun.comp] at hxgfdom
+  dsimp only [MyFun.from_fun] at hxgfdom
+  dsimp only [MyFun.comp] at hx'gfdom
+  dsimp only [MyFun.from_fun] at hx'gfdom
+  have hfxgdom : f.eval x hxgfdom ∈ g.domain := by
+    rw [← hfg]
+    exact f.eval_codomain hxgfdom
+  rw [MyFun.comp.eval hfg hxgfdom hfxgdom]
+  have hfx'gdom : f.eval x' hx'gfdom ∈ g.domain := by
+    rw [← hfg]
+    exact f.eval_codomain hx'gfdom
+  rw [MyFun.comp.eval hfg hx'gfdom hfx'gdom]
+  exact hg hfxgdom hfx'gdom (hf hxgfdom hx'gfdom hxx')
 
 example (f : MyFun α β) (g : MyFun β γ)
   (hfg : f.codomain = g.domain) :
   f.isSurjective → g.isSurjective → (f.comp g hfg).isSurjective := by
-  sorry
+  intro hf hg
+  dsimp only [MyFun.isSurjective] at hf
+  dsimp only [MyFun.isSurjective] at hg
+  dsimp only [MyFun.isSurjective]
+  intro z hz
+  dsimp only [MyFun.comp] at hz
+  dsimp only [MyFun.from_fun] at hz
+  rcases hg z hz with ⟨y, hy, hgyz⟩
+  have hyfcodom : y ∈ f.codomain := by
+    rw [hfg]
+    exact hy
+  rcases hf y hyfcodom with ⟨x, hx, hfx⟩
+  use x, hx
+  have hfxgdom : f.eval x hx ∈ g.domain := by
+    rw [← hfg]
+    exact f.eval_codomain hx
+  rw [MyFun.comp.eval hfg hx hfxgdom]
+  rw [← hgyz]
+  exact g.substitute hfxgdom hy hfx
 
 -- Exercise 3.3.3
 -- TODO: When is the empty function into a given set X injective? surjective? bijective?
@@ -710,7 +832,43 @@ example (f : MyFun α β) (g : MyFun β γ)
 example (f f' : MyFun α β) (g : MyFun β γ)
   (hfg : f.codomain = g.domain) (hf'g : f'.codomain = g.domain) :
   (f.comp g hfg ≃ f'.comp g hf'g) → g.isInjective → f ≃ f' := by
-  sorry
+  intro hgfgf' hg
+  dsimp only [MyFun.eq] at hgfgf'
+  rcases hgfgf' with ⟨hgfgf'dom, hgfgf'codom, hgfgf'⟩
+  dsimp only [MyFun.comp] at hgfgf'dom
+  dsimp only [MyFun.from_fun] at hgfgf'dom
+  dsimp only [MyFun.comp] at hgfgf'codom
+  dsimp only [MyFun.from_fun] at hgfgf'codom
+  dsimp only [MyFun.eq]
+  constructor
+  · exact hgfgf'dom
+  · constructor
+    · rw [hfg]
+      rw [hf'g]
+    · intro x hxf hxf'
+      have hxgfdom : x ∈ (f.comp g hfg).domain := by
+        dsimp only [MyFun.comp]
+        dsimp only [MyFun.from_fun]
+        exact hxf
+      have hxgf'dom : x ∈ (f'.comp g hf'g).domain := by
+        dsimp only [MyFun.comp]
+        dsimp only [MyFun.from_fun]
+        exact hxf'
+      have hgfxgf'x :
+        (f.comp g hfg).eval x hxgfdom =
+          (f'.comp g hf'g).eval x hxgf'dom :=
+        hgfgf' hxgfdom hxgf'dom
+      have hfxgdom : f.eval x hxf ∈ g.domain := by
+        rw [← hfg]
+        exact f.eval_codomain hxf
+      rw [MyFun.comp.eval hfg hxf hfxgdom] at hgfxgf'x
+      have hfx'gdom : f'.eval x hxf' ∈ g.domain := by
+        rw [← hf'g]
+        exact f'.eval_codomain hxf'
+      rw [MyFun.comp.eval hf'g hxf' hfx'gdom] at hgfxgf'x
+      rw [MyFun.isInjective_iff] at hg
+      dsimp only [MyFun.isInjective'] at hg
+      exact hg hfxgdom hfx'gdom hgfxgf'x
 
 -- TODO: Is the same statement true if g is not injective?
 
