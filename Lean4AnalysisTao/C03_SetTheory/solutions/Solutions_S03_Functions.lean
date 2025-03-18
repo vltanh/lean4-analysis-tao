@@ -675,19 +675,7 @@ def MyFun.inv {α β : Type} (f : MyFun α β) (hf : f.isBijective) :
     exact hx
   exact MyFun.from_fun aux
 
--- theorem MyFun.inv_domain {α β : Type} {f : MyFun α β} (hf : f.isBijective)
---   {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
---   fi.codomain = f.domain := by
---   rw [hfi]
---   dsimp only [MyFun.inv]
---   dsimp only [MyFun.from_fun]
 
--- theorem MyFun.inv_codomain {α β : Type} {f : MyFun α β} (hf : f.isBijective)
---   {fi : MyFun β α} (hfi : fi = MyFun.inv f hf) :
---   fi.domain = f.codomain := by
---   rw [hfi]
---   dsimp only [MyFun.inv]
---   dsimp only [MyFun.from_fun]
 
 namespace Exercises
 
@@ -1161,18 +1149,181 @@ namespace Exercise_3_3_7
 lemma aux₁ {f : MyFun α β} {g : MyFun β γ} (hfg : f.codomain = g.domain)
   (hf : f.isBijective) (hg : g.isBijective) :
   (f.comp g hfg).isBijective := by
-  sorry
+  dsimp only [MyFun.isBijective]
+  constructor
+  · dsimp only [MyFun.isInjective]
+    intro x x' hxgfdom hx'gfdom hxnx'
+    intro hgfxgfx'
+    have hxfdom : x ∈ f.domain := by
+      dsimp only [MyFun.comp] at hxgfdom
+      dsimp only [MyFun.from_fun] at hxgfdom
+      exact hxgfdom
+    have hfxgdom : f.eval x hxfdom ∈ g.domain := by
+      rw [← hfg]
+      exact f.eval_codomain hxfdom
+    rw [MyFun.comp.eval hfg hxfdom hfxgdom] at hgfxgfx'
+    have hx'fdom : x' ∈ f.domain := by
+      dsimp only [MyFun.comp] at hx'gfdom
+      dsimp only [MyFun.from_fun] at hx'gfdom
+      exact hx'gfdom
+    have hfx'gdom : f.eval x' hx'fdom ∈ g.domain := by
+      rw [← hfg]
+      exact f.eval_codomain hx'fdom
+    rw [MyFun.comp.eval hfg hx'fdom hfx'gdom] at hgfxgfx'
+    dsimp only [MyFun.isBijective] at hg
+    rcases hg with ⟨hg_inj, hg_surj⟩
+    rw [g.isInjective_iff] at hg_inj
+    dsimp only [MyFun.isInjective'] at hg_inj
+    have hfxfx' : f.eval x hxfdom = f.eval x' hx'fdom :=
+      hg_inj hfxgdom hfx'gdom hgfxgfx'
+    dsimp only [MyFun.isBijective] at hf
+    rcases hf with ⟨hf_inj, hf_surj⟩
+    rw [f.isInjective_iff] at hf_inj
+    dsimp only [MyFun.isInjective'] at hf_inj
+    have hxx' := hf_inj hxfdom hx'fdom hfxfx'
+    exact hxnx' hxx'
+  · dsimp only [MyFun.isSurjective]
+    intro z hzgfcodom
+    dsimp only [MyFun.isBijective] at hg
+    rcases hg with ⟨hg_inj, hg_surj⟩
+    dsimp only [MyFun.isSurjective] at hg_surj
+    rcases hg_surj z hzgfcodom with ⟨y, hygdom, hgyz⟩
+    dsimp only [MyFun.isBijective] at hf
+    rcases hf with ⟨hf_inj, hf_surj⟩
+    dsimp only [MyFun.isSurjective] at hf_surj
+    have hyfcodom : y ∈ f.codomain := by
+      rw [hfg]
+      exact hygdom
+    rcases hf_surj y hyfcodom with ⟨x, hxfdom, hfyx⟩
+    use x
+    have hxgfdom : x ∈ (f.comp g hfg).domain := by
+      dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+      exact hxfdom
+    use hxgfdom
+    have hfxgdom : f.eval x hxfdom ∈ g.domain := by
+      rw [← hfg]
+      exact f.eval_codomain hxfdom
+    rw [MyFun.comp.eval hfg hxfdom hfxgdom]
+    rw [← hgyz]
+    exact g.substitute hfxgdom hygdom hfyx
 
 lemma aux₂ {f : MyFun α β} {g : MyFun β γ} (hfg : f.codomain = g.domain)
   (hf : f.isBijective) (hg : g.isBijective) :
   (g.inv hg).codomain = (f.inv hf).domain := by
-  sorry
+  dsimp only [MyFun.inv]
+  dsimp only [MyFun.from_fun]
+  exact hfg.symm
 
 example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain)
   (hf : f.isBijective) (hg : g.isBijective) :
   (f.comp g hfg).inv (aux₁ hfg hf hg) ≃
     (g.inv hg).comp (f.inv hf) (aux₂ hfg hf hg) := by
-  sorry
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [MyFun.inv]
+    dsimp only [MyFun.comp]
+    dsimp only [MyFun.from_fun]
+  · constructor
+    · dsimp only [MyFun.inv]
+      dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+    · intro z hzgfidom hzfigidom
+      have hzgidom : z ∈ (g.inv hg).domain := by
+        dsimp only [MyFun.inv]
+        dsimp only [MyFun.from_fun]
+        dsimp only [MyFun.inv] at hzgfidom
+        dsimp only [MyFun.from_fun] at hzgfidom
+        dsimp only [MyFun.comp] at hzgfidom
+        dsimp only [MyFun.from_fun] at hzgfidom
+        exact hzgfidom
+      have hgizfidom : (g.inv hg).eval z hzgidom ∈ (f.inv hf).domain := by
+        have : (f.inv hf).domain = (g.inv hg).codomain := by
+          dsimp only [MyFun.inv]
+          dsimp only [MyFun.from_fun]
+          exact hfg
+        rw [this]
+        exact (g.inv hg).eval_codomain hzgidom
+      rw [MyFun.comp.eval (aux₂ hfg hf hg) hzgfidom hgizfidom]
+      have hg : g.isBijective := hg
+      dsimp only [MyFun.isBijective] at hg
+      rcases hg with ⟨hg_inj, hg_surj⟩
+      dsimp only [MyFun.isSurjective] at hg_surj
+      have hzgcodom : z ∈ g.codomain := by
+        dsimp only [MyFun.inv] at hzgfidom
+        dsimp only [MyFun.from_fun] at hzgfidom
+        dsimp only [MyFun.comp] at hzgfidom
+        dsimp only [MyFun.from_fun] at hzgfidom
+        exact hzgfidom
+      rcases MyFun.exists_unique_of_bijective hg hzgfidom with ⟨y, hygdom, hgyz, hgyz!⟩
+      have hgizy : (g.inv hg).eval z hzgfidom = y := by
+        have hgygidom : g.eval y hygdom ∈ (g.inv hg).domain := by
+          have : (g.inv hg).domain = g.codomain := by
+            dsimp only [MyFun.inv]
+            dsimp only [MyFun.from_fun]
+          rw [this]
+          exact g.eval_codomain hygdom
+        have :
+          (g.inv hg).eval z hzgfidom =
+            (g.inv hg).eval (g.eval y hygdom) hgygidom :=
+          MyFun.substitute (g.inv hg) hzgfidom hgygidom hgyz.symm
+        rw [this]
+        rw [← MyFun.comp.eval]
+        exact Exercise_3_3_6.finv_f hg hygdom
+      have hyfidom : y ∈ (f.inv hf).domain := by
+        dsimp only [MyFun.inv]
+        dsimp only [MyFun.from_fun]
+        rw [hfg]
+        exact hygdom
+      rw [MyFun.substitute (f.inv hf) hgizfidom hyfidom hgizy]
+      rcases MyFun.exists_unique_of_bijective hf hyfidom with ⟨x, hxfdom, hfxz, hfxz!⟩
+      have hfiyx : (f.inv hf).eval y hyfidom = x := by
+        have hfxgidom : f.eval x hxfdom ∈ (f.inv hf).domain := by
+          have : (f.inv hf).domain = f.codomain := by
+            dsimp only [MyFun.inv]
+            dsimp only [MyFun.from_fun]
+          rw [this]
+          exact f.eval_codomain hxfdom
+        have :
+          (f.inv hf).eval y hyfidom =
+            (f.inv hf).eval (f.eval x hxfdom) hfxgidom :=
+          MyFun.substitute (f.inv hf) hyfidom hfxgidom hfxz.symm
+        rw [this]
+        rw [← MyFun.comp.eval]
+        exact Exercise_3_3_6.finv_f hf hxfdom
+      rw [hfiyx]
+      have hgf : (f.comp g hfg).isBijective := aux₁ hfg hf hg
+      rcases MyFun.exists_unique_of_bijective hgf hzgfidom with ⟨x', hx'gfdom, hgfx'z, hgfx'z!⟩
+
+      have hgfx'gfidom : (f.comp g hfg).eval x' hx'gfdom ∈ ((f.comp g hfg).inv hgf).domain := by
+        have : ((f.comp g hfg).inv hgf).domain = (f.comp g hfg).codomain := by
+          dsimp only [MyFun.inv]
+          dsimp only [MyFun.comp]
+          dsimp only [MyFun.from_fun]
+        rw [this]
+        exact (f.comp g hfg).eval_codomain hx'gfdom
+      have :
+        ((f.comp g hfg).inv hgf).eval z hzgfidom =
+          ((f.comp g hfg).inv hgf).eval ((f.comp g hfg).eval x' hx'gfdom) hgfx'gfidom :=
+        ((f.comp g hfg).inv hgf).substitute hzgfidom hgfx'gfidom hgfx'z.symm
+      rw [this]
+      have : x' ∈ (f.comp g hfg).domain := hx'gfdom
+      rw [← MyFun.comp.eval]
+      rw [Exercise_3_3_6.finv_f hgf hx'gfdom]
+      have hxgfdom : x ∈ (f.comp g hfg).domain := by
+        dsimp only [MyFun.comp]
+        dsimp only [MyFun.from_fun]
+        exact hxfdom
+      have hgfxz : (f.comp g hfg).eval x hxgfdom = z := by
+        have hfxgdom : f.eval x hxfdom ∈ g.domain := by
+          rw [← hfg]
+          exact f.eval_codomain hxfdom
+        rw [MyFun.comp.eval hfg hxfdom hfxgdom]
+        have : g.eval (f.eval x hxfdom) hfxgdom = g.eval y hygdom :=
+          g.substitute hfxgdom hygdom hfxz
+        rw [this]
+        exact hgyz
+      exact hgfx'z! hxgfdom hgfxz
 
 end Exercise_3_3_7
 

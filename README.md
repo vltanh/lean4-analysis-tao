@@ -6,7 +6,7 @@ We acknowledge the use of AI tools to assist in the formalization process, notab
 
 ## Progress
 
-**(Updated on 2025-03-10)**
+**(Updated on 2025-03-18)**
 
 ### Main text
 
