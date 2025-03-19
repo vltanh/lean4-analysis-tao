@@ -282,7 +282,7 @@ example (A : MySet α) :
   exact False.elim (MySet.not_mem_empty h)
 
 -- Proposition 3.1.17
-theorem MySet.subset_trans (A B C : MySet α) :
+theorem MySet.subset_trans {A B C : MySet α} :
   A ⊆ B → B ⊆ C → A ⊆ C := by
   intro hAB hBC
   rw [MySet.subset] at hAB
@@ -308,7 +308,7 @@ theorem MySet.proper_ss_of_proper_ss_of_proper_ss (A B C : MySet α) :
   A ⊊ B → B ⊊ C → A ⊊ C := by
   intro hAB hBC
   constructor
-  · exact MySet.subset_trans A B C hAB.left hBC.left
+  · exact MySet.subset_trans hAB.left hBC.left
   · intro hAC
     have : C ⊆ B := by
       rw [hAC] at hAB

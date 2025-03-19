@@ -183,7 +183,7 @@ example (A : MySet α) :
   sorry
 
 -- Proposition 3.1.17
-theorem MySet.subset_trans (A B C : MySet α) :
+theorem MySet.subset_trans {A B C : MySet α} :
   A ⊆ B → B ⊆ C → A ⊆ C := by
   intro hAB hBC
   rw [MySet.subset] at hAB
