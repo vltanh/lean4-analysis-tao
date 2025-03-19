@@ -1294,7 +1294,6 @@ example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain)
       rw [hfiyx]
       have hgf : (f.comp g hfg).isBijective := aux₁ hfg hf hg
       rcases MyFun.exists_unique_of_bijective hgf hzgfidom with ⟨x', hx'gfdom, hgfx'z, hgfx'z!⟩
-
       have hgfx'gfidom : (f.comp g hfg).eval x' hx'gfdom ∈ ((f.comp g hfg).inv hgf).domain := by
         have : ((f.comp g hfg).inv hgf).domain = (f.comp g hfg).codomain := by
           dsimp only [MyFun.inv]
@@ -1332,13 +1331,13 @@ namespace Exercise_3_3_8
 
 def ι {X Y : MySet α} (hXY : X ⊆ Y) : MyFun α α := by
   let f : α → α := fun x => x
-  let h : ∀ {x : α} (hx : x ∈ X), f x ∈ Y := by
+  have h : ∀ {x : α} (hx : x ∈ X), f x ∈ Y := by
     intro x hx
     exact hXY x hx
   exact MyFun.from_fun h
 
 lemma aux {α : Type} (X : MySet α) : X ⊆ X := by
-  sorry
+  exact fun x hx => hx
 
 def ι_id (X : MySet α) := ι (aux X)
 
@@ -1346,41 +1345,118 @@ def ι_id (X : MySet α) := ι (aux X)
 namespace Exercise_3_3_8_a
 
 lemma aux₁ {X Y Z : MySet α} (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
-  (ι hYZ).codomain = (ι hXY).domain := by
-  sorry
+  (ι hXY).codomain = (ι hYZ).domain := by
+  dsimp only [ι]
+  dsimp only [MyFun.from_fun]
 
 lemma aux₂ {X Y Z : MySet α} (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
   X ⊆ Z := by
-  sorry
+  exact MySet.subset_trans hXY hYZ
 
 example {X Y Z : MySet α} (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
-  (ι hYZ).comp (ι hXY) (aux₁ hXY hYZ) ≃ ι (aux₂ hXY hYZ) := by
-  sorry
+  (ι hXY).comp (ι hYZ) (aux₁ hXY hYZ) ≃ ι (aux₂ hXY hYZ) := by
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [ι]
+    dsimp only [MyFun.comp]
+    dsimp only [MyFun.from_fun]
+  · constructor
+    · dsimp only [ι]
+      dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+    · intro x hxYZXYdom hxXZdom
+      have hxXYdom : x ∈ (ι hXY).domain := by
+        dsimp only [ι]
+        dsimp only [MyFun.from_fun]
+        dsimp only [ι] at hxXZdom
+        dsimp only [MyFun.from_fun] at hxXZdom
+        exact hxXZdom
+      have hXYxYZdom : (ι hXY).eval x hxXYdom ∈ (ι hYZ).domain := by
+        rw [← aux₁ hXY hYZ]
+        exact (ι hXY).eval_codomain hxXYdom
+      rw [MyFun.comp.eval (aux₁ hXY hYZ) hxXYdom hXYxYZdom]
+      dsimp only [ι]
+      rw [MyFun.from_fun.eval]
+      rw [MyFun.from_fun.eval]
+      rw [MyFun.from_fun.eval]
 
 end Exercise_3_3_8_a
 
 -- (b)
 namespace Exercise_3_3_8_b
 
-lemma aux₁ {A : MySet α} {B : MySet β} {f : MyFun α β}
-  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
+lemma aux₁ {A : MySet α} {f : MyFun α β} (hfdom : f.domain = A) :
   (ι_id A).codomain = f.domain := by
-  sorry
+  dsimp only [ι_id]
+  dsimp only [ι]
+  dsimp only [MyFun.from_fun]
+  exact hfdom.symm
 
-example (A : MySet α) (B : MySet β) (f : MyFun α β)
-  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
-  f ≃ (ι_id A).comp f (aux₁ hfdom hfcodom) := by
-  sorry
+example (A : MySet α) (f : MyFun α β) (hfdom : f.domain = A) :
+  f ≃ (ι_id A).comp f (aux₁ hfdom) := by
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [ι_id]
+    dsimp only [ι]
+    dsimp only [MyFun.comp]
+    dsimp only [MyFun.from_fun]
+    exact hfdom
+  · constructor
+    · dsimp only [ι_id]
+      dsimp only [ι]
+      dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+    · intro x hxfdom hxfAdom
+      have hxAdom : x ∈ (ι_id A).domain := by
+        dsimp only [ι_id]
+        dsimp only [ι]
+        dsimp only [MyFun.from_fun]
+        rw [hfdom] at hxfdom
+        exact hxfdom
+      have hAxfdom : (ι_id A).eval x hxAdom ∈ f.domain := by
+        rw [← aux₁ hfdom]
+        exact (ι_id A).eval_codomain hxAdom
+      rw [MyFun.comp.eval (aux₁ hfdom) hxAdom hAxfdom]
+      have : x = (ι_id A).eval x hxAdom := by
+        dsimp only [ι_id]
+        dsimp only [ι]
+        rw [MyFun.from_fun.eval]
+      exact f.substitute hxfdom hAxfdom this
 
-lemma aux₂ {A : MySet α} {B : MySet β} {f : MyFun α β}
-  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
+lemma aux₂ {B : MySet β} {f : MyFun α β} (hfcodom : f.codomain = B) :
   f.codomain = (ι_id B).domain := by
-  sorry
+  dsimp only [ι_id]
+  dsimp only [ι]
+  dsimp only [MyFun.from_fun]
+  exact hfcodom
 
-example (A : MySet α) (B : MySet β) (f : MyFun α β)
-  (hfdom : f.domain = A) (hfcodom : f.codomain = B) :
-  f ≃ f.comp (ι_id B) (aux₂ hfdom hfcodom) := by
-  sorry
+example (B : MySet β) (f : MyFun α β) (hfcodom : f.codomain = B) :
+  f ≃ f.comp (ι_id B) (aux₂ hfcodom) := by
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [ι_id]
+    dsimp only [ι]
+    dsimp only [MyFun.comp]
+    dsimp only [MyFun.from_fun]
+  · constructor
+    · dsimp only [ι_id]
+      dsimp only [ι]
+      dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+      exact hfcodom
+    · intro x hxfdom hxBfdom
+      have hfxBdom : f.eval x hxfdom ∈ (ι_id B).domain := by
+        have : (ι_id B).domain = f.codomain := by
+          dsimp only [ι_id]
+          dsimp only [ι]
+          dsimp only [MyFun.from_fun]
+          exact hfcodom.symm
+        rw [this]
+        exact f.eval_codomain hxfdom
+      rw [MyFun.comp.eval (aux₂ hfcodom) hxfdom hfxBdom]
+      dsimp only [ι_id]
+      dsimp only [ι]
+      rw [MyFun.from_fun.eval]
 
 end Exercise_3_3_8_b
 
@@ -1389,23 +1465,77 @@ namespace Exercise_3_3_8_c
 
 lemma aux₁ {f : MyFun α β} (hf : f.isBijective) :
   (f.inv hf).codomain = f.domain := by
-  sorry
+  dsimp only [MyFun.inv]
+  dsimp only [MyFun.from_fun]
 
-example {A : MySet α} {B : MySet β} {f : MyFun α β}
-  (hfdom : f.domain = A) (hfcodom : f.codomain = B)
-  (hf : f.isBijective) :
+example {B : MySet β} {f : MyFun α β}
+  (hfcodom : f.codomain = B) (hf : f.isBijective) :
   (f.inv hf).comp f (aux₁ hf) ≃ ι_id B := by
-  sorry
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [MyFun.inv]
+    dsimp only [MyFun.comp]
+    dsimp only [MyFun.from_fun]
+    dsimp only [ι_id]
+    dsimp only [ι]
+    dsimp only [MyFun.from_fun]
+    exact hfcodom
+  · constructor
+    · dsimp only [MyFun.inv]
+      dsimp only [MyFun.comp]
+      dsimp only [MyFun.from_fun]
+      dsimp only [ι_id]
+      dsimp only [ι]
+      dsimp only [MyFun.from_fun]
+      exact hfcodom
+    · intro x hxffidom hxBdom
+      dsimp only [ι_id]
+      dsimp only [ι]
+      rw [MyFun.from_fun.eval]
+      have hxfidom : x ∈ (f.inv hf).domain := by
+        dsimp only [MyFun.inv]
+        dsimp only [MyFun.from_fun]
+        rw [hfcodom]
+        dsimp only [ι_id] at hxBdom
+        dsimp only [ι] at hxBdom
+        dsimp only [MyFun.from_fun] at hxBdom
+        exact hxBdom
+      rw [Exercise_3_3_6.f_finv hf hxfidom]
 
 lemma aux₂ {f : MyFun α β} (hf : f.isBijective) :
   f.codomain = (f.inv hf).domain := by
-  sorry
+  dsimp only [MyFun.inv]
+  dsimp only [MyFun.from_fun]
 
-example {A : MySet α} {B : MySet β} {f : MyFun α β}
-  (hfdom : f.domain = A) (hfcodom : f.codomain = B)
-  (hf : f.isBijective) :
+example {A : MySet α} {f : MyFun α β}
+  (hfdom : f.domain = A) (hf : f.isBijective) :
   f.comp (f.inv hf) (aux₂ hf) ≃ ι_id A := by
-  sorry
+  dsimp only [MyFun.eq]
+  constructor
+  · dsimp only [MyFun.comp]
+    dsimp only [MyFun.inv]
+    dsimp only [MyFun.from_fun]
+    dsimp only [ι_id]
+    dsimp only [ι]
+    dsimp only [MyFun.from_fun]
+    exact hfdom
+  · constructor
+    · dsimp only [MyFun.comp]
+      dsimp only [MyFun.inv]
+      dsimp only [MyFun.from_fun]
+      dsimp only [ι_id]
+      dsimp only [ι]
+      dsimp only [MyFun.from_fun]
+      exact hfdom
+    · intro x hxfifdom hxAdom
+      dsimp only [ι_id]
+      dsimp only [ι]
+      rw [MyFun.from_fun.eval]
+      have hxfdom : x ∈ f.domain := by
+        dsimp only [MyFun.comp] at hxfifdom
+        dsimp only [MyFun.from_fun] at hxfifdom
+        exact hxfifdom
+      rw [Exercise_3_3_6.finv_f hf hxfdom]
 
 end Exercise_3_3_8_c
 
@@ -1414,31 +1544,316 @@ namespace Exercise_3_3_8_d
 
 lemma aux₁ {α : Type} (X Y : MySet α) :
   X ⊆ X ∪ Y := by
-  sorry
+  dsimp only [MySet.subset]
+  intro x hxX
+  rw [MySet.mem_union X Y x]
+  exact Or.inl hxX
 
 lemma aux₂ {α : Type} (X Y : MySet α) :
   Y ⊆ X ∪ Y := by
-  sorry
+  dsimp only [MySet.subset]
+  intro x hxY
+  rw [MySet.mem_union X Y x]
+  exact Or.inr hxY
 
-lemma aux₃ {α : Type} (X Y : MySet α) (h : MyFun α β) :
+lemma aux₃ {α : Type} (X Y : MySet α) (h : MyFun α β)
+  (hhdom : h.domain = X ∪ Y) :
   (ι (aux₁ X Y)).codomain = h.domain := by
-  sorry
+  dsimp only [ι]
+  dsimp only [MyFun.from_fun]
+  exact hhdom.symm
 
-lemma aux₄ {α : Type} (X Y : MySet α) (h : MyFun α β) :
+lemma aux₄ {α : Type} (X Y : MySet α) (h : MyFun α β)
+  (hhdom : h.domain = X ∪ Y) :
   (ι (aux₂ X Y)).codomain = h.domain := by
-  sorry
+  dsimp only [ι]
+  dsimp only [MyFun.from_fun]
+  exact hhdom.symm
 
 example {X Y : MySet α} {Z : MySet β}
   (hXY : MySet.disjoint X Y)
   (f : MyFun α β) (hfdom : f.domain = X) (hfcodom : f.codomain = Z)
   (g : MyFun α β) (hgdom : g.domain = Y) (hgcodom : g.codomain = Z) :
-  ∃ (h : MyFun α β), h.domain = X ∪ Y ∧ h.codomain = Z ∧
-    ((ι (aux₁ X Y)).comp h (aux₃ X Y h) ≃ f) ∧
-    ((ι (aux₂ X Y)).comp h (aux₄ X Y h) ≃ g) ∧
-    (∀ (h' : MyFun α β), h'.domain = X ∪ Y → h'.codomain = Z →
-      ((ι (aux₁ X Y)).comp h' (aux₃ X Y h') ≃ f) →
-      ((ι (aux₂ X Y)).comp h' (aux₄ X Y h') ≃ g) → h' ≃ h) := by
-  sorry
+  ∃ (h : MyFun α β) (hhdom : h.domain = X ∪ Y),
+    h.codomain = Z ∧
+    ((ι (aux₁ X Y)).comp h (aux₃ X Y h hhdom) ≃ f) ∧
+    ((ι (aux₂ X Y)).comp h (aux₄ X Y h hhdom) ≃ g) ∧
+    (∀ (h' : MyFun α β) (hh'dom : h'.domain = X ∪ Y),
+      h'.codomain = Z →
+      ((ι (aux₁ X Y)).comp h' (aux₃ X Y h' hh'dom) ≃ f) →
+      ((ι (aux₂ X Y)).comp h' (aux₄ X Y h' hh'dom) ≃ g) → h' ≃ h) := by
+  let h : MyFun α β := {
+    domain := X ∪ Y,
+    codomain := Z,
+    prop := fun x y => by
+      by_cases h : x ∈ X
+      · have hxfdom : x ∈ f.domain := by
+          rw [hfdom]
+          exact h
+        exact y = f.eval x hxfdom
+      · by_cases h' : x ∈ Y
+        · have hxgdom : x ∈ g.domain := by
+            rw [hgdom]
+            exact h'
+          exact y = g.eval x hxgdom
+        · exact False
+    isValidProp := by
+      intro x hxXY
+      rw [MySet.mem_union X Y x] at hxXY
+      rcases hxXY with (hxX | hxY)
+      · have hxfdom : x ∈ f.domain := by
+          rw [hfdom]
+          exact hxX
+        use (f.eval x hxfdom)
+        constructor
+        · rw [← hfcodom]
+          exact f.eval_codomain hxfdom
+        · constructor
+          · dsimp only [MyFun.prop]
+            rw [dif_pos hxX]
+          · intro y' hy'Z h
+            rw [dif_pos hxX] at h
+            rw [h]
+      · have hxgdom : x ∈ g.domain := by
+          rw [hgdom]
+          exact hxY
+        use (g.eval x hxgdom)
+        constructor
+        · rw [← hgcodom]
+          exact g.eval_codomain hxgdom
+        · have hxnX : ¬ x ∈ X := by
+            intro hxX
+            have : x ∈ X ∩ Y := by
+              dsimp only [MySet.inter]
+              rw [MySet.mem_spec]
+              constructor
+              · exact hxX
+              · exact hxY
+            dsimp only [MySet.disjoint] at hXY
+            rw [hXY] at this
+            exact MySet.not_mem_empty this
+          constructor
+          · dsimp only [MyFun.prop]
+            rw [dif_neg hxnX]
+            rw [dif_pos hxY]
+          · intro y' hy'Z h
+            rw [dif_neg hxnX] at h
+            rw [dif_pos hxY] at h
+            rw [h]
+  }
+  have hhdom : h.domain = X ∪ Y := by
+    dsimp only [h]
+  use h, hhdom
+  have hXXY : X ⊆ X ∪ Y := (aux₁ X Y)
+  have hYXY : Y ⊆ X ∪ Y := (aux₂ X Y)
+  constructor
+  · dsimp only [h]
+  · constructor
+    · dsimp only [MyFun.eq]
+      constructor
+      · dsimp only [MyFun.comp]
+        dsimp only [MyFun.from_fun]
+        dsimp only [ι]
+        dsimp only [MyFun.from_fun]
+        exact hfdom.symm
+      · constructor
+        · dsimp only [MyFun.comp]
+          dsimp only [MyFun.from_fun]
+          dsimp only [h]
+          exact hfcodom.symm
+        · intro x hxhXXYdom hxfdom
+          have hXXYcodomhdom : (ι hXXY).codomain = h.domain := by
+            dsimp only [ι]
+            dsimp only [MyFun.from_fun]
+          have hxXXYdom : x ∈ (ι hXXY).domain := by
+            dsimp only [ι]
+            dsimp only [MyFun.from_fun]
+            rw [← hfdom]
+            exact hxfdom
+          have hXXYxhdom : (ι hXXY).eval x hxXXYdom ∈ h.domain := by
+            have : h.domain = (ι hXXY).codomain := by
+              dsimp only [ι]
+              dsimp only [MyFun.from_fun]
+            rw [this]
+            exact (ι hXXY).eval_codomain hxXXYdom
+          rw [MyFun.comp.eval hXXYcodomhdom hxXXYdom hXXYxhdom]
+          have hxhdom : x ∈ h.domain := by
+            dsimp only [h]
+            rw [MySet.mem_union X Y x]
+            rw [hfdom] at hxfdom
+            exact Or.inl hxfdom
+          have : h.eval ((ι hXXY).eval x hxXXYdom) hXXYxhdom = h.eval x hxhdom := by
+            have : (ι hXXY).eval x hxXXYdom = x := by
+              dsimp only [ι]
+              rw [MyFun.from_fun.eval]
+            exact h.substitute hXXYxhdom hxhdom this
+          rw [this]
+          have hfxhcodom : f.eval x hxfdom ∈ h.codomain := by
+            have : h.codomain = f.codomain := by
+              dsimp only [h]
+              exact hfcodom.symm
+            rw [this]
+            exact f.eval_codomain hxfdom
+          have : h.prop x (f.eval x hxfdom) := by
+            dsimp only [h]
+            have hxX : x ∈ X := by
+              rw [hfdom] at hxfdom
+              exact hxfdom
+            rw [dif_pos hxX]
+          have := (h.def hxhdom hfxhcodom).mpr this
+          exact this.symm
+    · dsimp only [MyFun.eq]
+      constructor
+      · constructor
+        · dsimp only [MyFun.comp]
+          dsimp only [MyFun.from_fun]
+          dsimp only [ι]
+          dsimp only [MyFun.from_fun]
+          exact hgdom.symm
+        · constructor
+          · dsimp only [MyFun.comp]
+            dsimp only [MyFun.from_fun]
+            dsimp only [h]
+            exact hgcodom.symm
+          · intro x hxhYXYdom hxgdom
+            have hYXYcodomhdom : (ι hYXY).codomain = h.domain := by
+              dsimp only [ι]
+              dsimp only [MyFun.from_fun]
+            have hxYXYdom : x ∈ (ι hYXY).domain := by
+              dsimp only [ι]
+              dsimp only [MyFun.from_fun]
+              rw [← hgdom]
+              exact hxgdom
+            have hYXYxhdom : (ι hYXY).eval x hxYXYdom ∈ h.domain := by
+              have : h.domain = (ι hYXY).codomain := by
+                dsimp only [ι]
+                dsimp only [MyFun.from_fun]
+              rw [this]
+              exact (ι hYXY).eval_codomain hxYXYdom
+            rw [MyFun.comp.eval hYXYcodomhdom hxYXYdom hYXYxhdom]
+            have hxhdom : x ∈ h.domain := by
+              dsimp only [h]
+              rw [MySet.mem_union X Y x]
+              rw [hgdom] at hxgdom
+              exact Or.inr hxgdom
+            have : h.eval ((ι hYXY).eval x hxYXYdom) hYXYxhdom = h.eval x hxhdom := by
+              have : (ι hYXY).eval x hxYXYdom = x := by
+                dsimp only [ι]
+                rw [MyFun.from_fun.eval]
+              exact h.substitute hYXYxhdom hxhdom this
+            rw [this]
+            have hxgxhcodom : g.eval x hxgdom ∈ h.codomain := by
+              have : h.codomain = g.codomain := by
+                dsimp only [h]
+                exact hgcodom.symm
+              rw [this]
+              exact g.eval_codomain hxgdom
+            have : h.prop x (g.eval x hxgdom) := by
+              dsimp only [h]
+              have hxY : x ∈ Y := by
+                rw [hgdom] at hxgdom
+                exact hxgdom
+              have hxnX : ¬ x ∈ X := by
+                intro hxX
+                have : x ∈ X ∩ Y := by
+                  dsimp only [MySet.inter]
+                  rw [MySet.mem_spec]
+                  constructor
+                  · exact hxX
+                  · exact hxY
+                dsimp only [MySet.disjoint] at hXY
+                rw [hXY] at this
+                exact MySet.not_mem_empty this
+              rw [dif_neg hxnX]
+              rw [dif_pos hxY]
+            have := (h.def hxhdom hxgxhcodom).mpr this
+            exact this.symm
+      · intro h' hh'dom hh'codom hh'f hh'g
+        constructor
+        · dsimp only [h]
+          exact hh'dom
+        · constructor
+          · dsimp only [h]
+            exact hh'codom
+          · intro x hxh'dom hxhdom
+            have : h.prop x (h'.eval x hxh'dom) := by
+              dsimp only [h]
+              by_cases hxX : x ∈ X
+              · rw [dif_pos hxX]
+                rcases hh'f with ⟨hh'XXYdomfdom, hh'XXYcodomfcodom, hh'XXYxfx⟩
+                have hXXYcodomh'dom : (ι hXXY).codomain = h'.domain := by
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hh'dom.symm
+                have hxh'XXY : x ∈ ((ι hXXY).comp h' hXXYcodomh'dom).domain := by
+                  dsimp only [MyFun.comp]
+                  dsimp only [MyFun.from_fun]
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hxX
+                have hxfdom : x ∈ f.domain := by
+                  rw [hfdom]
+                  exact hxX
+                have :
+                  ((ι hXXY).comp h' hXXYcodomh'dom).eval x hxh'XXY =
+                    f.eval x hxfdom := hh'XXYxfx hxh'XXY hxfdom
+                rw [← this]
+                have hXXYxh'dom : (ι hXXY).eval x hxh'XXY ∈ h'.domain := by
+                  have : h'.domain = (ι hXXY).codomain := by
+                    dsimp only [ι]
+                    dsimp only [MyFun.from_fun]
+                    exact hh'dom
+                  rw [this]
+                  exact (ι hXXY).eval_codomain hxh'XXY
+                rw [MyFun.comp.eval hXXYcodomh'dom hxh'XXY hXXYxh'dom]
+                have : x = (ι hXXY).eval x hxh'XXY := by
+                  dsimp only [ι]
+                  rw [MyFun.from_fun.eval]
+                exact h'.substitute hxh'dom hXXYxh'dom this
+              · rw [dif_neg hxX]
+                have hxY : x ∈ Y := by
+                  rw [hh'dom] at hxh'dom
+                  rw [MySet.mem_union] at hxh'dom
+                  rw [or_iff_not_imp_left] at hxh'dom
+                  exact hxh'dom hxX
+                rw [dif_pos hxY]
+                rcases hh'g with ⟨hh'YXYdomgdom, hh'YXYcodomgcodom, hh'YXYxgx⟩
+                have hYXYcodomh'dom : (ι hYXY).codomain = h'.domain := by
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hh'dom.symm
+                have hxh'YXY : x ∈ ((ι hYXY).comp h' hYXYcodomh'dom).domain := by
+                  dsimp only [MyFun.comp]
+                  dsimp only [MyFun.from_fun]
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hxY
+                have hxgdom : x ∈ g.domain := by
+                  rw [hgdom]
+                  exact hxY
+                have :
+                  ((ι hYXY).comp h' hYXYcodomh'dom).eval x hxh'YXY =
+                    g.eval x hxgdom := hh'YXYxgx hxh'YXY hxgdom
+                rw [← this]
+                have hYXYxh'dom : (ι hYXY).eval x hxh'YXY ∈ h'.domain := by
+                  have : h'.domain = (ι hYXY).codomain := by
+                    dsimp only [ι]
+                    dsimp only [MyFun.from_fun]
+                    exact hh'dom
+                  rw [this]
+                  exact (ι hYXY).eval_codomain hxh'YXY
+                rw [MyFun.comp.eval hYXYcodomh'dom hxh'YXY hYXYxh'dom]
+                have : x = (ι hYXY).eval x hxh'YXY := by
+                  dsimp only [ι]
+                  rw [MyFun.from_fun.eval]
+                exact h'.substitute hxh'dom hYXYxh'dom this
+            have hh'xhcodom : h'.eval x hxh'dom ∈ h.codomain := by
+              have : h.codomain = h'.codomain := by
+                dsimp only [h]
+                exact hh'codom.symm
+              rw [this]
+              exact h'.eval_codomain hxh'dom
+            refine (h.def hxhdom hh'xhcodom).mpr this
 
 end Exercise_3_3_8_d
 
@@ -1447,28 +1862,313 @@ namespace Exercise_3_3_8_e
 
 open Exercise_3_3_8_d
 
-lemma aux₅ {X Y : MySet α}
+lemma aux₅ {x : α} {X Y : MySet α}
   {f : MyFun α β} (hfdom : f.domain = X) :
   x ∈ X ∩ Y → x ∈ f.domain := by
-  sorry
+  intro hxXY
+  rw [MySet.mem_inter X Y x] at hxXY
+  rw [hfdom]
+  exact hxXY.left
 
-lemma aux₆ {X Y : MySet α}
+lemma aux₆ {x : α} {X Y : MySet α}
   {g : MyFun α β} (hgdom : g.domain = Y) :
   x ∈ X ∩ Y → x ∈ g.domain := by
-  sorry
+  intro hxXY
+  rw [MySet.mem_inter X Y x] at hxXY
+  rw [hgdom]
+  exact hxXY.right
 
 example {X Y : MySet α} {Z : MySet β}
   (f : MyFun α β) (hfdom : f.domain = X) (hfcodom : f.codomain = Z)
   (g : MyFun α β) (hgdom : g.domain = Y) (hgcodom : g.codomain = Z)
   (hfg : ∀ (x : α) (hx : x ∈ X ∩ Y),
     f.eval x (aux₅ hfdom hx) = g.eval x (aux₆ hgdom hx)) :
-  ∃ (h : MyFun α β), h.domain = X ∪ Y ∧ h.codomain = Z ∧
-    ((ι (aux₁ X Y)).comp h (aux₃ X Y h) ≃ f) ∧
-    ((ι (aux₂ X Y)).comp h (aux₄ X Y h) ≃ g) ∧
-    (∀ (h' : MyFun α β), h'.domain = X ∪ Y → h'.codomain = Z →
-      ((ι (aux₁ X Y)).comp h' (aux₃ X Y h') ≃ f) →
-      ((ι (aux₂ X Y)).comp h' (aux₄ X Y h') ≃ g) → h' ≃ h) := by
-  sorry
+  ∃ (h : MyFun α β) (hhdom : h.domain = X ∪ Y),
+    h.codomain = Z ∧
+    ((ι (aux₁ X Y)).comp h (aux₃ X Y h hhdom) ≃ f) ∧
+    ((ι (aux₂ X Y)).comp h (aux₄ X Y h hhdom) ≃ g) ∧
+    (∀ (h' : MyFun α β) (hh'dom : h'.domain = X ∪ Y),
+      h'.codomain = Z →
+      ((ι (aux₁ X Y)).comp h' (aux₃ X Y h' hh'dom) ≃ f) →
+      ((ι (aux₂ X Y)).comp h' (aux₄ X Y h' hh'dom) ≃ g) → h' ≃ h) := by
+  let h : MyFun α β := {
+    domain := X ∪ Y,
+    codomain := Z,
+    prop := fun x y => by
+      by_cases h : x ∈ X
+      · have hxfdom : x ∈ f.domain := by
+          rw [hfdom]
+          exact h
+        exact y = f.eval x hxfdom
+      · by_cases h' : x ∈ Y
+        · have hxgdom : x ∈ g.domain := by
+            rw [hgdom]
+            exact h'
+          exact y = g.eval x hxgdom
+        · exact False
+    isValidProp := by
+      intro x hxXY
+      rw [MySet.mem_union X Y x] at hxXY
+      rcases hxXY with (hxX | hxY)
+      · have hxfdom : x ∈ f.domain := by
+          rw [hfdom]
+          exact hxX
+        use (f.eval x hxfdom)
+        constructor
+        · rw [← hfcodom]
+          exact f.eval_codomain hxfdom
+        · constructor
+          · dsimp only [MyFun.prop]
+            rw [dif_pos hxX]
+          · intro y' hy'Z h
+            rw [dif_pos hxX] at h
+            rw [h]
+      · have hxgdom : x ∈ g.domain := by
+          rw [hgdom]
+          exact hxY
+        use (g.eval x hxgdom)
+        constructor
+        · rw [← hgcodom]
+          exact g.eval_codomain hxgdom
+        · constructor
+          · dsimp only [MyFun.prop]
+            rw [dif_pos hxY]
+            by_cases hxX : x ∈ X
+            · rw [dif_pos hxX]
+              have hxXY : x ∈ X ∩ Y := by
+                dsimp only [MySet.inter]
+                rw [MySet.mem_spec]
+                constructor
+                · exact hxX
+                · exact hxY
+              exact (hfg x hxXY).symm
+            · rw [dif_neg hxX]
+          · intro y' hy'Z h
+            rw [dif_pos hxY] at h
+            by_cases hxX : x ∈ X
+            · rw [dif_pos hxX] at h
+              have hxXY : x ∈ X ∩ Y := by
+                dsimp only [MySet.inter]
+                rw [MySet.mem_spec]
+                constructor
+                · exact hxX
+                · exact hxY
+              rw [h]
+              exact (hfg x hxXY).symm
+            · rw [dif_neg hxX] at h
+              exact h.symm
+  }
+  have hhdom : h.domain = X ∪ Y := by
+    dsimp only [h]
+  use h, hhdom
+  have hXXY : X ⊆ X ∪ Y := (aux₁ X Y)
+  have hYXY : Y ⊆ X ∪ Y := (aux₂ X Y)
+  constructor
+  · dsimp only [h]
+  · constructor
+    · dsimp only [MyFun.eq]
+      constructor
+      · dsimp only [MyFun.comp]
+        dsimp only [MyFun.from_fun]
+        dsimp only [ι]
+        dsimp only [MyFun.from_fun]
+        exact hfdom.symm
+      · constructor
+        · dsimp only [MyFun.comp]
+          dsimp only [MyFun.from_fun]
+          dsimp only [h]
+          exact hfcodom.symm
+        · intro x hxhXXYdom hxfdom
+          have hXXYcodomhdom : (ι hXXY).codomain = h.domain := by
+            dsimp only [ι]
+            dsimp only [MyFun.from_fun]
+          have hxXXYdom : x ∈ (ι hXXY).domain := by
+            dsimp only [ι]
+            dsimp only [MyFun.from_fun]
+            rw [← hfdom]
+            exact hxfdom
+          have hXXYxhdom : (ι hXXY).eval x hxXXYdom ∈ h.domain := by
+            have : h.domain = (ι hXXY).codomain := by
+              dsimp only [ι]
+              dsimp only [MyFun.from_fun]
+            rw [this]
+            exact (ι hXXY).eval_codomain hxXXYdom
+          rw [MyFun.comp.eval hXXYcodomhdom hxXXYdom hXXYxhdom]
+          have hxhdom : x ∈ h.domain := by
+            dsimp only [h]
+            rw [MySet.mem_union X Y x]
+            rw [hfdom] at hxfdom
+            exact Or.inl hxfdom
+          have : h.eval ((ι hXXY).eval x hxXXYdom) hXXYxhdom = h.eval x hxhdom := by
+            have : (ι hXXY).eval x hxXXYdom = x := by
+              dsimp only [ι]
+              rw [MyFun.from_fun.eval]
+            exact h.substitute hXXYxhdom hxhdom this
+          rw [this]
+          have hfxhcodom : f.eval x hxfdom ∈ h.codomain := by
+            have : h.codomain = f.codomain := by
+              dsimp only [h]
+              exact hfcodom.symm
+            rw [this]
+            exact f.eval_codomain hxfdom
+          have : h.prop x (f.eval x hxfdom) := by
+            dsimp only [h]
+            have hxX : x ∈ X := by
+              rw [hfdom] at hxfdom
+              exact hxfdom
+            rw [dif_pos hxX]
+          have := (h.def hxhdom hfxhcodom).mpr this
+          exact this.symm
+    · dsimp only [MyFun.eq]
+      constructor
+      · constructor
+        · dsimp only [MyFun.comp]
+          dsimp only [MyFun.from_fun]
+          dsimp only [ι]
+          dsimp only [MyFun.from_fun]
+          exact hgdom.symm
+        · constructor
+          · dsimp only [MyFun.comp]
+            dsimp only [MyFun.from_fun]
+            dsimp only [h]
+            exact hgcodom.symm
+          · intro x hxhYXYdom hxgdom
+            have hYXYcodomhdom : (ι hYXY).codomain = h.domain := by
+              dsimp only [ι]
+              dsimp only [MyFun.from_fun]
+            have hxYXYdom : x ∈ (ι hYXY).domain := by
+              dsimp only [ι]
+              dsimp only [MyFun.from_fun]
+              rw [← hgdom]
+              exact hxgdom
+            have hYXYxhdom : (ι hYXY).eval x hxYXYdom ∈ h.domain := by
+              have : h.domain = (ι hYXY).codomain := by
+                dsimp only [ι]
+                dsimp only [MyFun.from_fun]
+              rw [this]
+              exact (ι hYXY).eval_codomain hxYXYdom
+            rw [MyFun.comp.eval hYXYcodomhdom hxYXYdom hYXYxhdom]
+            have hxhdom : x ∈ h.domain := by
+              dsimp only [h]
+              rw [MySet.mem_union X Y x]
+              rw [hgdom] at hxgdom
+              exact Or.inr hxgdom
+            have : h.eval ((ι hYXY).eval x hxYXYdom) hYXYxhdom = h.eval x hxhdom := by
+              have : (ι hYXY).eval x hxYXYdom = x := by
+                dsimp only [ι]
+                rw [MyFun.from_fun.eval]
+              exact h.substitute hYXYxhdom hxhdom this
+            rw [this]
+            have hxgxhcodom : g.eval x hxgdom ∈ h.codomain := by
+              have : h.codomain = g.codomain := by
+                dsimp only [h]
+                exact hgcodom.symm
+              rw [this]
+              exact g.eval_codomain hxgdom
+            have : h.prop x (g.eval x hxgdom) := by
+              dsimp only [h]
+              have hxY : x ∈ Y := by
+                rw [hgdom] at hxgdom
+                exact hxgdom
+              by_cases hxX : x ∈ X
+              · rw [dif_pos hxX]
+                have hxXY : x ∈ X ∩ Y := by
+                  dsimp only [MySet.inter]
+                  rw [MySet.mem_spec]
+                  constructor
+                  · exact hxX
+                  · exact hxY
+                exact (hfg x hxXY).symm
+              · rw [dif_neg hxX]
+                rw [dif_pos hxY]
+            have := (h.def hxhdom hxgxhcodom).mpr this
+            exact this.symm
+      · intro h' hh'dom hh'codom hh'f hh'g
+        constructor
+        · dsimp only [h]
+          exact hh'dom
+        · constructor
+          · dsimp only [h]
+            exact hh'codom
+          · intro x hxh'dom hxhdom
+            have : h.prop x (h'.eval x hxh'dom) := by
+              dsimp only [h]
+              by_cases hxX : x ∈ X
+              · rw [dif_pos hxX]
+                rcases hh'f with ⟨hh'XXYdomfdom, hh'XXYcodomfcodom, hh'XXYxfx⟩
+                have hXXYcodomh'dom : (ι hXXY).codomain = h'.domain := by
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hh'dom.symm
+                have hxh'XXY : x ∈ ((ι hXXY).comp h' hXXYcodomh'dom).domain := by
+                  dsimp only [MyFun.comp]
+                  dsimp only [MyFun.from_fun]
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hxX
+                have hxfdom : x ∈ f.domain := by
+                  rw [hfdom]
+                  exact hxX
+                have :
+                  ((ι hXXY).comp h' hXXYcodomh'dom).eval x hxh'XXY =
+                    f.eval x hxfdom := hh'XXYxfx hxh'XXY hxfdom
+                rw [← this]
+                have hXXYxh'dom : (ι hXXY).eval x hxh'XXY ∈ h'.domain := by
+                  have : h'.domain = (ι hXXY).codomain := by
+                    dsimp only [ι]
+                    dsimp only [MyFun.from_fun]
+                    exact hh'dom
+                  rw [this]
+                  exact (ι hXXY).eval_codomain hxh'XXY
+                rw [MyFun.comp.eval hXXYcodomh'dom hxh'XXY hXXYxh'dom]
+                have : x = (ι hXXY).eval x hxh'XXY := by
+                  dsimp only [ι]
+                  rw [MyFun.from_fun.eval]
+                exact h'.substitute hxh'dom hXXYxh'dom this
+              · rw [dif_neg hxX]
+                have hxY : x ∈ Y := by
+                  rw [hh'dom] at hxh'dom
+                  rw [MySet.mem_union] at hxh'dom
+                  rw [or_iff_not_imp_left] at hxh'dom
+                  exact hxh'dom hxX
+                rw [dif_pos hxY]
+                rcases hh'g with ⟨hh'YXYdomgdom, hh'YXYcodomgcodom, hh'YXYxgx⟩
+                have hYXYcodomh'dom : (ι hYXY).codomain = h'.domain := by
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hh'dom.symm
+                have hxh'YXY : x ∈ ((ι hYXY).comp h' hYXYcodomh'dom).domain := by
+                  dsimp only [MyFun.comp]
+                  dsimp only [MyFun.from_fun]
+                  dsimp only [ι]
+                  dsimp only [MyFun.from_fun]
+                  exact hxY
+                have hxgdom : x ∈ g.domain := by
+                  rw [hgdom]
+                  exact hxY
+                have :
+                  ((ι hYXY).comp h' hYXYcodomh'dom).eval x hxh'YXY =
+                    g.eval x hxgdom := hh'YXYxgx hxh'YXY hxgdom
+                rw [← this]
+                have hYXYxh'dom : (ι hYXY).eval x hxh'YXY ∈ h'.domain := by
+                  have : h'.domain = (ι hYXY).codomain := by
+                    dsimp only [ι]
+                    dsimp only [MyFun.from_fun]
+                    exact hh'dom
+                  rw [this]
+                  exact (ι hYXY).eval_codomain hxh'YXY
+                rw [MyFun.comp.eval hYXYcodomh'dom hxh'YXY hYXYxh'dom]
+                have : x = (ι hYXY).eval x hxh'YXY := by
+                  dsimp only [ι]
+                  rw [MyFun.from_fun.eval]
+                exact h'.substitute hxh'dom hYXYxh'dom this
+            have hh'xhcodom : h'.eval x hxh'dom ∈ h.codomain := by
+              have : h.codomain = h'.codomain := by
+                dsimp only [h]
+                exact hh'codom.symm
+              rw [this]
+              exact h'.eval_codomain hxh'dom
+            refine (h.def hxhdom hh'xhcodom).mpr this
 
 end Exercise_3_3_8_e
 
