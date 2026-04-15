@@ -8,7 +8,7 @@ package «lean4-analysis-tao» where
   ]
   -- add any additional package configuration options here
 
-require "leanprover-community" / "mathlib" @ git "v4.16.0"
+require "leanprover-community" / "mathlib" @ git "v4.29.0"
 
 @[default_target]
 lean_lib «Lean4AnalysisTao» where

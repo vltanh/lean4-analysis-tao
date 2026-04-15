@@ -1,5 +1,6 @@
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Use
+import Mathlib.Data.Nat.Basic
 
 -- Definition 3.1.1
 axiom MySet.mem {α γ : Type} : γ → α → Prop

@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
 
@@ -644,7 +644,7 @@ theorem MyFun.exists_unique_of_bijective {α β : Type} {f : MyFun α β}
   rw [← hxy'] at hxy
   exact hinj hx hx' hxy
 
-def MyFun.inv {α β : Type} (f : MyFun α β) (hf : f.isBijective) :
+noncomputable def MyFun.inv {α β : Type} (f : MyFun α β) (hf : f.isBijective) :
   MyFun β α := by
   let X : MySet β := f.codomain
   let Y : MySet α := f.domain

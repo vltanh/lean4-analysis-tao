@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
 
@@ -661,7 +661,7 @@ theorem MyFun.exists_unique_of_bijective {α β : Type} {f : MyFun α β}
   rw [← hxy'] at hxy
   exact hinj hx hx' hxy
 
-def MyFun.inv {α β : Type} (f : MyFun α β) (hf : f.isBijective) :
+noncomputable def MyFun.inv {α β : Type} (f : MyFun α β) (hf : f.isBijective) :
   MyFun β α := by
   let X : MySet β := f.codomain
   let Y : MySet α := f.domain
@@ -1307,7 +1307,12 @@ example (f : MyFun α β) (g : MyFun β γ) (hfg : f.codomain = g.domain)
         ((f.comp g hfg).inv hgf).substitute hzgfidom hgfx'gfidom hgfx'z.symm
       rw [this]
       have : x' ∈ (f.comp g hfg).domain := hx'gfdom
-      rw [← MyFun.comp.eval]
+      have hfg_inv : (f.comp g hfg).codomain = ((f.comp g hfg).inv hgf).domain := by
+        dsimp only [MyFun.inv, MyFun.from_fun]
+      have hx'comp : x' ∈ ((f.comp g hfg).comp ((f.comp g hfg).inv hgf) hfg_inv).domain := by
+        dsimp only [MyFun.comp, MyFun.from_fun]
+        exact hx'gfdom
+      rw [← MyFun.comp.eval hfg_inv hx'gfdom hgfx'gfidom hx'comp]
       rw [Exercise_3_3_6.finv_f hgf hx'gfdom]
       have hxgfdom : x ∈ (f.comp g hfg).domain := by
         dsimp only [MyFun.comp]
