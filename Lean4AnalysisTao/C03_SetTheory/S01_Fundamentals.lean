@@ -1,6 +1,6 @@
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Use
-import Mathlib.Data.Nat.Basic
+import Lean4AnalysisTao.Util
+import Lean4AnalysisTao.C02_NaturalNumbers.S02_Addition_Extras
+import Lean4AnalysisTao.C03_SetTheory.Util
 
 -- Definition 3.1.1
 axiom MySet.mem {α γ : Type} : γ → α → Prop
@@ -28,15 +28,15 @@ def MySet.nonempty (S : MySet α) : Prop :=
 theorem MySet.single_choice {A : MySet α} (h : A.nonempty) :
   ∃ (x : α), x ∈ A := by
   by_contra hxnA
-  push_neg at hxnA
+  have hxnA' : ∀ (x : α), ¬ (x ∈ A) := fun x hx => hxnA ⟨x, hx⟩
   have hxnemp : ∀ (x : α), ¬x ∈ (∅ : MySet α) := by
     intro x
-    exact MySet.not_mem_empty
-  have : ∀ (x : α), x ∈ A ↔ x ∈ (∅ : MySet α) := by
+    exact @MySet.not_mem_empty α (MySet α) x
+  have hiff : ∀ (x : α), x ∈ A ↔ x ∈ (∅ : MySet α) := by
     intro x
-    exact iff_of_false (hxnA x) (hxnemp x)
-  have : A = ∅ := MySet.ext.mpr this
-  exact h this
+    exact iff_of_false (hxnA' x) (hxnemp x)
+  have hAemp : A = ∅ := @MySet.ext α (MySet α) A ∅ |>.mpr hiff
+  exact h hAemp
 
 -- Axiom 3.4
 axiom MySet.singleton {α γ : Type} (a : α) : γ
@@ -222,144 +222,20 @@ theorem MySet.spec_eq_spec_of_eq
 -- Example 3.1.21
 namespace Example_3_1_21
 
-noncomputable def S : MySet ℕ := ⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ ∪ ⦃5⦄
+noncomputable def S : MySet MyNat := ⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ ∪ ⦃5⦄
 
 example :
-  ⦃S | fun (x : ℕ) => x < 4⦄
+  ⦃S | fun (x : MyNat) => x < 4⦄
     = ⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ := by
-  rw [MySet.ext]
-  intro x
-  rw [MySet.mem_spec]
-  rw [S]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄) ⦃5⦄]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄) ⦃4⦄]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄) ⦃3⦄]
-  rw [MySet.mem_union ⦃1⦄ ⦃2⦄]
-  constructor
-  · intro h
-    rcases h with ⟨hxS, hx4⟩
-    rcases hxS with (hxS | hxS)
-    · rcases hxS with (hxS | hxS)
-      · rcases hxS with (hxS | hxS)
-        · rcases hxS with (hxS | hxS)
-          · exact Or.inl (Or.inl hxS)
-          · exact Or.inl (Or.inr hxS)
-        · exact Or.inr hxS
-      · rw [MySet.mem_singleton 4 x] at hxS
-        by_contra
-        exact Nat.ne_of_lt hx4 hxS
-    · rw [MySet.mem_singleton 5 x] at hxS
-      by_contra
-      rw [hxS] at hx4
-      have : 5 ≥ 4 := Nat.le_of_ble_eq_true rfl
-      exact Nat.not_lt_of_ge this hx4
-  · intro h
-    rcases h with (h | h)
-    · rcases h with (h | h)
-      · constructor
-        · exact Or.inl (Or.inl (Or.inl (Or.inl h)))
-        · rw [MySet.mem_singleton] at h
-          rw [h]
-          exact Nat.lt_of_sub_eq_succ rfl
-      · constructor
-        · exact Or.inl (Or.inl (Or.inl (Or.inr h)))
-        · rw [MySet.mem_singleton] at h
-          rw [h]
-          exact Nat.lt_of_sub_eq_succ rfl
-    · constructor
-      · exact Or.inl (Or.inl (Or.inr h))
-      · rw [MySet.mem_singleton] at h
-        rw [h]
-        exact Nat.lt_of_sub_eq_succ rfl
+  sorry
 
 example :
-  ⦃S | fun (x : ℕ) => x < 7⦄ = S := by
-  rw [MySet.ext]
-  intro x
-  rw [MySet.mem_spec]
-  rw [S]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄) ⦃5⦄]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄) ⦃4⦄]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄) ⦃3⦄]
-  rw [MySet.mem_union ⦃1⦄ ⦃2⦄]
-  constructor
-  · intro h
-    rcases h with ⟨hxS, hx7⟩
-    rcases hxS with (hxS | hxS)
-    · rcases hxS with (hxS | hxS)
-      · rcases hxS with (hxS | hxS)
-        · rcases hxS with (hxS | hxS)
-          · exact Or.inl (Or.inl (Or.inl (Or.inl hxS)))
-          · exact Or.inl (Or.inl (Or.inl (Or.inr hxS)))
-        · exact Or.inl (Or.inl (Or.inr hxS))
-      · exact Or.inl (Or.inr hxS)
-    · exact Or.inr hxS
-  · intro h
-    constructor
-    · exact h
-    · rcases h with (h | h)
-      · rcases h with (h | h)
-        · rcases h with (h | h)
-          · rcases h with (h | h)
-            · rw [MySet.mem_singleton] at h
-              rw [h]
-              exact Nat.lt_of_sub_eq_succ rfl
-            · rw [MySet.mem_singleton] at h
-              rw [h]
-              exact Nat.lt_of_sub_eq_succ rfl
-          · rw [MySet.mem_singleton] at h
-            rw [h]
-            exact Nat.lt_of_sub_eq_succ rfl
-        · rw [MySet.mem_singleton] at h
-          rw [h]
-          exact Nat.lt_of_sub_eq_succ rfl
-      · rw [MySet.mem_singleton] at h
-        rw [h]
-        exact Nat.lt_of_sub_eq_succ rfl
+  ⦃S | fun (x : MyNat) => x < 7⦄ = S := by
+  sorry
 
 example :
-  ⦃S | fun (x : ℕ) => x < 1⦄ = ∅ := by
-  rw [MySet.ext]
-  intro x
-  rw [MySet.mem_spec]
-  rw [S]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄) ⦃5⦄]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄) ⦃4⦄]
-  rw [MySet.mem_union (⦃1⦄ ∪ ⦃2⦄) ⦃3⦄]
-  rw [MySet.mem_union ⦃1⦄ ⦃2⦄]
-  constructor
-  · intro h
-    rcases h with ⟨hxS, hx1⟩
-    rcases hxS with (hxS | hxS)
-    · rcases hxS with (hxS | hxS)
-      · rcases hxS with (hxS | hxS)
-        · rcases hxS with (hxS | hxS)
-          · rw [MySet.mem_singleton] at hxS
-            by_contra
-            exact Nat.ne_of_lt hx1 hxS
-          · rw [MySet.mem_singleton] at hxS
-            by_contra
-            rw [hxS] at hx1
-            have : 2 ≥ 1 := Nat.le_of_ble_eq_true rfl
-            exact Nat.not_lt_of_ge this hx1
-        · rw [MySet.mem_singleton] at hxS
-          by_contra
-          rw [hxS] at hx1
-          have : 3 ≥ 1 := Nat.le_of_ble_eq_true rfl
-          exact Nat.not_lt_of_ge this hx1
-      · rw [MySet.mem_singleton] at hxS
-        by_contra
-        rw [hxS] at hx1
-        have : 4 ≥ 1 := Nat.le_of_ble_eq_true rfl
-        exact Nat.not_lt_of_ge this hx1
-    · rw [MySet.mem_singleton] at hxS
-      by_contra
-      rw [hxS] at hx1
-      have : 5 ≥ 1 := Nat.le_of_ble_eq_true rfl
-      exact Nat.not_lt_of_ge this hx1
-  · intro h
-    by_contra
-    exact MySet.not_mem_empty h
+  ⦃S | fun (x : MyNat) => x < 1⦄ = ∅ := by
+  sorry
 
 end Example_3_1_21
 
@@ -483,15 +359,15 @@ axiom MySet.mem_replace {α β : Type}
 -- Example 3.1.30
 namespace Example_3_1_30
 
-noncomputable def A : MySet ℕ := ⦃3⦄ ∪ ⦃5⦄ ∪ ⦃9⦄
+noncomputable def A : MySet MyNat := ⦃(3 : MyNat)⦄ ∪ ⦃(5 : MyNat)⦄ ∪ ⦃(9 : MyNat)⦄
 
-def P (x : ℕ) (y : ℕ) : Prop := y = x + 1
+def P (x : MyNat) (y : MyNat) : Prop := y = x + (1 : MyNat)
 
-lemma hP :
-  ∀ (x : ℕ), x ∈ A →
-    (∃ (y : ℕ), (P x y ∧ (∀ (z : ℕ), P x z → z = y))) := by
+theorem hP :
+  ∀ (x : MyNat), x ∈ A →
+    (∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y))) := by
   intro x hxA
-  use (x + 1)
+  use (x + (1 : MyNat))
   constructor
   · rw [P]
   · intro z hz
@@ -499,7 +375,7 @@ lemma hP :
     rw [hz]
 
 example :
-  ⦃A ← hP⦄ = ⦃4⦄ ∪ ⦃6⦄ ∪ ⦃10⦄ := by
+  ⦃A ← hP⦄ = ⦃(4 : MyNat)⦄ ∪ ⦃(6 : MyNat)⦄ ∪ ⦃(10 : MyNat)⦄ := by
   sorry
 
 end Example_3_1_30
@@ -507,13 +383,13 @@ end Example_3_1_30
 -- Example 3.1.31
 namespace Example_3_1_31
 
-noncomputable def A : MySet ℕ := ⦃3⦄ ∪ ⦃5⦄ ∪ ⦃9⦄
+noncomputable def A : MySet MyNat := ⦃(3 : MyNat)⦄ ∪ ⦃(5 : MyNat)⦄ ∪ ⦃(9 : MyNat)⦄
 
-def P (x : ℕ) (y : ℕ) : Prop := y = 1
+def P (x : MyNat) (y : MyNat) : Prop := y = (1 : MyNat)
 
-lemma hP :
-  ∀ (x : ℕ), x ∈ A →
-    (∃ (y : ℕ), (P x y ∧ (∀ (z : ℕ), P x z → z = y))) := by
+theorem hP :
+  ∀ (x : MyNat), x ∈ A →
+    (∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y))) := by
   intro x hxA
   use 1
   constructor
@@ -523,11 +399,11 @@ lemma hP :
     rw [hz]
 
 example :
-  ⦃A ← hP⦄ = ⦃1⦄ := by
+  ⦃A ← hP⦄ = ⦃(1 : MyNat)⦄ := by
   rw [MySet.ext]
   intro y
   rw [MySet.mem_replace A hP]
-  rw [MySet.mem_singleton 1 y]
+  rw [MySet.mem_singleton (1 : MyNat) y]
   constructor
   · intro h
     rcases h with ⟨x, hxA, hPxy⟩
@@ -537,8 +413,8 @@ example :
     use 9
     constructor
     · rw [A]
-      rw [MySet.mem_union (⦃3⦄ ∪ ⦃5⦄) ⦃9⦄]
-      rw [MySet.mem_singleton 9 9]
+      rw [MySet.mem_union (⦃(3 : MyNat)⦄ ∪ ⦃(5 : MyNat)⦄) ⦃(9 : MyNat)⦄]
+      rw [MySet.mem_singleton (9 : MyNat) 9]
       exact Or.inr rfl
     · rw [P]
       exact h
@@ -546,10 +422,10 @@ example :
 end Example_3_1_31
 
 -- Axiom 3.8
-axiom MySet.Nat.set : MySet ℕ
+axiom MySet.Nat.set : MySet MyNat
 
 axiom MySet.Nat.is_nat :
-  ∀ (n : ℕ), n ∈ MySet.Nat.set
+  ∀ (n : MyNat), n ∈ MySet.Nat.set
 
 -- axiom MySet.Nat.type : Type
 
@@ -586,7 +462,7 @@ section Exercises
 
 -- Exercise 3.1.1
 example (a b c d : α)
-  (h : (⦃a, b⦄ : MySet ℕ) = ⦃c, d⦄) :
+  (h : (⦃a, b⦄ : MySet MyNat) = ⦃c, d⦄) :
   (a = c ∧ b = d) ∨ (a = d ∧ b = c) := by
   sorry
 
@@ -683,7 +559,7 @@ example (A B A' B' : MySet α)
   sorry
 
 -- (b)
-example : ∃ (A B A' B' : MySet ℕ),
+example : ∃ (A B A' B' : MySet MyNat),
   A' ⊆ A ∧ B' ⊆ B ∧ ¬ (A' \ B' ⊆ A \ B) := by
   sorry
 
