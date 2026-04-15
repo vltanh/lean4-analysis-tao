@@ -1,7 +1,4 @@
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Constructor
-
+import Lean4AnalysisTao.Util
 import Lean4AnalysisTao.C02_NaturalNumbers.S01_PeanoAxioms
 
 -- Definition 2.2.1
@@ -24,7 +21,7 @@ theorem MyNat.add_zero :
     intro n hn
     rw [MyNat.succ_add n 𝟘]
     rw [hn]
-  exact MyNat.induction hbase hind
+  exact @MyNat.induction (fun n => n + 𝟘 = n) hbase hind
 
 -- Lemma 2.2.3
 theorem MyNat.add_succ :
@@ -41,7 +38,7 @@ theorem MyNat.add_succ :
     rw [MyNat.succ_add n m]
     rw [MyNat.succ_add n (m++)]
     rw [hn m]
-  exact MyNat.induction hbase hind
+  exact @MyNat.induction (fun n => ∀ (m : MyNat), n + m++ = (n + m)++) hbase hind
 
 -- Proposition 2.2.4
 theorem MyNat.add_comm :
@@ -58,7 +55,7 @@ theorem MyNat.add_comm :
     rw [MyNat.succ_add n m]
     rw [MyNat.add_succ m n]
     rw [hn m]
-  exact MyNat.induction hbase hind
+  exact @MyNat.induction (fun n => ∀ (m : MyNat), n + m = m + n) hbase hind
 
 -- Proposition 2.2.5
 theorem MyNat.add_assoc :
@@ -80,8 +77,8 @@ theorem MyNat.add_left_cancel :
     intro b c h
     rw [MyNat.succ_add a b] at h
     rw [MyNat.succ_add a c] at h
-    exact ha (MyNat.succ_inj h)
-  exact MyNat.induction hbase hind
+    exact ha (@MyNat.succ_inj (a + b) (a + c) h)
+  exact @MyNat.induction (fun a => ∀ {b c : MyNat}, a + b = a + c → b = c) hbase hind
 
 -- Definition 2.2.7
 def MyNat.is_positive (n : MyNat) : Prop :=
@@ -90,7 +87,7 @@ def MyNat.is_positive (n : MyNat) : Prop :=
 -- Proposition 2.2.8
 theorem MyNat.pos_add {a : MyNat} (ha : a.is_positive) (b : MyNat) :
   (a + b).is_positive := by
-  have : ∀ (b : MyNat), (a + b).is_positive := by
+  have hall : ∀ (b : MyNat), (a + b).is_positive := by
     have hbase : (a + 𝟘).is_positive := by
       rw [MyNat.add_zero a]
       exact ha
@@ -100,25 +97,25 @@ theorem MyNat.pos_add {a : MyNat} (ha : a.is_positive) (b : MyNat) :
       intro b hb
       rw [MyNat.add_succ a b]
       exact MyNat.succ_ne_zero (a + b)
-    exact MyNat.induction hbase hind
-  exact this b
+    exact @MyNat.induction (fun b => (a + b).is_positive) hbase hind
+  exact hall b
 
 theorem MyNat.pos_add' {a : MyNat} (ha : a.is_positive) (b : MyNat) :
   (b + a).is_positive := by
   rw [MyNat.add_comm b a]
-  exact MyNat.pos_add ha b
+  exact @MyNat.pos_add a ha b
 
 -- Corollary 2.2.9
 theorem MyNat.zero_zero_of_add_zero :
   ∀ {a b : MyNat}, a + b = 𝟘 → a = 𝟘 ∧ b = 𝟘 := by
   intro a b hab
   by_contra h
-  rw [not_and_or] at h
+  rw [@not_and_or (a = 𝟘) (b = 𝟘)] at h
   rcases h with (ha | hb)
-  · have : (a + b).is_positive := MyNat.pos_add ha b
-    exact this hab
-  · have : (a + b).is_positive := MyNat.pos_add' hb a
-    exact this hab
+  · have hpos : (a + b).is_positive := @MyNat.pos_add a ha b
+    exact hpos hab
+  · have hpos : (a + b).is_positive := @MyNat.pos_add' b hb a
+    exact hpos hab
 
 -- Lemma 2.2.10
 theorem MyNat.unique_pred_of_pos {a : MyNat} (ha : a.is_positive) :
@@ -180,31 +177,31 @@ theorem MyNat.order_trichotomy (a b : MyNat) :
   ∨ (¬(a < b) ∧ ¬(a = b) ∧ (a > b)) := by
   have h12 : ¬((a < b) ∧ (a = b)) := by
     rintro ⟨h1, h2⟩
-    rw [MyNat.lt] at h1
-    rw [MyNat.gt] at h1
+    dsimp only [MyNat.lt] at h1
+    dsimp only [MyNat.gt] at h1
     exact h1.right.symm h2
   have h23 : ¬((a = b) ∧ (a > b)) := by
     rintro ⟨h2, h3⟩
-    rw [MyNat.gt] at h3
+    dsimp only [MyNat.gt] at h3
     exact h3.right h2
   have h13 : ¬((a < b) ∧ (a > b)) := by
     rintro ⟨h1, h3⟩
-    rw [MyNat.lt] at h1
-    rw [MyNat.gt] at h1
-    rw [MyNat.gt] at h3
-    have : a = b := MyNat.ge_antisymm h3.left h1.left
-    exact h3.right this
+    dsimp only [MyNat.lt] at h1
+    dsimp only [MyNat.gt] at h1
+    dsimp only [MyNat.gt] at h3
+    have heq : a = b := @MyNat.ge_antisymm a b h3.left h1.left
+    exact h3.right heq
   have h123 : ∀ (a b : MyNat), (a < b) ∨ (a = b) ∨ (a > b) := by
     have hbase : ∀ (b : MyNat), (𝟘 < b) ∨ (𝟘 = b) ∨ (𝟘 > b) := by
-      have : ∀ (b : MyNat), 𝟘 ≤ b := by
+      have hle : ∀ (b : MyNat), 𝟘 ≤ b := by
         sorry
       intro b
-      have : 𝟘 = b ∨ 𝟘 < b := by
+      have heq_or_lt : 𝟘 = b ∨ 𝟘 < b := by
         by_cases h : 𝟘 = b
         · exact Or.inl h
         · rw [← Ne.eq_def] at h
-          exact Or.inr ⟨this b, h.symm⟩
-      rcases this with (h1 | h2)
+          exact Or.inr ⟨hle b, h.symm⟩
+      rcases heq_or_lt with (h1 | h2)
       · exact Or.inr (Or.inl h1)
       · exact Or.inl h2
     have hind : ∀ {a : MyNat},
@@ -213,38 +210,38 @@ theorem MyNat.order_trichotomy (a b : MyNat) :
       intro a ha
       intro b
       rcases ha b with (h1 | h2 | h3)
-      · have := MyNat.lt_iff_succ_le.mp h1
+      · have hle : a++ ≤ b := (@MyNat.lt_iff_succ_le a b).mp h1
         by_cases h : a++ = b
         · exact Or.inr (Or.inl h)
         · rw [← Ne.eq_def] at h
-          exact Or.inl ⟨this, h.symm⟩
-      · have : a++ > b := by
+          exact Or.inl ⟨hle, h.symm⟩
+      · have hgt : a++ > b := by
           sorry
-        exact Or.inr (Or.inr this)
-      · have : a++ > b := by
+        exact Or.inr (Or.inr hgt)
+      · have hgt : a++ > b := by
           sorry
-        exact Or.inr (Or.inr this)
-    exact MyNat.induction hbase hind
+        exact Or.inr (Or.inr hgt)
+    exact @MyNat.induction (fun a => ∀ (b : MyNat), (a < b) ∨ (a = b) ∨ (a > b)) hbase hind
   rcases h123 a b with (h1 | h2 | h3)
   · have h2 : ¬(a = b) := by
-      rw [not_and] at h12
+      rw [@not_and (a < b) (a = b)] at h12
       exact h12 h1
     have h3 : ¬(a > b) := by
-      rw [not_and] at h13
+      rw [@not_and (a < b) (a > b)] at h13
       exact h13 h1
     exact Or.inl ⟨h1, h2, h3⟩
   · have h1 : ¬(a < b) := by
-      rw [not_and'] at h12
+      rw [@not_and' (a < b) (a = b)] at h12
       exact h12 h2
     have h3 : ¬(a > b) := by
-      rw [not_and] at h23
+      rw [@not_and (a = b) (a > b)] at h23
       exact h23 h2
     exact Or.inr (Or.inl ⟨h1, h2, h3⟩)
   · have h1 : ¬(a < b) := by
-      rw [not_and'] at h13
+      rw [@not_and' (a < b) (a > b)] at h13
       exact h13 h3
     have h2 : ¬(a = b) := by
-      rw [not_and'] at h23
+      rw [@not_and' (a = b) (a > b)] at h23
       exact h23 h3
     exact Or.inr (Or.inr ⟨h1, h2, h3⟩)
 
