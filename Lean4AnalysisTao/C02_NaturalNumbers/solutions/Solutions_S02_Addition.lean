@@ -85,7 +85,7 @@ example
 -- Lemma 2.2.10
 example
     (a : MyNat)
-    (ha : a.is_positive) :
+    (ha : (MyNat.is_positive a)) :
     ∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c) := by
   have hbase
       (h : 𝟘.is_positive) :
@@ -94,9 +94,9 @@ example
     exact False.elim (h rfl)
   have hind
       (a : MyNat)
-      (ha : a.is_positive →
+      (ha : (MyNat.is_positive a) →
         (∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c)))
-      (has : (a++).is_positive) :
+      (has : (MyNat.is_positive (a++))) :
       ∃ (b : MyNat), b++ = a++ ∧ (∀ (c : MyNat), c++ = a++ → b = c) := by
     use a
     constructor
@@ -104,7 +104,7 @@ example
     · intro c hc
       exact MyNat.succ_inj a c (Eq.symm hc)
   exact MyNat.induction
-    (fun a => a.is_positive →
+    (fun a => (MyNat.is_positive a) →
       (∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c))) hbase hind a ha
 
 -- Proposition 2.2.12
@@ -223,7 +223,7 @@ example
 -- (f)
 example
     (a b : MyNat) :
-    a < b ↔ ∃ (d : MyNat), d.is_positive ∧ b = a + d := by
+    a < b ↔ ∃ (d : MyNat), (MyNat.is_positive d) ∧ b = a + d := by
   constructor
   · intro hba
     dsimp only [MyNat.lt] at hba

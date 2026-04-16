@@ -31,9 +31,9 @@ theorem MyNat.mul_comm
 -- Lemma 2.3.3
 theorem MyNat.mul_pos
     (n m : MyNat)
-    (hn : n.is_positive)
-    (hm : m.is_positive) :
-    (n * m).is_positive := by
+    (hn : (MyNat.is_positive n))
+    (hm : (MyNat.is_positive m)) :
+    (MyNat.is_positive (n * m)) := by
   sorry
 
 theorem MyNat.mul_eq_zero
@@ -83,14 +83,14 @@ theorem MyNat.mul_assoc
 theorem MyNat.mul_lt_mul_of_pos_right
     (a b c : MyNat)
     (hab : a < b)
-    (hc : c.is_positive) :
+    (hc : (MyNat.is_positive c)) :
     a * c < b * c := by
   rcases Iff.mp (MyNat.lt_iff_eq_add a b) hab with ⟨d, hd, h⟩
   have h' : b * c = a * c + d * c := by
     rw [h]
     rw [MyNat.mul_distrib' c a d]
   have hdcpos :
-      (d * c).is_positive :=
+      (MyNat.is_positive (d * c)) :=
     MyNat.mul_pos d c hd hc
   exact Iff.mpr (MyNat.lt_iff_eq_add (a * c) (b * c)) ⟨d * c, hdcpos, h'⟩
 
@@ -121,7 +121,7 @@ theorem MyNat.mul_cancel_of_pos
 theorem MyNat.euclid_division
     (n : MyNat)
     (q : MyNat)
-    (hqpos : q.is_positive) :
+    (hqpos : (MyNat.is_positive q)) :
     ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r := by
   sorry
 

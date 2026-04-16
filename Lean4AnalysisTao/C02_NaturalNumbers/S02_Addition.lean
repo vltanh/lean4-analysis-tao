@@ -104,30 +104,30 @@ def MyNat.is_positive
 -- Proposition 2.2.8
 theorem MyNat.pos_add
     (a : MyNat)
-    (ha : a.is_positive)
+    (ha : (MyNat.is_positive a))
     (b : MyNat) :
-    (a + b).is_positive := by
+    (MyNat.is_positive (a + b)) := by
   have hall
       (b : MyNat) :
-      (a + b).is_positive := by
+      (MyNat.is_positive (a + b)) := by
     have hbase :
-        (a + 𝟘).is_positive := by
+        (MyNat.is_positive (a + 𝟘)) := by
       rw [MyNat.add_zero a]
       exact ha
     have hind
         (b : MyNat)
-        (hb : (a + b).is_positive) :
-        (a + b++).is_positive := by
+        (hb : (MyNat.is_positive (a + b))) :
+        (MyNat.is_positive (a + b++)) := by
       rw [MyNat.add_succ a b]
       exact MyNat.succ_ne_zero (a + b)
-    exact MyNat.induction (fun b => (a + b).is_positive) hbase hind b
+    exact MyNat.induction (fun b => (MyNat.is_positive (a + b))) hbase hind b
   exact hall b
 
 theorem MyNat.pos_add'
     (a : MyNat)
-    (ha : a.is_positive)
+    (ha : (MyNat.is_positive a))
     (b : MyNat) :
-    (b + a).is_positive := by
+    (MyNat.is_positive (b + a)) := by
   rw [MyNat.add_comm b a]
   exact MyNat.pos_add a ha b
 
@@ -139,15 +139,15 @@ theorem MyNat.zero_zero_of_add_zero
   by_contra h
   rw [not_and_or (a = 𝟘) (b = 𝟘)] at h
   rcases h with (ha | hb)
-  · have hpos : (a + b).is_positive := MyNat.pos_add a ha b
+  · have hpos : (MyNat.is_positive (a + b)) := MyNat.pos_add a ha b
     exact hpos hab
-  · have hpos : (a + b).is_positive := MyNat.pos_add' b hb a
+  · have hpos : (MyNat.is_positive (a + b)) := MyNat.pos_add' b hb a
     exact hpos hab
 
 -- Lemma 2.2.10
 theorem MyNat.unique_pred_of_pos
     (a : MyNat)
-    (ha : a.is_positive) :
+    (ha : (MyNat.is_positive a)) :
     ∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c) := by
   sorry
 
@@ -206,7 +206,7 @@ theorem MyNat.lt_iff_succ_le
 -- (f)
 theorem MyNat.lt_iff_eq_add
     (a b : MyNat) :
-    a < b ↔ ∃ (d : MyNat), d.is_positive ∧ b = a + d := by
+    a < b ↔ ∃ (d : MyNat), (MyNat.is_positive d) ∧ b = a + d := by
   sorry
 
 -- Proposition 2.2.13

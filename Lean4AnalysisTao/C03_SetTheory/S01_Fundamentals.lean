@@ -39,7 +39,7 @@ def MySet.nonempty
 -- Lemma 3.1.5
 theorem MySet.single_choice
     (A : MySet α)
-    (h : A.nonempty) :
+    (h : (MySet.nonempty A)) :
     ∃ (x : α), x ∈ A := by
   by_contra hxnA
   have hxnA'
@@ -714,8 +714,8 @@ example : ∃ (A B A' B' : MySet MyNat),
 -- Exercise 3.1.13
 example
     (A : MySet α)
-    (hA : A.nonempty) :
-    ¬ (∃ (B : MySet α), B.nonempty ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
+    (hA : (MySet.nonempty A)) :
+    ¬ (∃ (B : MySet α), (MySet.nonempty B) ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
   sorry
 
 end Exercises

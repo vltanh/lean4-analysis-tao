@@ -64,7 +64,7 @@ end Axiom_3_9
 axiom MySet.regularity
     {α : Type}
     (A : MySet α)
-    (hA : A.nonempty) :
+    (hA : (MySet.nonempty A)) :
     (∃ (x : MySet α), x ∈ A ∧ MySet.disjoint x A)
     ∨ (∃ (ν : Type) (x : ν), x ∈ A ∧ ν ≠ MySet α)
 

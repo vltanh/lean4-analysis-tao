@@ -37,8 +37,8 @@ example
     rw [@MySet.mem_singleton_obj
         (MySet MyNat) (MySet MyNat) A (MySet MyNat) A]
   have hnonempty :
-      (@MySet.singleton (MySet MyNat) (MySet MyNat) A :
-        MySet MyNat).nonempty := by
+      (MySet.nonempty (@MySet.singleton (MySet MyNat) (MySet MyNat) A :
+        MySet MyNat)) := by
     intro hemp
     rw [hemp] at hA_mem_SA
     exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_mem_SA
@@ -88,8 +88,8 @@ example
         (MySet MyNat) (MySet MyNat) A B (MySet MyNat) B]
     exact Or.inr HEq.rfl
   have hnonempty :
-      (@MySet.pair (MySet MyNat) (MySet MyNat) A B :
-        MySet MyNat).nonempty := by
+      (MySet.nonempty (@MySet.pair (MySet MyNat) (MySet MyNat) A B :
+        MySet MyNat)) := by
     intro hemp
     rw [hemp] at hA_mem_PAB
     exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_mem_PAB

@@ -1087,20 +1087,20 @@ example :
 -- Exercise 3.1.13
 example
     (A : MySet α)
-    (hA : A.nonempty) :
-    ¬ (∃ (B : MySet α), B.nonempty ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
+    (hA : (MySet.nonempty A)) :
+    ¬ (∃ (B : MySet α), (MySet.nonempty B) ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
   constructor
   · intro h
     have hh
         (B : MySet α)
-        (hB : B.nonempty)
+        (hB : (MySet.nonempty B))
         (hss : B ⊊ A) :
         False :=
       h (Exists.intro B (And.intro hB hss))
     rcases @MySet.single_choice α A hA with ⟨x, hxA⟩
     use x
     have hnonempty :
-        (⦃x⦄ : MySet α).nonempty := by
+        (MySet.nonempty (⦃x⦄ : MySet α)) := by
       rw [MySet.nonempty]
       intro h'
       rw [MySet.ext] at h'
