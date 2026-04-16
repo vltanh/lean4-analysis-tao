@@ -42,7 +42,8 @@ example :
       (hmem : (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) ∈ (⦃n⦄ : MySet Nat)) :
       False := by
     rw [MySet.mem_singleton_obj n (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat)] at hmem
-    have htype : MySet Nat = Nat :=
+    have htype :
+        MySet Nat = Nat :=
       type_eq_of_heq hmem
     exact MySet.type_ne Nat htype
   rw [MySet.mem_union (⦃2⦄ ∪ ⦃3⦄) ⦃4⦄ (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat)] at hself

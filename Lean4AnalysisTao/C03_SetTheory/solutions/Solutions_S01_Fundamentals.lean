@@ -38,44 +38,54 @@ example
 example :
     (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
   intro h
-  have hmem : (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
+  have hmem :
+      (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
     rw [MySet.mem_singleton ∅ ∅]
-  have habs : ∅ ∈ ∅ :=
+  have habs :
+      ∅ ∈ ∅ :=
     Iff.mpr (Iff.mp (@MySet.ext γ γ ∅ ⦃∅⦄) h ∅) hmem
   exact @MySet.not_mem_empty γ γ ∅ habs
 
 example :
     (∅ : γ) ≠ ⦃(⦃(∅ : γ)⦄ : γ)⦄ := by
   intro h
-  have hmem : (⦃(∅ : γ)⦄ : γ) ∈ (⦃(⦃(∅ : γ)⦄ : γ)⦄ : γ) := by
+  have hmem :
+      (⦃(∅ : γ)⦄ : γ) ∈ (⦃(⦃(∅ : γ)⦄ : γ)⦄ : γ) := by
     rw [MySet.mem_singleton ⦃∅⦄ ⦃∅⦄]
-  have habs : ⦃∅⦄ ∈ ∅ :=
+  have habs :
+      ⦃∅⦄ ∈ ∅ :=
     Iff.mpr (Iff.mp (@MySet.ext γ γ ∅ ⦃⦃∅⦄⦄) h ⦃∅⦄) hmem
   exact @MySet.not_mem_empty γ γ ⦃∅⦄ habs
 
 example :
     (∅ : γ) ≠ ⦃(∅ : γ), (⦃(∅ : γ)⦄ : γ)⦄ := by
   intro h
-  have hmem : (⦃(∅ : γ)⦄ : γ) ∈ (⦃(∅ : γ), (⦃(∅ : γ)⦄ : γ)⦄ : γ) := by
+  have hmem :
+      (⦃(∅ : γ)⦄ : γ) ∈ (⦃(∅ : γ), (⦃(∅ : γ)⦄ : γ)⦄ : γ) := by
     rw [MySet.mem_pair ∅ ⦃∅⦄]
     exact Or.inr rfl
-  have habs : ⦃∅⦄ ∈ ∅ :=
+  have habs :
+      ⦃∅⦄ ∈ ∅ :=
     Iff.mpr (Iff.mp (@MySet.ext γ γ ∅ ⦃∅, ⦃∅⦄⦄) h ⦃∅⦄) hmem
   exact @MySet.not_mem_empty γ γ ⦃∅⦄ habs
 
 example :
     (⦃(∅ : γ)⦄ : γ) ≠ ⦃(⦃(∅ : γ)⦄ : γ)⦄ := by
   intro h
-  have hmem : (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
+  have hmem :
+      (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
     rw [MySet.mem_singleton ∅ ∅]
   have h' : ∅ ∈ ⦃⦃∅⦄⦄ :=
     Iff.mp (Iff.mp (@MySet.ext γ γ ⦃∅⦄ ⦃⦃∅⦄⦄) h ∅) hmem
   rw [MySet.mem_singleton ⦃∅⦄ ∅] at h'
-  have hne : (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
+  have hne :
+      (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
     intro heq
-    have hmem2 : (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
+    have hmem2 :
+        (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
       rw [MySet.mem_singleton ∅ ∅]
-    have habs : ∅ ∈ ∅ :=
+    have habs :
+        ∅ ∈ ∅ :=
       Iff.mpr (Iff.mp (@MySet.ext γ γ ∅ ⦃∅⦄) heq ∅) hmem2
     exact @MySet.not_mem_empty γ γ ∅ habs
   exact hne h'
@@ -83,17 +93,21 @@ example :
 example :
     (⦃(∅ : γ)⦄ : γ) ≠ ⦃(∅ : γ), ⦃(∅ : γ)⦄⦄ := by
   intro h
-  have hmem : (⦃(∅ : γ)⦄ : γ) ∈ (⦃(∅ : γ), ⦃(∅ : γ)⦄⦄ : γ) := by
+  have hmem :
+      (⦃(∅ : γ)⦄ : γ) ∈ (⦃(∅ : γ), ⦃(∅ : γ)⦄⦄ : γ) := by
     rw [MySet.mem_pair ∅ ⦃∅⦄]
     exact Or.inr rfl
   have h' : ⦃∅⦄ ∈ ⦃∅⦄ :=
     Iff.mpr (Iff.mp (@MySet.ext γ γ ⦃∅⦄ ⦃∅, ⦃∅⦄⦄) h ⦃∅⦄) hmem
   rw [MySet.mem_singleton ∅ ⦃∅⦄] at h'
-  have hne : (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
+  have hne :
+      (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
     intro heq
-    have hmem2 : (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
+    have hmem2 :
+        (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
       rw [MySet.mem_singleton ∅ ∅]
-    have habs : ∅ ∈ ∅ :=
+    have habs :
+        ∅ ∈ ∅ :=
       Iff.mpr (Iff.mp (@MySet.ext γ γ ∅ ⦃∅⦄) heq ∅) hmem2
     exact @MySet.not_mem_empty γ γ ∅ habs
   exact Ne.symm hne h'
@@ -101,17 +115,21 @@ example :
 example :
     (⦃(⦃(∅ : γ)⦄ : γ)⦄ : γ) ≠ ⦃(∅ : γ), (⦃(∅ : γ)⦄ : γ)⦄ := by
   intro h
-  have hmem : (∅ : γ) ∈ (⦃(∅ : γ), ⦃(∅ : γ)⦄⦄ : γ) := by
+  have hmem :
+      (∅ : γ) ∈ (⦃(∅ : γ), ⦃(∅ : γ)⦄⦄ : γ) := by
     rw [MySet.mem_pair ∅ ⦃∅⦄]
     exact Or.inl rfl
   have h' : ∅ ∈ ⦃⦃∅⦄⦄ :=
     Iff.mpr (Iff.mp (@MySet.ext γ γ ⦃⦃∅⦄⦄ ⦃∅, ⦃∅⦄⦄) h ∅) hmem
   rw [MySet.mem_singleton ⦃∅⦄ ∅] at h'
-  have hne : (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
+  have hne :
+      (∅ : γ) ≠ ⦃(∅ : γ)⦄ := by
     intro heq
-    have hmem2 : (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
+    have hmem2 :
+        (∅ : γ) ∈ (⦃(∅ : γ)⦄ : γ) := by
       rw [MySet.mem_singleton ∅ ∅]
-    have habs : ∅ ∈ ∅ :=
+    have habs :
+        ∅ ∈ ∅ :=
       Iff.mpr (Iff.mp (@MySet.ext γ γ ∅ ⦃∅⦄) heq ∅) hmem2
     exact @MySet.not_mem_empty γ γ ∅ habs
   exact hne h'
@@ -176,8 +194,9 @@ example
 example
     (A : MySet α) :
     A ∪ ∅ = A := by
-  have hiff : ∀ (x : α), x ∈ A ∪ ∅ ↔ x ∈ A := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ A ∪ ∅ ↔ x ∈ A := by
     rw [MySet.mem_union A ∅]
     constructor
     · intro h
@@ -191,16 +210,19 @@ example
 example
     (A : MySet α) :
     ∅ ∪ A = A := by
-  have hcomm : ∅ ∪ A = A ∪ ∅ := by
-    have hiff : ∀ (x : α), x ∈ ∅ ∪ A ↔ x ∈ A ∪ ∅ := by
-      intro x
+  have hcomm :
+      ∅ ∪ A = A ∪ ∅ := by
+    have hiff
+        (x : α) :
+        x ∈ ∅ ∪ A ↔ x ∈ A ∪ ∅ := by
       rw [MySet.mem_union ∅ A]
       rw [MySet.mem_union A ∅]
       exact Or.comm
     exact Iff.mpr (@MySet.ext α (MySet α) (∅ ∪ A) (A ∪ ∅)) hiff
   rw [hcomm]
-  have hiff : ∀ (x : α), x ∈ A ∪ ∅ ↔ x ∈ A := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ A ∪ ∅ ↔ x ∈ A := by
     rw [MySet.mem_union A ∅]
     constructor
     · intro h
@@ -221,7 +243,8 @@ example
   rw [MySet.subset] at hBC
   rw [MySet.subset]
   intro x hxA
-  have hxB : x ∈ B :=
+  have hxB :
+      x ∈ B :=
     hAB x hxA
   exact hBC x hxB
 
@@ -246,10 +269,12 @@ example
   constructor
   · exact @MySet.subset_trans α A B C (And.left hAB) (And.left hBC)
   · intro hAC
-    have hCB : C ⊆ B := by
+    have hCB :
+        C ⊆ B := by
       rw [hAC] at hAB
       exact And.left hAB
-    have hBC_eq : B = C :=
+    have hBC_eq :
+        B = C :=
       @MySet.subset_antisymm α B C (And.left hBC) hCB
     exact And.right hBC hBC_eq
 
@@ -545,18 +570,22 @@ example
   rw [MySet.ext] at h
   by_cases hac : a = c
   · have hbd : b = d := by
-      have hmemb : b ∈ (⦃a, b⦄ : MySet MyNat) := by
+      have hmemb :
+          b ∈ (⦃a, b⦄ : MySet MyNat) := by
         rw [MySet.mem_pair a b]
         exact Or.inr rfl
-      have hbcd : b ∈ (⦃c, d⦄ : MySet MyNat) :=
+      have hbcd :
+          b ∈ (⦃c, d⦄ : MySet MyNat) :=
         Iff.mp (h b) hmemb
       rw [MySet.mem_pair c d] at hbcd
       rcases hbcd with (hbc | hbd)
       · rw [← hbc] at hac
-        have hmemd : d ∈ (⦃c, d⦄ : MySet MyNat) := by
+        have hmemd :
+            d ∈ (⦃c, d⦄ : MySet MyNat) := by
           rw [MySet.mem_pair c d]
           exact Or.inr rfl
-        have hdab : d ∈ (⦃a, b⦄ : MySet MyNat) :=
+        have hdab :
+            d ∈ (⦃a, b⦄ : MySet MyNat) :=
           Iff.mpr (h d) hmemd
         rw [MySet.mem_pair a b] at hdab
         rcases hdab with (hac' | hbd)
@@ -566,20 +595,25 @@ example
       · exact hbd
     exact Or.inl ⟨hac, hbd⟩
   · have haeqd : a = d := by
-      have hmema : a ∈ (⦃a, b⦄ : MySet MyNat) := by
+      have hmema :
+          a ∈ (⦃a, b⦄ : MySet MyNat) := by
         rw [MySet.mem_pair a b]
         exact Or.inl rfl
-      have hacd : a ∈ (⦃c, d⦄ : MySet MyNat) :=
+      have hacd :
+          a ∈ (⦃c, d⦄ : MySet MyNat) :=
         Iff.mp (h a) hmema
       rw [MySet.mem_pair c d] at hacd
       rcases hacd with (hac' | had)
       · exact False.elim (hac hac')
       · exact had
-    have hbeqc : b = c := by
-      have hmemc : c ∈ (⦃c, d⦄ : MySet MyNat) := by
+    have hbeqc :
+        b = c := by
+      have hmemc :
+          c ∈ (⦃c, d⦄ : MySet MyNat) := by
         rw [MySet.mem_pair c d]
         exact Or.inl rfl
-      have hcab : c ∈ (⦃a, b⦄ : MySet MyNat) :=
+      have hcab :
+          c ∈ (⦃a, b⦄ : MySet MyNat) :=
         Iff.mpr (h c) hmemc
       rw [MySet.mem_pair a b] at hcab
       rcases hcab with (hac' | hbc)
@@ -600,7 +634,8 @@ example
       rw [MySet.subset]
       intro x hxA
       rw [MySet.ext] at h
-      have hmem : x ∈ A ∪ B := by
+      have hmem :
+          x ∈ A ∪ B := by
         rw [MySet.mem_union A B]
         exact Or.inl hxA
       exact Iff.mp (h x) hmem
@@ -611,7 +646,8 @@ example
       rw [MySet.subset]
       intro x hxA
       rw [MySet.ext] at h
-      have hmem : x ∈ A ∩ B :=
+      have hmem :
+          x ∈ A ∩ B :=
         Iff.mpr (h x) hxA
       rw [MySet.inter] at hmem
       rw [MySet.mem_spec A (fun x => x ∈ B)] at hmem
@@ -655,7 +691,8 @@ example
     · rw [MySet.subset]
       intro x hxC
       rw [MySet.subset] at h
-      have hmem : x ∈ A ∩ B :=
+      have hmem :
+          x ∈ A ∩ B :=
         h x hxC
       rw [MySet.inter] at hmem
       rw [MySet.mem_spec A (fun x => x ∈ B)] at hmem
@@ -663,7 +700,8 @@ example
     · rw [MySet.subset]
       intro x hxC
       rw [MySet.subset] at h
-      have hmem : x ∈ A ∩ B :=
+      have hmem :
+          x ∈ A ∩ B :=
         h x hxC
       rw [MySet.inter] at hmem
       rw [MySet.mem_spec A (fun x => x ∈ B)] at hmem
@@ -703,14 +741,16 @@ example
     · rw [MySet.subset]
       intro x hxA
       rw [MySet.subset] at h
-      have hmem : x ∈ A ∪ B := by
+      have hmem :
+          x ∈ A ∪ B := by
         rw [MySet.mem_union A B]
         exact Or.inl hxA
       exact h x hmem
     · rw [MySet.subset]
       intro x hxB
       rw [MySet.subset] at h
-      have hmem : x ∈ A ∪ B := by
+      have hmem :
+          x ∈ A ∪ B := by
         rw [MySet.mem_union A B]
         exact Or.inr hxB
       exact h x hmem
@@ -767,14 +807,16 @@ example
         exact Or.inl h
       exact Iff.mp (hu x) hmem
     · intro hxB
-      have hmem : x ∈ A ∩ B := by
+      have hmem :
+          x ∈ A ∩ B := by
         rw [MySet.inter]
         rw [MySet.mem_spec A (fun x => x ∈ B)]
         exact And.intro h hxB
       rw [hi] at hmem
       exact @MySet.not_mem_empty α (MySet α) x hmem
   · intro h
-    have hmem : x ∈ A ∪ B :=
+    have hmem :
+        x ∈ A ∪ B :=
       Iff.mpr (hu x) (And.left h)
     rw [MySet.mem_union A B] at hmem
     rcases hmem with (hxA | hxB)
@@ -799,14 +841,16 @@ example
         exact Or.inr h
       exact Iff.mp (hu x) hmem
     · intro hxA
-      have hmem : x ∈ A ∩ B := by
+      have hmem :
+          x ∈ A ∩ B := by
         rw [MySet.inter]
         rw [MySet.mem_spec A (fun x => x ∈ B)]
         exact And.intro hxA h
       rw [hi] at hmem
       exact @MySet.not_mem_empty α (MySet α) x hmem
   · intro h
-    have hmem : x ∈ A ∪ B :=
+    have hmem :
+        x ∈ A ∪ B :=
       Iff.mpr (hu x) (And.left h)
     rw [MySet.mem_union A B] at hmem
     rcases hmem with (hxA | hxB)
@@ -914,9 +958,10 @@ example
   · rcases h with ⟨x', hx'A, hPx'⟩
     let P' : α → α → Prop :=
       fun x y => (P x ∧ y = x) ∨ (¬ P x ∧ y = x')
-    have hP'spec : ∀ (x : α), x ∈ A →
-      (∃ (y : α), P' x y ∧ (∀ (z : α), P' x z → y = z)) := by
-      intro x hxA
+    have hP'spec
+        (x : α)
+        (hxA : x ∈ A) :
+        ∃ (y : α), P' x y ∧ (∀ (z : α), P' x z → y = z) := by
       by_cases hPx : P x
       · use x
         constructor
@@ -950,8 +995,12 @@ example
     · intro hxA
       rcases hxA with ⟨hxA, hPx⟩
       exact Iff.mpr (hS x) ⟨x, hxA, Or.inl ⟨hPx, rfl⟩⟩
-  · have hh : ∀ (x : α), x ∈ A → ¬ P x :=
-      fun x hx hPx => h ⟨x, hx, hPx⟩
+  · have hh
+        (x : α)
+        (hx : x ∈ A)
+        (hPx : P x) :
+        False :=
+      h ⟨x, hx, hPx⟩
     use ∅
     intro x
     constructor
@@ -959,7 +1008,8 @@ example
       exact False.elim (@MySet.not_mem_empty α (MySet α) x hxS)
     · intro h'
       rcases h' with ⟨hxA, hPx⟩
-      have hnotP : ¬ P x :=
+      have hnotP :
+          ¬ P x :=
         hh x hxA
       exact False.elim (hnotP hPx)
 
@@ -1015,7 +1065,8 @@ example :
       exact False.elim (@MySet.not_mem_empty MyNat (MySet MyNat) x hx)
     · intro h
       rw [MySet.subset] at h
-      have h1 : (1 : MyNat) ∈ (⦃(1 : MyNat)⦄ : MySet MyNat) \ ∅ := by
+      have h1 :
+          (1 : MyNat) ∈ (⦃(1 : MyNat)⦄ : MySet MyNat) \ ∅ := by
         rw [MySet.diff]
         rw [MySet.mem_spec ⦃(1 : MyNat)⦄ (fun x => x ∉ ∅)]
         constructor
@@ -1027,7 +1078,8 @@ example :
         rw [MySet.diff]
         rw [MySet.mem_spec ⦃(1 : MyNat), (2 : MyNat)⦄ (fun x => x ∉ ⦃(1 : MyNat)⦄)]
         intro hmem
-        have h1mem : (1 : MyNat) ∈ (⦃(1 : MyNat)⦄ : MySet MyNat) := by
+        have h1mem :
+            (1 : MyNat) ∈ (⦃(1 : MyNat)⦄ : MySet MyNat) := by
           rw [MySet.mem_singleton (1 : MyNat) 1]
         exact And.right hmem h1mem
       exact h2 (h 1 h1)
@@ -1047,16 +1099,20 @@ example
       h (Exists.intro B (And.intro hB hss))
     rcases @MySet.single_choice α A hA with ⟨x, hxA⟩
     use x
-    have hnonempty : (⦃x⦄ : MySet α).nonempty := by
+    have hnonempty :
+        (⦃x⦄ : MySet α).nonempty := by
       rw [MySet.nonempty]
       intro h'
       rw [MySet.ext] at h'
-      have hmem : x ∈ (⦃x⦄ : MySet α) := by
+      have hmem :
+          x ∈ (⦃x⦄ : MySet α) := by
         rw [MySet.mem_singleton x x]
-      have habs : x ∈ ∅ :=
+      have habs :
+          x ∈ ∅ :=
         Iff.mp (h' x) hmem
       exact @MySet.not_mem_empty α (MySet α) x habs
-    have hss : ⦃x⦄ ⊆ A := by
+    have hss :
+        ⦃x⦄ ⊆ A := by
       rw [MySet.subset]
       intro y hy
       rw [MySet.mem_singleton x y] at hy
@@ -1075,22 +1131,26 @@ example
     -- B is nonempty, pick z ∈ B, then z = x, so x ∈ B
     -- Then A = ⦃x⦄ ⊆ B (since x ∈ B), so B = A
     rcases @MySet.single_choice α B hB with ⟨z, hzB⟩
-    have hzA : z ∈ A :=
+    have hzA :
+        z ∈ A :=
       And.left hss z hzB
     rw [hAx] at hzA
     rw [MySet.mem_singleton x z] at hzA
     -- hzA : z = x
-    have hxB : x ∈ B := by
+    have hxB :
+        x ∈ B := by
       rw [← hzA]
       exact hzB
-    have hAsubB : A ⊆ B := by
+    have hAsubB :
+        A ⊆ B := by
       rw [MySet.subset]
       intro y hyA
       rw [hAx] at hyA
       rw [MySet.mem_singleton x y] at hyA
       rw [hyA]
       exact hxB
-    have hBeqA : B = A :=
+    have hBeqA :
+        B = A :=
       @MySet.subset_antisymm α B A (And.left hss) hAsubB
     exact And.right hss hBeqA
 

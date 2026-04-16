@@ -25,7 +25,8 @@ theorem not_lt_of_ge
   intro hlt
   dsimp only [MyNat.lt] at hlt
   dsimp only [MyNat.gt] at hlt
-  have heq : a = b :=
+  have heq :
+      a = b :=
     MyNat.ge_antisymm a b h (And.left hlt)
   exact (And.right hlt) (Eq.symm heq)
 
@@ -46,7 +47,8 @@ theorem lt_of_lt_of_le
   refine And.intro (MyNat.ge_trans c b a hbc (And.left hab)) ?_
   intro hca
   rw [hca] at hbc
-  have heq : b = a :=
+  have heq :
+      b = a :=
     MyNat.ge_antisymm b a (And.left hab) hbc
   exact (And.right hab) heq
 

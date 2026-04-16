@@ -55,7 +55,8 @@ theorem MySet.single_choice
       (x : α) :
       x ∈ A ↔ x ∈ (∅ : MySet α) :=
     iff_of_false (hxnA' x) (hxnemp x)
-  have hAemp : A = ∅ :=
+  have hAemp :
+      A = ∅ :=
     Iff.mpr (MySet.ext A ∅) hiff
   exact h hAemp
 
@@ -253,9 +254,11 @@ theorem MySet.subset_trans
   rw [MySet.subset] at hBC
   rw [MySet.subset]
   intro x hxA
-  have hxB : x ∈ B :=
+  have hxB :
+      x ∈ B :=
     hAB x hxA
-  have hxC : x ∈ C :=
+  have hxC :
+      x ∈ C :=
     hBC x hxB
   exact hxC
 

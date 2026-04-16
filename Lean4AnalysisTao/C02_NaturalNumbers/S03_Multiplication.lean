@@ -48,7 +48,8 @@ theorem MyNat.mul_distrib
   have hall
       (c : MyNat) :
       a * (b + c) = a * b + a * c := by
-    have hbase : a * (b + 𝟘) = a * b + a * 𝟘 := by
+    have hbase :
+        a * (b + 𝟘) = a * b + a * 𝟘 := by
       rw [MyNat.add_zero b]
       rw [MyNat.mul_zero a]
       rw [MyNat.add_zero (a * b)]
@@ -88,7 +89,8 @@ theorem MyNat.mul_lt_mul_of_pos_right
   have h' : b * c = a * c + d * c := by
     rw [h]
     rw [MyNat.mul_distrib' c a d]
-  have hdcpos : (d * c).is_positive :=
+  have hdcpos :
+      (d * c).is_positive :=
     MyNat.mul_pos d c hd hc
   exact Iff.mpr (MyNat.lt_iff_eq_add (a * c) (b * c)) ⟨d * c, hdcpos, h'⟩
 
@@ -102,14 +104,16 @@ theorem MyNat.mul_cancel_of_pos
   rcases MyNat.order_trichotomy a b with (h | h | h)
   · rcases h with ⟨hlt, hne, hngt⟩
     by_contra hne_ab
-    have hltmul : a * c < b * c :=
+    have hltmul :
+        a * c < b * c :=
       MyNat.mul_lt_mul_of_pos_right a b c hlt hc
     exact And.right hltmul (Eq.symm h)
   · rcases h with ⟨hngt, heq, hnlt⟩
     exact heq
   · rcases h with ⟨hnlt, hne, hgt⟩
     by_contra hne_ab
-    have hltmul : b * c < a * c :=
+    have hltmul :
+        b * c < a * c :=
       MyNat.mul_lt_mul_of_pos_right b a c hgt hc
     exact And.right hltmul h
 

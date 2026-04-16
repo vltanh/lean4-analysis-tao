@@ -17,7 +17,8 @@ axiom MyNat.succ_add
 theorem MyNat.add_zero
     (n : MyNat) :
     n + 𝟘 = n := by
-  have hbase : 𝟘 + 𝟘 = 𝟘 := by
+  have hbase :
+      𝟘 + 𝟘 = 𝟘 := by
     rw [MyNat.zero_add 𝟘]
   have hind
       (n : MyNat)
@@ -109,7 +110,8 @@ theorem MyNat.pos_add
   have hall
       (b : MyNat) :
       (a + b).is_positive := by
-    have hbase : (a + 𝟘).is_positive := by
+    have hbase :
+        (a + 𝟘).is_positive := by
       rw [MyNat.add_zero a]
       exact ha
     have hind
@@ -213,21 +215,25 @@ theorem MyNat.order_trichotomy
     ((a < b) ∧ ¬(a = b) ∧ ¬(a > b))
   ∨ (¬(a < b) ∧ (a = b) ∧ ¬(a > b))
   ∨ (¬(a < b) ∧ ¬(a = b) ∧ (a > b)) := by
-  have h12 : ¬((a < b) ∧ (a = b)) := by
+  have h12 :
+      ¬((a < b) ∧ (a = b)) := by
     intro ⟨h1, h2⟩
     dsimp only [MyNat.lt] at h1
     dsimp only [MyNat.gt] at h1
     exact Ne.symm (And.right h1) h2
-  have h23 : ¬((a = b) ∧ (a > b)) := by
+  have h23 :
+      ¬((a = b) ∧ (a > b)) := by
     intro ⟨h2, h3⟩
     dsimp only [MyNat.gt] at h3
     exact And.right h3 h2
-  have h13 : ¬((a < b) ∧ (a > b)) := by
+  have h13 :
+      ¬((a < b) ∧ (a > b)) := by
     intro ⟨h1, h3⟩
     dsimp only [MyNat.lt] at h1
     dsimp only [MyNat.gt] at h1
     dsimp only [MyNat.gt] at h3
-    have heq : a = b :=
+    have heq :
+        a = b :=
       MyNat.ge_antisymm a b (And.left h3) (And.left h1)
     exact And.right h3 heq
   have h123
@@ -240,7 +246,8 @@ theorem MyNat.order_trichotomy
           (b : MyNat) :
           𝟘 ≤ b := by
         sorry
-      have heq_or_lt : 𝟘 = b ∨ 𝟘 < b := by
+      have heq_or_lt :
+          𝟘 = b ∨ 𝟘 < b := by
         by_cases h : 𝟘 = b
         · exact Or.inl h
         · rw [← Ne.eq_def] at h
@@ -270,21 +277,24 @@ theorem MyNat.order_trichotomy
   · have h2 : ¬(a = b) := by
       rw [@not_and (a < b) (a = b)] at h12
       exact h12 h1
-    have h3 : ¬(a > b) := by
+    have h3 :
+        ¬(a > b) := by
       rw [@not_and (a < b) (a > b)] at h13
       exact h13 h1
     exact Or.inl ⟨h1, h2, h3⟩
   · have h1 : ¬(a < b) := by
       rw [@not_and' (a < b) (a = b)] at h12
       exact h12 h2
-    have h3 : ¬(a > b) := by
+    have h3 :
+        ¬(a > b) := by
       rw [@not_and (a = b) (a > b)] at h23
       exact h23 h2
     exact Or.inr (Or.inl ⟨h1, h2, h3⟩)
   · have h1 : ¬(a < b) := by
       rw [@not_and' (a < b) (a > b)] at h13
       exact h13 h3
-    have h2 : ¬(a = b) := by
+    have h2 :
+        ¬(a = b) := by
       rw [@not_and' (a = b) (a > b)] at h23
       exact h23 h3
     exact Or.inr (Or.inr ⟨h1, h2, h3⟩)

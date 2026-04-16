@@ -53,7 +53,8 @@ example
   rcases hreg with ⟨x, hxmem, hdisj⟩ | ⟨ν, x, hxmem, hνne⟩
   · rw [@MySet.mem_singleton_obj
         (MySet MyNat) (MySet MyNat) A (MySet MyNat) x] at hxmem
-    have hxA : x = A :=
+    have hxA :
+        x = A :=
       eq_of_heq hxmem
     rw [hxA] at hdisj
     rw [MySet.disjoint] at hdisj

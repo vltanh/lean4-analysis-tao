@@ -37,9 +37,11 @@ theorem MyFun.def
     (hx : x ∈ f.domain)
     (hy : y ∈ f.codomain) :
     y = f.eval x hx ↔ f.prop x y := by
-  have hfxY : f.eval x hx ∈ f.codomain :=
+  have hfxY :
+      f.eval x hx ∈ f.codomain :=
     MyFun.eval_codomain f x hx
-  have hPxfx : f.prop x (f.eval x hx) := by
+  have hPxfx :
+      f.prop x (f.eval x hx) := by
     exact And.left (And.right (MyClassical.choose_spec
       (fun y => y ∈ f.codomain ∧ f.prop x y ∧
         (∀ (y' : β), y' ∈ f.codomain → f.prop x y' → y = y'))
@@ -91,7 +93,8 @@ theorem MyFun.from_fun.eval
     (x : α)
     (hx : x ∈ X) :
     (MyFun.from_fun X Y f h).eval x hx = f x hx := by
-  have heq : f x hx = (MyFun.from_fun X Y f h).eval x hx := by
+  have heq :
+      f x hx = (MyFun.from_fun X Y f h).eval x hx := by
     rw [MyFun.def (MyFun.from_fun X Y f h) x (f x hx) hx (h x hx)]
     dsimp only [MyFun.from_fun]
     rw [dif_pos hx]
@@ -127,12 +130,15 @@ example
     (x : MyNat)
     (hx : x ∈ X) :
     f.eval x hx = x++ := by
-  have hy : x++ ∈ Y := by
+  have hy :
+      x++ ∈ Y := by
     dsimp only [Y]
     exact MySet.Nat.is_nat (x++)
-  have hPx : f.prop x (x++) := by
+  have hPx :
+      f.prop x (x++) := by
     dsimp only [f]
-  have hfx : x++ = f.eval x hx :=
+  have hfx :
+      x++ = f.eval x hx :=
     Iff.mpr (MyFun.def f x (x++) hx hy) hPx
   exact Eq.symm hfx
 
@@ -157,7 +163,8 @@ noncomputable def f : MyFun MyNat MyNat where
     rw [MySet.mem_spec MySet.Nat.set
       (fun z => ¬ (z ∈ (⦃(0 : MyNat)⦄ : MySet MyNat))) x] at hx
     rw [MySet.mem_singleton (0 : MyNat) x] at hx
-    have hxpos : (x : MyNat).is_positive :=
+    have hxpos :
+        (x : MyNat).is_positive :=
       fun heq => And.right hx heq
     rcases MyNat.unique_pred_of_pos x hxpos with ⟨y, hy, huniq⟩
     use y
@@ -183,10 +190,12 @@ theorem aux :
 
 example :
     f.eval (4 : MyNat) aux = (3 : MyNat) := by
-  have h : (3 : MyNat) ∈ Y := by
+  have h :
+      (3 : MyNat) ∈ Y := by
     dsimp only [Y]
     exact MySet.Nat.is_nat (3 : MyNat)
-  have hprop : f.prop (4 : MyNat) (3 : MyNat) := by
+  have hprop :
+      f.prop (4 : MyNat) (3 : MyNat) := by
     dsimp only [f]
     rfl
   rw [← MyFun.def f (4 : MyNat) (3 : MyNat) aux h] at hprop
@@ -213,7 +222,8 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
     MyNat
   let β :=
     MyNat
-  let f : MyFun α β :=
+  let f :
+      MyFun α β :=
     {
     domain := MySet.Nat.set
     codomain := MySet.Nat.set
@@ -228,11 +238,13 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
         · intro y' _hy' hP
           exact Eq.symm hP
   }
-  let x : α :=
+  let x :
+      α :=
     (0 : MyNat)
   let x' : α :=
     (1 : MyNat)
-  let hx : x ∈ f.domain := by
+  let hx :
+      x ∈ f.domain := by
     dsimp only [x, f]
     exact MySet.Nat.is_nat (0 : MyNat)
   let hx' : x' ∈ f.domain := by
@@ -243,7 +255,8 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
   use x, x', hx, hx'
   -- Goal: ¬ ((x ≠ x') → f.eval x hx ≠ f.eval x' hx')
   intro himp
-  have hne : x ≠ x' := by
+  have hne :
+      x ≠ x' := by
     dsimp only [x, x']
     have hne' : (0 : MyNat) ≠ (1 : MyNat) :=
       fun heq => MyNat.succ_ne_zero (0 : MyNat) (Eq.symm heq)
@@ -252,14 +265,17 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
       (a : α)
       (ha : a ∈ f.domain) :
       f.eval a ha = (7 : MyNat) := by
-    have h7 : (7 : MyNat) ∈ f.codomain := by
+    have h7 :
+        (7 : MyNat) ∈ f.codomain := by
       dsimp only [f]
       exact MySet.Nat.is_nat (7 : MyNat)
-    have hPa : f.prop a (7 : MyNat) := by
+    have hPa :
+        f.prop a (7 : MyNat) := by
       dsimp only [f]
     rw [← MyFun.def f a (7 : MyNat) ha h7] at hPa
     exact Eq.symm hPa
-  have heval : f.eval x hx = f.eval x' hx' := by
+  have heval :
+      f.eval x hx = f.eval x' hx' := by
     rw [hall x hx]
     rw [hall x' hx']
   exact himp hne heval
@@ -318,7 +334,8 @@ noncomputable def g : MyFun MyNat MyNat :=
 private theorem sq_eq
     (n : MyNat) :
     n ^ 𝟚 + (𝟚 : MyNat) * n + (1 : MyNat) = (n + (1 : MyNat)) ^ 𝟚 := by
-  have hone : (1 : MyNat) = 𝟘++ :=
+  have hone :
+      (1 : MyNat) = 𝟘++ :=
     rfl
   rw [hone]
   rw [MyNat.add_succ n 𝟘]
@@ -341,10 +358,12 @@ example :
   dsimp only [MyFun.eq]
   refine And.intro rfl (And.intro rfl ?_)
   intro x hxf hxg
-  have hfeval : f.eval x hxf = _f_fn x hxf := by
+  have hfeval :
+      f.eval x hxf = _f_fn x hxf := by
     dsimp only [f]
     rw [MyFun.from_fun.eval X Y _f_fn _f_mem x hxf]
-  have hgeval : g.eval x hxg = _g_fn x hxg := by
+  have hgeval :
+      g.eval x hxg = _g_fn x hxg := by
     dsimp only [g]
     rw [MyFun.from_fun.eval X Y _g_fn _g_mem x hxg]
   rw [hfeval, hgeval]
@@ -394,7 +413,8 @@ noncomputable def MyFun.comp
       f.eval x hx ∈ g.domain := by
     rw [← hfg]
     exact MyFun.eval_codomain f x hx
-  let gf : (x : α) → x ∈ f.domain → γ :=
+  let gf :
+      (x : α) → x ∈ f.domain → γ :=
     fun x h => g.eval (f.eval x h) (aux x h)
   have aux'
       (x : α)
@@ -474,7 +494,8 @@ example
     (x : MyNat) :
     gf.eval x (MySet.Nat.is_nat x) = (2 : MyNat) * x + (3 : MyNat) := by
   dsimp only [gf]
-  have hfxg : f.eval x (MySet.Nat.is_nat x) ∈ g.domain :=
+  have hfxg :
+      f.eval x (MySet.Nat.is_nat x) ∈ g.domain :=
     MyFun.eval_codomain f x (MySet.Nat.is_nat x)
   rw [MyFun.comp.eval f g rfl x (MySet.Nat.is_nat x) hfxg (MySet.Nat.is_nat x)]
   dsimp only [g]
@@ -493,7 +514,8 @@ example
     (x : MyNat) :
     fg.eval x (MySet.Nat.is_nat x) = (2 : MyNat) * x + (6 : MyNat) := by
   dsimp only [fg]
-  have hgxf : g.eval x (MySet.Nat.is_nat x) ∈ f.domain :=
+  have hgxf :
+      g.eval x (MySet.Nat.is_nat x) ∈ f.domain :=
     MyFun.eval_codomain g x (MySet.Nat.is_nat x)
   rw [MyFun.comp.eval g f rfl x (MySet.Nat.is_nat x) hgxf (MySet.Nat.is_nat x)]
   dsimp only [f]
@@ -505,12 +527,16 @@ example
   dsimp only [_f]
   dsimp only [_g]
   rw [MyNat.mul_distrib (2 : MyNat) x (3 : MyNat)]
-  have h23 : (2 : MyNat) * (3 : MyNat) = (6 : MyNat) := by
-    have h2 : (2 : MyNat) = (𝟘++)++ :=
+  have h23 :
+      (2 : MyNat) * (3 : MyNat) = (6 : MyNat) := by
+    have h2 :
+        (2 : MyNat) = (𝟘++)++ :=
       rfl
-    have h3 : (3 : MyNat) = ((𝟘++)++)++ :=
+    have h3 :
+        (3 : MyNat) = ((𝟘++)++)++ :=
       rfl
-    have h6 : (6 : MyNat) = ((((((𝟘++)++)++)++)++)++) :=
+    have h6 :
+        (6 : MyNat) = ((((((𝟘++)++)++)++)++)++) :=
       rfl
     rw [h2]
     rw [h3]
@@ -550,30 +576,37 @@ theorem MyFun.comp_assoc
       dsimp only [MyFun.comp] at hxh
       dsimp only [MyFun.from_fun] at hxh
 
-      have hf_gh : (h.comp g hgh).codomain = f.domain := by
+      have hf_gh :
+          (h.comp g hgh).codomain = f.domain := by
         rw [MyFun.comp.eval.codomain h g hgh]
         exact hfg
-      have hghxf : (h.comp g hgh).eval x hxh ∈ f.domain := by
+      have hghxf :
+          (h.comp g hgh).eval x hxh ∈ f.domain := by
         rw [← hfg]
         rw [← MyFun.comp.eval.codomain h g hgh]
         exact MyFun.eval_codomain (h.comp g hgh) x hxh
       rw [MyFun.comp.eval (h.comp g hgh) f hf_gh x hxh hghxf hxh]
 
-      have hhxg : h.eval x hxh ∈ g.domain := by
+      have hhxg :
+          h.eval x hxh ∈ g.domain := by
         rw [← hgh]
         exact MyFun.eval_codomain h x hxh
-      have hg_hxf : g.eval (h.eval x hxh) hhxg ∈ f.domain := by
+      have hg_hxf :
+          g.eval (h.eval x hxh) hhxg ∈ f.domain := by
         rw [← hfg]
         exact MyFun.eval_codomain g (h.eval x hxh) hhxg
-      have hcompeval : (h.comp g hgh).eval x hxh = g.eval (h.eval x hxh) hhxg := by
+      have hcompeval :
+          (h.comp g hgh).eval x hxh = g.eval (h.eval x hxh) hhxg := by
         rw [MyFun.comp.eval h g hgh x hxh hhxg hxh]
       rw [MyFun.substitute f
         ((h.comp g hgh).eval x hxh) (g.eval (h.eval x hxh) hhxg) hghxf hg_hxf hcompeval]
 
-      have hfg_h : h.codomain = (g.comp f hfg).domain := by
+      have hfg_h :
+          h.codomain = (g.comp f hfg).domain := by
         rw [MyFun.comp.eval.domain g f hfg]
         exact hgh
-      have hhxfg: h.eval x hxh ∈ (g.comp f hfg).domain := by
+      have hhxfg :
+          h.eval x hxh ∈ (g.comp f hfg).domain := by
         rw [MyFun.comp.eval.domain g f hfg]
         rw [← hgh]
         exact MyFun.eval_codomain h x hxh
@@ -683,7 +716,8 @@ example :
   rw [MySet.mem_replace MySet.Nat.set P hP_unique y] at hy
   rcases hy with ⟨x, hxnat, hPxy⟩
   dsimp only [P] at hPxy
-  have hfxeq : f.eval x (MySet.Nat.is_nat x) = y := by
+  have hfxeq :
+      f.eval x (MySet.Nat.is_nat x) = y := by
     dsimp only [f]
     rw [MyFun.from_fun.eval MySet.Nat.set Y (fun x _ => x ^ (𝟚 : MyNat)) _f_mem
       x (MySet.Nat.is_nat x)]
@@ -741,11 +775,13 @@ example :
     intro y hy
     dsimp only [f, MyFun.from_fun, Y] at hy
     rw [MySet.diff] at hy
-    have hmem : y ∈ MySet.Nat.set ∧ ¬y ∈ ⦃(𝟘 : MyNat)⦄ :=
+    have hmem :
+        y ∈ MySet.Nat.set ∧ ¬y ∈ ⦃(𝟘 : MyNat)⦄ :=
       Iff.mp (MySet.mem_spec MySet.Nat.set (fun z => ¬z ∈ ⦃(𝟘 : MyNat)⦄) y) hy
     rcases hmem with ⟨_hy, hny⟩
     rw [MySet.mem_singleton (γ := MySet MyNat) (𝟘 : MyNat) y] at hny
-    have hpos : y.is_positive :=
+    have hpos :
+        y.is_positive :=
       hny
     rcases MyNat.unique_pred_of_pos y hpos with ⟨x, hx, _⟩
     refine Exists.intro x (Exists.intro (MySet.Nat.is_nat x) ?_)
@@ -781,11 +817,16 @@ noncomputable def MyFun.inv
     (f : MyFun α β)
     (hf : f.isBijective) :
     MyFun β α := by
-  let X : MySet β :=
+  let X :
+      MySet β :=
     f.codomain
-  let Y : MySet α :=
+  let Y :
+      MySet α :=
     f.domain
-  let finv (y : β) (hy : y ∈ X) : α :=
+  let finv
+      (y : β)
+      (hy : y ∈ X) :
+      α :=
     MyClassical.choose
       (fun x => ∃ (hx : x ∈ f.domain), f.eval x hx = y ∧
         ∀ (x' : α) (hx' : x' ∈ f.domain), f.eval x' hx' = y → x = x')
@@ -958,7 +999,8 @@ private def ι'
     (X Y : MySet α)
     (hXY : X ⊆ Y) :
     MyFun α α := by
-  let f : α → α :=
+  let f :
+      α → α :=
     fun x => x
   have h
       (x : α)
