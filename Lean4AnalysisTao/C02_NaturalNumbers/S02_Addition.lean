@@ -251,7 +251,7 @@ theorem MyNat.order_trichotomy
         by_cases h : 𝟘 = b
         · exact Or.inl h
         · rw [← Ne.eq_def] at h
-          exact Or.inr ⟨hle b, Ne.symm h⟩
+          exact Or.inr (And.intro (hle b) (Ne.symm h))
       rcases heq_or_lt with (h1 | h2)
       · exact Or.inr (Or.inl h1)
       · exact Or.inl h2
@@ -265,7 +265,7 @@ theorem MyNat.order_trichotomy
         by_cases h : a++ = b
         · exact Or.inr (Or.inl h)
         · rw [← Ne.eq_def] at h
-          exact Or.inl ⟨hle, Ne.symm h⟩
+          exact Or.inl (And.intro hle (Ne.symm h))
       · have hgt : a++ > b := by
           sorry
         exact Or.inr (Or.inr hgt)
@@ -281,7 +281,7 @@ theorem MyNat.order_trichotomy
         ¬(a > b) := by
       rw [@not_and (a < b) (a > b)] at h13
       exact h13 h1
-    exact Or.inl ⟨h1, h2, h3⟩
+    exact Or.inl (And.intro h1 (And.intro h2 h3))
   · have h1 : ¬(a < b) := by
       rw [@not_and' (a < b) (a = b)] at h12
       exact h12 h2
@@ -289,7 +289,7 @@ theorem MyNat.order_trichotomy
         ¬(a > b) := by
       rw [@not_and (a = b) (a > b)] at h23
       exact h23 h2
-    exact Or.inr (Or.inl ⟨h1, h2, h3⟩)
+    exact Or.inr (Or.inl (And.intro h1 (And.intro h2 h3)))
   · have h1 : ¬(a < b) := by
       rw [@not_and' (a < b) (a > b)] at h13
       exact h13 h3
@@ -297,7 +297,7 @@ theorem MyNat.order_trichotomy
         ¬(a = b) := by
       rw [@not_and' (a = b) (a > b)] at h23
       exact h23 h3
-    exact Or.inr (Or.inr ⟨h1, h2, h3⟩)
+    exact Or.inr (Or.inr (And.intro h1 (And.intro h2 h3)))
 
 -- Proposition 2.2.14
 theorem MyNat.strong_induction

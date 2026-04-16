@@ -46,7 +46,7 @@ theorem MySet.single_choice
       (x : α)
       (hx : x ∈ A) :
       False :=
-    hxnA ⟨x, hx⟩
+    hxnA (Exists.intro x hx)
   have hxnemp
       (x : α) :
       ¬x ∈ (∅ : MySet α) :=

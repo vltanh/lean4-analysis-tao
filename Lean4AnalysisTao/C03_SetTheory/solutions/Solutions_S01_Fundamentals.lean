@@ -447,7 +447,7 @@ example
   · intro h
     by_cases hxA : x ∈ A
     · exact Or.inl hxA
-    · exact Or.inr ⟨h, hxA⟩
+    · exact Or.inr (And.intro h hxA)
 
 example
     (X A : MySet α) :
@@ -517,9 +517,9 @@ example
     · by_cases hxB : x ∈ B
       · rcases h with ⟨hxX, hxAB⟩
         rw [not_and] at hxAB
-        exact Or.inr ⟨hxX, hxAB hxA⟩
-      · exact Or.inr ⟨And.left h, hxB⟩
-    · exact Or.inl ⟨And.left h, hxA⟩
+        exact Or.inr (And.intro hxX (hxAB hxA))
+      · exact Or.inr (And.intro (And.left h) hxB)
+    · exact Or.inl (And.intro (And.left h) hxA)
   · intro h
     rcases h with (h | h)
     · rcases h with ⟨hxX, hxA⟩
@@ -580,7 +580,7 @@ example
           exact Eq.symm hac
         · exact Eq.symm hbd
       · exact hbd
-    exact Or.inl ⟨hac, hbd⟩
+    exact Or.inl (And.intro hac hbd)
   · have haeqd : a = d := by
       have hmema :
           a ∈ (⦃a, b⦄ : MySet MyNat) := by
@@ -606,7 +606,7 @@ example
       rcases hcab with (hac' | hbc)
       · exact False.elim (hac (Eq.symm hac'))
       · exact Eq.symm hbc
-    exact Or.inr ⟨haeqd, hbeqc⟩
+    exact Or.inr (And.intro haeqd hbeqc)
 
 -- Exercise 3.1.5
 example
@@ -923,11 +923,11 @@ example
   · intro h
     rcases h with (h | h)
     · by_cases hxB : x ∈ B
-      · exact Or.inl (Or.inr ⟨h, hxB⟩)
-      · exact Or.inl (Or.inl ⟨h, hxB⟩)
+      · exact Or.inl (Or.inr (And.intro h hxB))
+      · exact Or.inl (Or.inl (And.intro h hxB))
     · by_cases hxA : x ∈ A
-      · exact Or.inl (Or.inr ⟨hxA, h⟩)
-      · exact Or.inr ⟨h, hxA⟩
+      · exact Or.inl (Or.inr (And.intro hxA h))
+      · exact Or.inr (And.intro h hxA)
 
 -- Exercise 3.1.11
 example
@@ -952,14 +952,14 @@ example
       by_cases hPx : P x
       · use x
         constructor
-        · exact Or.inl ⟨hPx, rfl⟩
+        · exact Or.inl (And.intro hPx rfl)
         · intro z hP'zx
           rcases hP'zx with (hP'zx | hP'zx)
           · exact Eq.symm (And.right hP'zx)
           · exact False.elim (And.left hP'zx hPx)
       · use x'
         constructor
-        · exact Or.inr ⟨hPx, rfl⟩
+        · exact Or.inr (And.intro hPx rfl)
         · intro z hP'zx
           rcases hP'zx with (hP'zx | hP'zx)
           · exact False.elim (hPx (And.left hP'zx))
@@ -981,13 +981,14 @@ example
         · exact hPx'
     · intro hxA
       rcases hxA with ⟨hxA, hPx⟩
-      exact Iff.mpr (hS x) ⟨x, hxA, Or.inl ⟨hPx, rfl⟩⟩
+      exact Iff.mpr (hS x)
+        (Exists.intro x (And.intro hxA (Or.inl (And.intro hPx rfl))))
   · have hh
         (x : α)
         (hx : x ∈ A)
         (hPx : P x) :
         False :=
-      h ⟨x, hx, hPx⟩
+      h (Exists.intro x (And.intro hx hPx))
     use ∅
     intro x
     constructor
@@ -1108,7 +1109,7 @@ example
     by_contra hne
     have hne' : ⦃x⦄ ≠ A :=
       fun heq => hne (Eq.symm heq)
-    exact hh ⦃x⦄ hnonempty ⟨hss, hne'⟩
+    exact hh ⦃x⦄ hnonempty (And.intro hss hne')
   · intro h
     rcases h with ⟨x, hAx⟩
     intro ⟨B, hB, hss⟩

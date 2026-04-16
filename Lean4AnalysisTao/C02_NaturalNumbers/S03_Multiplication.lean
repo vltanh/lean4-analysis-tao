@@ -92,7 +92,8 @@ theorem MyNat.mul_lt_mul_of_pos_right
   have hdcpos :
       (MyNat.is_positive (d * c)) :=
     MyNat.mul_pos d c hd hc
-  exact Iff.mpr (MyNat.lt_iff_eq_add (a * c) (b * c)) ⟨d * c, hdcpos, h'⟩
+  exact Iff.mpr (MyNat.lt_iff_eq_add (a * c) (b * c))
+    (Exists.intro (d * c) (And.intro hdcpos h'))
 
 -- Corollary 2.3.7
 theorem MyNat.mul_cancel_of_pos
