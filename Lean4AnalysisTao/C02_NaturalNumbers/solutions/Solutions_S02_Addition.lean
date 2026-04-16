@@ -247,6 +247,7 @@ example
     constructor
     · dsimp only [MyNat.ge]
       use d
+      exact hd'
     · by_contra h
       rw [← MyNat.add_zero b] at hd'
       rw [h] at hd'

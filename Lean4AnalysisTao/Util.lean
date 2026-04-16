@@ -12,7 +12,7 @@ theorem not_and_or
   constructor
   · intro h
     rcases MyClassical.em p with hp | hnp
-    · exact Or.inr (fun hq => h ⟨hp, hq⟩)
+    · exact Or.inr (fun hq => h (And.intro hp hq))
     · exact Or.inl hnp
   · intro hor ⟨hp, hq⟩
     rcases hor with h | h
@@ -31,19 +31,18 @@ macro "by_contra " h:ident : tactic =>
   `(tactic|
     first
     | intro $h:ident
-    | (apply MyClassical.byContradiction; intro $h:ident))
+    | refine MyClassical.byContradiction _ (fun $h:ident => ?_))
 
 /-- `by_contra`; assume `¬ goal` as hypothesis `h` (default name). -/
 macro "by_contra" : tactic =>
   `(tactic|
     first
     | intro h
-    | (apply MyClassical.byContradiction; intro h))
+    | refine MyClassical.byContradiction _ (fun h => ?_))
 
 /--
 `use x₁, …, xₙ`; provide witnesses for a goal built from `Exists`/`And`
-anonymous constructors. After refining, tries `rfl`/`assumption` to close
-any residual goal (mirroring Mathlib's convenience behaviour).
+anonymous constructors, leaving a single `?_` for the residual obligation.
 -/
 macro "use " xs:term,+ : tactic =>
-  `(tactic| (refine ⟨$xs,*, ?_⟩ <;> first | rfl | assumption | skip))
+  `(tactic| refine ⟨$xs,*, ?_⟩)
