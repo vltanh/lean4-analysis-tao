@@ -147,14 +147,12 @@ example
     (A A' B : MySet α)
     (h : A = A') :
     A ∪ B = A' ∪ B := by
-  -- Use Axiom 3.2 and Axiom 3.5
   sorry
 
 example
     (A B B' : MySet α)
     (h : B = B') :
     A ∪ B = A ∪ B' := by
-  -- Use Axiom 3.2 and Axiom 3.5
   sorry
 
 -- Lemma 3.1.12
@@ -358,12 +356,7 @@ noncomputable def MySet.diff
 infix:70 " \\ " => MySet.diff
 
 -- Proposition 3.1.27
--- (a)
--- See Lemma 3.1.12
--- theorem MySet.union_empty (A : Type) :
---   A ∪ ∅ = A := by
---   sorry
-
+-- (a) `MySet.union_empty`: see Lemma 3.1.12
 theorem MySet.inter_empty
     (A : MySet α) :
     A ∩ ∅ = ∅ := by
@@ -382,34 +375,19 @@ theorem MySet.inter_superset
     A ∩ X = A := by
   sorry
 
--- (c)
+-- (c) `MySet.union_self`: see Lemma 3.1.12
 theorem MySet.inter_self
     (A : MySet α) :
     A ∩ A = A := by
   sorry
 
--- See Lemma 3.1.12
--- theorem MySet.union_self (A : Type) :
---   A ∪ A = A := by
---   sorry
-
--- (d)
--- See Lemma 3.1.12
--- theorem MySet.union_comm (A B : Type) :
---   A ∪ B = B ∪ A := by
---   sorry
-
+-- (d) `MySet.union_comm`: see Lemma 3.1.12
 theorem MySet.inter_comm
     (A B : MySet α) :
     A ∩ B = B ∩ A := by
   sorry
 
--- (e)
--- See Lemma 3.1.12
--- theorem MySet.union_assoc (A B C : Type) :
---   (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
---   sorry
-
+-- (e) `MySet.union_assoc`: see Lemma 3.1.12
 theorem MySet.inter_assoc
     (A B C : MySet α) :
     (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
@@ -550,37 +528,6 @@ axiom MySet.Nat.set : MySet MyNat
 axiom MySet.Nat.is_nat
     (n : MyNat) :
     n ∈ MySet.Nat.set
-
--- axiom MySet.Nat.type : Type
-
--- axiom MySet.Nat.set : MySet MySet.Nat.type
-
--- axiom MySet.Nat.zero : MySet.Nat.type
-
--- axiom MySet.Nat.succ : MySet.Nat.type → MySet.Nat.type
-
--- axiom MySet.Nat.zero_is_nat :
---   MySet.Nat.zero ∈ MySet.Nat.set
-
--- axiom MySet.Nat.succ_is_nat :
---   ∀ (n : MySet.Nat.type),
---     n ∈ MySet.Nat.set → MySet.Nat.succ n ∈ MySet.Nat.set
-
--- axiom MySet.Nat.succ_ne_zero :
---   ∀ (n : MySet.Nat.type),
---     n ∈ MySet.Nat.set → MySet.Nat.succ n ≠ MySet.Nat.zero
-
--- axiom MySet.Nat.succ_inj :
---   ∀ (n : MySet.Nat.type), n ∈ MySet.Nat.set →
---     ∀ (m : MySet.Nat.type), m ∈ MySet.Nat.set →
---       MySet.Nat.succ n = MySet.Nat.succ m → n = m
-
--- axiom MySet.Nat.induction :
---   ∀ (P : MySet.Nat.type → Prop),
---     P MySet.Nat.zero →
---     (∀ (n : MySet.Nat.type), n ∈ MySet.Nat.set →
---       P n → P (MySet.Nat.succ n)) →
---     (∀ (n : MySet.Nat.type), n ∈ MySet.Nat.set → P n)
 
 section Exercises
 

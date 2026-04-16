@@ -1,10 +1,7 @@
 import Lean4AnalysisTao.C03_SetTheory.S02_RussellParadox
 
--- Solutions for C03/S02: Set Theory – Russell's Paradox.
-
 -- Exercise 3.2.1
--- Two proofs: (a) direct via Axiom 3.3 `MySet.empty`; (b) faithful to Tao's
--- intent, via Axiom 3.9 with `P x := False` so `⦃| P ⦄` is empty.
+-- Two proofs: via Axiom 3.3, and via Axiom 3.9 with `P x := False`.
 
 example :
     ∃ (E : MySet MyNat), ∀ (x : MyNat), x ∉ E := by
@@ -20,14 +17,7 @@ example :
       (fun (_ : MyNat) => False) x] at hx
   exact hx
 
--- Exercise 3.2.2 (first half): A ∉ A.
--- Apply regularity to the singleton ⦃A⦄ (built with the singleton's α
--- pinned to `MySet MyNat` so the result is itself a `MySet MyNat`).
--- Its only element is A; the first disjunct of regularity gives
--- `disjoint A ⦃A⦄`, and if `A ∈ A` then `A ∈ A ∩ ⦃A⦄` (cross-type
--- `mem_inter_obj` from Extras), contradicting disjointness.
--- The second disjunct is impossible: any element of ⦃A⦄ has type
--- `MySet MyNat` by `mem_singleton_obj` + `type_eq_of_heq`.
+-- Exercise 3.2.2 (first half): A ∉ A, via regularity applied to ⦃A⦄.
 example
     (A : MySet MyNat) :
     A ∉ A := by
@@ -70,10 +60,7 @@ example
         (MySet MyNat) (MySet MyNat) A ν x] at hxmem
     exact hνne (type_eq_of_heq hxmem)
 
--- Exercise 3.2.2 (second half): A ∉ B ∨ B ∉ A.
--- Apply regularity to the pair ⦃A, B⦄ (α pinned so the pair is itself a
--- `MySet MyNat`). First disjunct picks one of A, B as disjoint from the
--- pair; cross-type `mem_inter_obj` then refutes membership of the other.
+-- Exercise 3.2.2 (second half), via regularity applied to ⦃A, B⦄.
 example
     (A B : MySet MyNat) :
     A ∉ B ∨ B ∉ A := by

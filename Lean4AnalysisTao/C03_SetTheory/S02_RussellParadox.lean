@@ -1,10 +1,8 @@
 import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
 import Lean4AnalysisTao.C03_SetTheory.S02_RussellParadox_Extras
 
--- Axiom 3.9 (Universal specification / comprehension).
--- "Dangerous!"; see Russell's paradox below; this axiom is inconsistent with
--- the rest of the set-theoretic axioms, so it is quarantined in its own
--- namespace and is NOT used elsewhere in the project.
+-- Axiom 3.9 (Universal specification). Inconsistent with the other set
+-- axioms (Russell's paradox below); quarantined in its own namespace.
 namespace Axiom_3_9
 
 axiom MySet.univ_spec
@@ -21,17 +19,12 @@ axiom MySet.mem_univ_spec
 
 namespace Example
 
--- Russell's predicate: "γ is MySet α for some α, and the would-be-set does
--- not contain itself."
+-- Russell's predicate.
 noncomputable def P
     {γ : Type} :
     γ → Prop :=
   fun x => ∃ (α : Type), (γ = MySet α) ∧ x ∉ x
 
--- Tao's illustration that `P ({2,3,4})` holds: the set `{2,3,4}` is not one
--- of the natural numbers `2, 3, 4`, so it is not an element of itself.
--- Formally we use `MySet.mem_singleton_obj` (the cross-type form of Axiom
--- 3.4) together with `MySet.type_ne` (both from `S02_RussellParadox_Extras`).
 example :
     P (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) := by
   use Nat
@@ -58,9 +51,7 @@ end Example
 
 end Axiom_3_9
 
--- Axiom 3.10 (Regularity / Foundation).
--- If A is a non-empty set then A has an element which is either not a set,
--- or is disjoint from A.
+-- Axiom 3.10 (Regularity).
 axiom MySet.regularity
     {α : Type}
     (A : MySet α)
@@ -71,31 +62,22 @@ axiom MySet.regularity
 section Exercises
 
 -- Exercise 3.2.1
--- The universal specification axiom implies Axioms 3.3, 3.4, 3.5, 3.6, 3.7
--- (and, assuming natural numbers are objects, Axiom 3.8).
--- We illustrate with the empty-set axiom (3.3); the remaining derivations
--- are analogous and are left to the solutions file.
 example :
     ∃ (E : MySet MyNat), ∀ (x : MyNat), x ∉ E := by
   sorry
 
 -- Exercise 3.2.2
--- Using regularity (and singleton), if A is a set then A ∉ A.
 example
     (A : MySet MyNat) :
     A ∉ A := by
   sorry
 
--- Furthermore, for any two sets A and B, either A ∉ B or B ∉ A.
 example
     (A B : MySet MyNat) :
     A ∉ B ∨ B ∉ A := by
   sorry
 
 -- Exercise 3.2.3
--- The universal specification axiom is equivalent to postulating a universal
--- set Ω containing every object. We state the forward direction here:
--- if Axiom 3.9 holds, then a universal set exists.
 example :
     ∃ (Ω : MySet MyNat), ∀ (x : MyNat), x ∈ Ω := by
   sorry

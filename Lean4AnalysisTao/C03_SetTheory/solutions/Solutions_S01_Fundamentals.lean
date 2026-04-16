@@ -1,10 +1,6 @@
 import Lean4AnalysisTao.Util
 import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
 
--- Solutions for C03/S01: Set Theory – Fundamentals
--- Provides proofs for the sorry-stubbed examples/theorems in S01_Fundamentals.lean
--- and solutions to the exercises.
-
 -- Remarks 3.1.8
 example
     (a : α)
@@ -278,7 +274,7 @@ example
       @MySet.subset_antisymm α B C (And.left hBC) hCB
     exact And.right hBC hBC_eq
 
--- Axiom 3.6 examples
+-- Axiom 3.6
 example
     (A : MySet α)
     (P : α → Prop) :
@@ -301,16 +297,12 @@ example
 
 -- Example 3.1.21
 namespace Example_3_1_21
--- S, and the three examples, are already declared in S01_Fundamentals as sorry stubs.
--- We provide proofs here as further examples.
 
--- TODO: port proof; MyNat.lt proofs for specific numerals require
--- explicit construction via MyNat.ge/add axioms (Nat.lt_of_sub_eq_succ not available)
--- The three examples are left as sorry pending a MyNat numeric decision procedure.
+-- TODO: port; needs a MyNat numeric decision procedure for `<` on literals.
 
 end Example_3_1_21
 
--- Prop 3.1.27
+-- Proposition 3.1.27
 example :
     MySet.disjoint (∅ : MySet α) ∅ := by
   rw [MySet.disjoint]
@@ -320,7 +312,7 @@ example :
   rw [MySet.mem_spec ∅ (fun x => x ∈ ∅)]
   rw [and_self (x ∈ ∅)]
 
--- (a) Proposition 3.1.27
+-- (a)
 example
     (A : MySet α) :
     A ∩ ∅ = ∅ := by
@@ -334,7 +326,7 @@ example
   · intro h
     exact False.elim (@MySet.not_mem_empty α (MySet α) x h)
 
--- (b) Proposition 3.1.27
+-- (b)
 example
     (X A : MySet α)
     (hA : A ⊆ X) :
@@ -368,7 +360,7 @@ example
     · rw [MySet.subset] at hA
       exact hA x h
 
--- (c) Proposition 3.1.27
+-- (c)
 example
     (A : MySet α) :
     A ∩ A = A := by
@@ -378,7 +370,7 @@ example
   rw [MySet.mem_spec A (fun x => x ∈ A)]
   rw [and_self (x ∈ A)]
 
--- (d) Proposition 3.1.27
+-- (d)
 example
     (A B : MySet α) :
     A ∩ B = B ∩ A := by
@@ -390,7 +382,7 @@ example
   rw [MySet.mem_spec B (fun x => x ∈ A)]
   exact and_comm
 
--- (e) Proposition 3.1.27
+-- (e)
 example
     (A B C : MySet α) :
     (A ∩ B) ∩ C = A ∩ (B ∩ C) := by
@@ -406,7 +398,7 @@ example
   rw [MySet.mem_spec B (fun x => x ∈ C)]
   exact and_assoc
 
--- (f) Proposition 3.1.27
+-- (f)
 example
     (A B C : MySet α) :
     A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
@@ -436,7 +428,7 @@ example
   rw [MySet.mem_union A C]
   exact or_and_left
 
--- (g) Proposition 3.1.27
+-- (g)
 example
     (X A : MySet α)
     (hA : A ⊆ X) :
@@ -542,21 +534,16 @@ example
         exact Or.inr hxB
 
 -- Example 3.1.30
--- A, P, hP already declared in S01_Fundamentals (they are not sorry-stubs there).
--- The example below is the solution to the sorry-stub in S01_Fundamentals.
 namespace Example_3_1_30
 
--- TODO: port proof; y = x + 1 with x = 3,5,9 gives y = 4,6,10 as MyNat,
--- but MyNat addition is axiomatic so 3 + 1 ≠ 4 definitionally;
--- requires explicit numeric rewriting via MyNat.succ_add/zero_add.
+-- TODO: port; needs numeric rewriting for `3 + 1 = 4` etc. on MyNat.
 
 end Example_3_1_30
 
 -- Example 3.1.31
--- A, P, hP already declared in S01_Fundamentals.
 namespace Example_3_1_31
 
--- TODO: port proof; y = 1 is a constant predicate, proof needs referencing A/P/hP from main file.
+-- TODO: port.
 
 end Example_3_1_31
 
@@ -1125,18 +1112,12 @@ example
   · intro h
     rcases h with ⟨x, hAx⟩
     intro ⟨B, hB, hss⟩
-    -- hss : B ⊊ A = B ⊆ A ∧ B ≠ A
-    -- We show B = A, contradicting hss.right
-    -- All elements of B satisfy y = x (since B ⊆ A = ⦃x⦄)
-    -- B is nonempty, pick z ∈ B, then z = x, so x ∈ B
-    -- Then A = ⦃x⦄ ⊆ B (since x ∈ B), so B = A
     rcases @MySet.single_choice α B hB with ⟨z, hzB⟩
     have hzA :
         z ∈ A :=
       And.left hss z hzB
     rw [hAx] at hzA
     rw [MySet.mem_singleton x z] at hzA
-    -- hzA : z = x
     have hxB :
         x ∈ B := by
       rw [← hzA]

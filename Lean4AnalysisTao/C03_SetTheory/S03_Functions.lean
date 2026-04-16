@@ -253,7 +253,6 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
   use α, β
   use f
   use x, x', hx, hx'
-  -- Goal: ¬ ((x ≠ x') → (MyFun.eval f) x hx ≠ (MyFun.eval f) x' hx')
   intro himp
   have hne :
       x ≠ x' := by
@@ -661,8 +660,7 @@ noncomputable def f : MyFun MyNat MyNat :=
 
 example :
     (MyFun.isInjective f) := by
-  -- TODO: port; injectivity of squaring on MyNat requires order lemmas
-  --              (MyNat trichotomy + strict monotonicity of squaring) not yet proved here.
+  -- TODO: port; needs strict monotonicity of squaring on MyNat.
   sorry
 
 end Example_3_3_18
@@ -947,8 +945,6 @@ example
 
 -- Exercise 3.3.6
 section Exercise_3_3_6
-
--- aux₁, finv_f, aux₂, f_finv, finv_bij proved in Solutions_S03_Functions
 
 example
     (f : MyFun α β)
