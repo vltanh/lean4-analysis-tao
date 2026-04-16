@@ -62,7 +62,7 @@ example
       rw [@MySet.mem_inter_obj MyNat A
           (@MySet.singleton (MySet MyNat) (MySet MyNat) A)
           (MySet MyNat) A]
-      exact ⟨hAA, hA_mem_SA⟩
+      exact And.intro hAA hA_mem_SA
     rw [hdisj] at hA_inter
     exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_inter
   · rw [@MySet.mem_singleton_obj
@@ -114,7 +114,7 @@ example
         rw [@MySet.mem_inter_obj MyNat A
             (@MySet.pair (MySet MyNat) (MySet MyNat) A B)
             (MySet MyNat) B]
-        exact ⟨hBA, hB_mem_PAB⟩
+        exact And.intro hBA hB_mem_PAB
       rw [hdisj] at hB_inter
       exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) B hB_inter
     · have hxB' : x = B := eq_of_heq hxB
@@ -126,7 +126,7 @@ example
         rw [@MySet.mem_inter_obj MyNat B
             (@MySet.pair (MySet MyNat) (MySet MyNat) A B)
             (MySet MyNat) A]
-        exact ⟨hAB, hA_mem_PAB⟩
+        exact And.intro hAB hA_mem_PAB
       rw [hdisj] at hA_inter
       exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_inter
   · rw [@MySet.mem_pair_obj

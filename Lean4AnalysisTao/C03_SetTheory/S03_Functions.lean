@@ -336,7 +336,7 @@ private theorem sq_eq
 example :
     f ≃ g := by
   dsimp only [MyFun.eq]
-  refine ⟨rfl, rfl, ?_⟩
+  refine And.intro rfl (And.intro rfl ?_)
   intro x hxf hxg
   have hfeval : f.eval x hxf = _f_fn x hxf := by
     dsimp only [f]
@@ -647,7 +647,7 @@ private theorem hP_unique : ∀ (x : MyNat), x ∈ MySet.Nat.set →
     intro z hz
     dsimp only [P] at hz
     exact hz
-  exact ⟨x ^ (𝟚 : MyNat), rfl, huniq⟩
+  exact Exists.intro (x ^ (𝟚 : MyNat)) (And.intro rfl huniq)
 
 noncomputable def Y : MySet MyNat :=
   ⦃ MySet.Nat.set ← hP_unique ⦄
@@ -658,7 +658,7 @@ private theorem _f_mem
     x ^ (𝟚 : MyNat) ∈ Y := by
   dsimp only [Y]
   rw [MySet.mem_replace MySet.Nat.set P hP_unique (x ^ (𝟚 : MyNat))]
-  exact ⟨x, ⟨MySet.Nat.is_nat x, rfl⟩⟩
+  exact Exists.intro x (And.intro (MySet.Nat.is_nat x) rfl)
 
 noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun MySet.Nat.set Y (fun x _ => x ^ (𝟚 : MyNat)) _f_mem
@@ -678,7 +678,7 @@ example :
     rw [MyFun.from_fun.eval MySet.Nat.set Y (fun x _ => x ^ (𝟚 : MyNat)) _f_mem
       x (MySet.Nat.is_nat x)]
     exact Eq.symm hPxy
-  exact ⟨x, MySet.Nat.is_nat x, hfxeq⟩
+  exact Exists.intro x (Exists.intro (MySet.Nat.is_nat x) hfxeq)
 
 end Example_3_3_21
 
@@ -738,7 +738,7 @@ example :
     have hpos : y.is_positive :=
       hny
     rcases MyNat.unique_pred_of_pos y hpos with ⟨x, hx, _⟩
-    refine ⟨x, MySet.Nat.is_nat x, ?_⟩
+    refine Exists.intro x (Exists.intro (MySet.Nat.is_nat x) ?_)
     dsimp only [f]
     rw [MyFun.from_fun.eval X Y _f_fn _f_mem x (MySet.Nat.is_nat x)]
     dsimp only [_f_fn]

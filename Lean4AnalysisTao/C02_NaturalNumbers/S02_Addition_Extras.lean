@@ -43,7 +43,7 @@ theorem lt_of_lt_of_le
   dsimp only [MyNat.gt] at hab
   dsimp only [MyNat.lt]
   dsimp only [MyNat.gt]
-  refine ⟨MyNat.ge_trans c b a hbc (And.left hab), ?_⟩
+  refine And.intro (MyNat.ge_trans c b a hbc (And.left hab)) ?_
   intro hca
   rw [hca] at hbc
   have heq : b = a :=
@@ -55,7 +55,7 @@ theorem zero_lt_succ
     𝟘 < n++ := by
   dsimp only [MyNat.lt, MyNat.gt]
   constructor
-  · refine ⟨n++, ?_⟩
+  · refine Exists.intro (n++) ?_
     rw [MyNat.zero_add (n++)]
   · exact MyNat.succ_ne_zero n
 

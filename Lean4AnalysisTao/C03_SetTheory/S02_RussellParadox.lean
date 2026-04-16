@@ -35,7 +35,7 @@ noncomputable def P
 example :
     P (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) := by
   use Nat
-  refine ⟨rfl, ?_⟩
+  refine And.intro rfl ?_
   intro hself
   have aux : ∀ (n : Nat),
       (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) ∉ (⦃n⦄ : MySet Nat) := by

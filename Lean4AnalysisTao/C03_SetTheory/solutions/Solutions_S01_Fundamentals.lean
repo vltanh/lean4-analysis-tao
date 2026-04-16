@@ -763,7 +763,7 @@ example
       have hmem : x ∈ A ∩ B := by
         rw [MySet.inter]
         rw [MySet.mem_spec A (fun x => x ∈ B)]
-        exact ⟨h, hxB⟩
+        exact And.intro h hxB
       rw [hi] at hmem
       exact @MySet.not_mem_empty α (MySet α) x hmem
   · intro h
@@ -795,7 +795,7 @@ example
       have hmem : x ∈ A ∩ B := by
         rw [MySet.inter]
         rw [MySet.mem_spec A (fun x => x ∈ B)]
-        exact ⟨hxA, h⟩
+        exact And.intro hxA h
       rw [hi] at hmem
       exact @MySet.not_mem_empty α (MySet α) x hmem
   · intro h

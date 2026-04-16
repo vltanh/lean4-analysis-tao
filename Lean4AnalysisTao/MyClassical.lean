@@ -23,7 +23,7 @@ noncomputable def indefiniteDescription
     (p : α → Prop)
     (h : ∃ x, p x) :
     {x // p x} :=
-  choice (let ⟨x, px⟩ := h; ⟨⟨x, px⟩⟩)
+  choice (let ⟨x, px⟩ := h; Nonempty.intro (Subtype.mk x px))
 
 /-- Given `∃ x, p x`, pick such an `x`. -/
 noncomputable def choose
@@ -54,9 +54,9 @@ theorem em
   let V (x : Prop) : Prop :=
     x = False ∨ p
   have exU : ∃ x, U x :=
-    ⟨True, Or.inl rfl⟩
+    Exists.intro True (Or.inl rfl)
   have exV : ∃ x, V x :=
-    ⟨False, Or.inl rfl⟩
+    Exists.intro False (Or.inl rfl)
   let u : Prop :=
     choose U exU
   let v : Prop :=
@@ -84,14 +84,13 @@ theorem em
           fun _ => Or.inr hp
         have hr : (x = False ∨ p) → (x = True ∨ p) :=
           fun _ => Or.inr hp
-        show (x = True ∨ p) = (x = False ∨ p) from
-          propext (Iff.intro hl hr)
+        (propext (Iff.intro hl hr) : (x = True ∨ p) = (x = False ∨ p))
     have h₀ : ∀ (exU' : ∃ x, U x) (exV' : ∃ x, V x),
         choose U exU' = choose V exV' := by
       rw [hpred]
       intro exU' exV'
       rfl
-    show u = v from h₀ exU exV
+    (h₀ exU exV : u = v)
   match not_uv_or_p with
   | Or.inl hne => Or.inr (mt p_implies_uv hne)
   | Or.inr h   => Or.inl h
