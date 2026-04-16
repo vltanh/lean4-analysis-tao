@@ -75,7 +75,7 @@ Every binder, value, and identifier is spelled out; nothing is inferred silently
 - Always annotate `have` with a type: `have hfoo : T := …`.
 - No `_` in applied or type-hole positions: spell `congrArg P h`, `Exists.intro a h`, `Eq.trans h₁ h₂`. Reach for `@` only when unification genuinely can't resolve a type implicit; prefer dropping `@` and passing arguments positionally. `_` is allowed only to discard names in binding patterns; `?_` only as a `refine` hole.
 - Numeric literals carry type ascriptions (`(3 : MyNat)`).
-- Fully-qualified names only: `Eq.symm h`, `And.left h`, `Iff.mp h`, `Or.elim h f g`, `Or.inl x`, `And.intro hp hq`, `Exists.intro a h`. No dot-projection (`h.symm`), no leading-dot constructors (`.inl x`), no anonymous `⟨…⟩` in term position — not at the top of a term, not nested as an argument (`Or.inr ⟨h1, h2⟩` becomes `Or.inr (And.intro h1 h2)`). Destructor-pattern `⟨…⟩` in `intro` / `rcases` / `let` / `fun` is fine.
+- Fully-qualified names only: `Eq.symm h`, `And.left h`, `Iff.mp h`, `Or.elim h f g`, `Or.inl x`, `And.intro hp hq`, `Exists.intro a h`, `MyFun.eval f x hx`. No dot-projection (`h.symm`, `f.eval`), no leading-dot constructors (`.inl x`), no anonymous `⟨…⟩` in term position — not at the top of a term, not nested as an argument (`Or.inr ⟨h1, h2⟩` becomes `Or.inr (And.intro h1 h2)`). Destructor-pattern `⟨…⟩` in `intro` / `rcases` / `let` / `fun` is fine.
 - Prefix proof hypotheses with `h`: `hle`, `hlt`, `hpos`, `hne`, `hxA`, `hfdom`. Value binders keep their natural name (`x`, `n`, `A`, `f`).
 - No `show T from e`; use `(e : T)` ascription.
 
