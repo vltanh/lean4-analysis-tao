@@ -15,8 +15,10 @@ example
     n + 𝟘 = n := by
   have hbase : 𝟘 + 𝟘 = 𝟘 := by
     rw [MyNat.zero_add 𝟘]
-  have hind : ∀ (n : MyNat), n + 𝟘 = n → n++ + 𝟘 = n++ := by
-    intro n hn
+  have hind
+      (n : MyNat)
+      (hn : n + 𝟘 = n) :
+      n++ + 𝟘 = n++ := by
     rw [MyNat.succ_add n 𝟘]
     rw [hn]
   exact MyNat.induction (fun n => n + 𝟘 = n) hbase hind n
@@ -25,15 +27,16 @@ example
 example
     (n m : MyNat) :
     n + m++ = (n + m)++ := by
-  have hbase : ∀ (m : MyNat), 𝟘 + m++ = (𝟘 + m)++ := by
-    intro m
+  have hbase
+      (m : MyNat) :
+      𝟘 + m++ = (𝟘 + m)++ := by
     rw [MyNat.zero_add m]
     rw [MyNat.zero_add (m++)]
-  have hind : ∀ (n : MyNat),
-    (∀ (m : MyNat), n + m++ = (n + m)++) →
-    ∀ (m : MyNat), n++ + m++ = (n++ + m)++ := by
-    intro n hn
-    intro m
+  have hind
+      (n : MyNat)
+      (hn : ∀ (m : MyNat), n + m++ = (n + m)++)
+      (m : MyNat) :
+      n++ + m++ = (n++ + m)++ := by
     rw [MyNat.succ_add n m]
     rw [MyNat.succ_add n (m++)]
     rw [hn m]
@@ -43,15 +46,16 @@ example
 example
     (n m : MyNat) :
     n + m = m + n := by
-  have hbase : ∀ (m : MyNat), 𝟘 + m = m + 𝟘 := by
-    intro m
+  have hbase
+      (m : MyNat) :
+      𝟘 + m = m + 𝟘 := by
     rw [MyNat.zero_add m]
     rw [MyNat.add_zero m]
-  have hind : ∀ (n : MyNat),
-    (∀ (m : MyNat), n + m = m + n) →
-    ∀ (m : MyNat), n++ + m = m + n++ := by
-    intro n hn
-    intro m
+  have hind
+      (n : MyNat)
+      (hn : ∀ (m : MyNat), n + m = m + n)
+      (m : MyNat) :
+      n++ + m = m + n++ := by
     rw [MyNat.succ_add n m]
     rw [MyNat.add_succ m n]
     rw [hn m]
@@ -61,15 +65,16 @@ example
 example
     (a b c : MyNat) :
     (a + b) + c = a + (b + c) := by
-  have hbase : ∀ (b c : MyNat), (𝟘 + b) + c = 𝟘 + (b + c) := by
-    intro b c
+  have hbase
+      (b c : MyNat) :
+      (𝟘 + b) + c = 𝟘 + (b + c) := by
     rw [MyNat.zero_add b]
     rw [MyNat.zero_add (b + c)]
-  have hind : ∀ (a : MyNat),
-    (∀ (b c : MyNat), (a + b) + c = a + (b + c)) →
-    ∀ (b c : MyNat), (a++ + b) + c = a++ + (b + c) := by
-    intro a ha
-    intro b c
+  have hind
+      (a : MyNat)
+      (ha : ∀ (b c : MyNat), (a + b) + c = a + (b + c))
+      (b c : MyNat) :
+      (a++ + b) + c = a++ + (b + c) := by
     rw [MyNat.succ_add a b]
     rw [MyNat.succ_add (a + b) c]
     rw [MyNat.succ_add a (b + c)]
@@ -82,18 +87,17 @@ example
     (a : MyNat)
     (ha : a.is_positive) :
     ∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c) := by
-  have hbase : 𝟘.is_positive →
-    ∃ (b : MyNat), b++ = 𝟘 ∧ (∀ (c : MyNat), c++ = 𝟘 → b = c) := by
-    intro h
+  have hbase
+      (h : 𝟘.is_positive) :
+      ∃ (b : MyNat), b++ = 𝟘 ∧ (∀ (c : MyNat), c++ = 𝟘 → b = c) := by
     dsimp only [MyNat.is_positive] at h
     exact False.elim (h rfl)
-  have hind : ∀ (a : MyNat),
-    (a.is_positive →
-      (∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c))) →
-    ((a++).is_positive →
-      (∃ (b : MyNat), b++ = a++ ∧ (∀ (c : MyNat), c++ = a++ → b = c))) := by
-    intro a ha
-    intro has
+  have hind
+      (a : MyNat)
+      (ha : a.is_positive →
+        (∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c)))
+      (has : (a++).is_positive) :
+      ∃ (b : MyNat), b++ = a++ ∧ (∀ (c : MyNat), c++ = a++ → b = c) := by
     use a
     constructor
     · exact rfl
@@ -261,7 +265,9 @@ example
     P m := by
   let Q : MyNat → Prop :=
     fun n => (∀ (m : MyNat), m₀ ≤ m → m < n → P m)
-  have hQall : ∀ (n : MyNat), Q n := by
+  have hQall
+      (n : MyNat) :
+      Q n := by
     have hbase : Q 𝟘 := by
       dsimp only [Q]
       intro m hm hm'
@@ -273,8 +279,10 @@ example
       have hpos : m + d ≠ 𝟘 :=
         MyNat.pos_add m (Ne.symm hne) d
       exact False.elim (hpos (Eq.symm hd))
-    have hindQ : ∀ (n : MyNat), Q n → Q n++ := by
-      intro n hn
+    have hindQ
+        (n : MyNat)
+        (hn : Q n) :
+        Q n++ := by
       dsimp only [Q]
       dsimp only [Q] at hn
       intro m hm hm'
@@ -296,7 +304,7 @@ example
         have heq : n++ = m :=
           MyNat.ge_antisymm (n++) m hm' hle
         exact hne heq
-    exact MyNat.induction Q hbase hindQ
+    exact MyNat.induction Q hbase hindQ n
   exact hind m hm (hQall m)
 
 section Exercises
@@ -310,12 +318,17 @@ example
     (m : MyNat)
     (hmn : m ≤ n) :
     P m := by
-  have hmain : ∀ (n : MyNat),
-    P n → ∀ (m : MyNat), m ≤ n → P m := by
-    have hbase0 :
-      P 𝟘 → ∀ (m : MyNat), m ≤ 𝟘 → P m := by
-      intro hbase
-      intro m hm
+  have hmain
+      (n : MyNat)
+      (hpn : P n)
+      (m : MyNat)
+      (hm : m ≤ n) :
+      P m := by
+    have hbase0
+        (hbase : P 𝟘)
+        (m : MyNat)
+        (hm : m ≤ 𝟘) :
+        P m := by
       have hm0 : m = 𝟘 := by
         dsimp only [MyNat.le] at hm
         dsimp only [MyNat.ge] at hm
@@ -324,12 +337,13 @@ example
         exact hd
       rw [hm0]
       exact hbase
-    have hindS : ∀ (n : MyNat),
-      (P n → ∀ (m : MyNat), m ≤ n → P m) →
-      (P n++ → ∀ (m : MyNat), m ≤ n++ → P m) := by
-      intro n hn
-      intro hbase
-      intro m hm
+    have hindS
+        (n : MyNat)
+        (hn : P n → ∀ (m : MyNat), m ≤ n → P m)
+        (hbase : P n++)
+        (m : MyNat)
+        (hm : m ≤ n++) :
+        P m := by
       rcases MyNat.order_trichotomy m (n++) with (h1 | h2 | h3)
       · rcases h1 with ⟨hlt, hneq, hngt⟩
         have hle_n : m ≤ n := by
@@ -355,7 +369,7 @@ example
           MyNat.ge_antisymm m (n++) hge hm
         exact hne heq
     exact MyNat.induction
-      (fun n => P n → ∀ (m : MyNat), m ≤ n → P m) hbase0 hindS
+      (fun n => P n → ∀ (m : MyNat), m ≤ n → P m) hbase0 hindS n hpn m hm
   exact hmain n hbase m hmn
 
 -- Exercise 2.2.7
@@ -367,9 +381,13 @@ example
     (m : MyNat)
     (hmn : m ≥ n) :
     P m := by
-  have hmain : ∀ (m : MyNat), m ≥ n → P m := by
-    have hbase0 : 𝟘 ≥ n → P 𝟘 := by
-      intro hn'
+  have hmain
+      (m : MyNat)
+      (hmn : m ≥ n) :
+      P m := by
+    have hbase0
+        (hn' : 𝟘 ≥ n) :
+        P 𝟘 := by
       have hn0 : n = 𝟘 := by
         dsimp only [MyNat.ge] at hn'
         rcases hn' with ⟨d, hd⟩
@@ -377,9 +395,11 @@ example
         exact hd
       rw [hn0] at hn
       exact hn
-    have hindS : ∀ (m : MyNat), (m ≥ n → P m) → (m++ ≥ n → P m++) := by
-      intro m hm
-      intro hge
+    have hindS
+        (m : MyNat)
+        (hm : m ≥ n → P m)
+        (hge : m++ ≥ n) :
+        P m++ := by
       rcases MyNat.order_trichotomy (m++) n with (h1 | h2 | h3)
       · rcases h1 with ⟨hlt, hneq, hngt⟩
         dsimp only [MyNat.lt] at hlt
@@ -406,7 +426,7 @@ example
         have hPm : P m :=
           hm hge_mn
         exact hind m hPm
-    exact MyNat.induction (fun m => m ≥ n → P m) hbase0 hindS
+    exact MyNat.induction (fun m => m ≥ n → P m) hbase0 hindS m hmn
   exact hmain m hmn
 
 end Exercises

@@ -19,8 +19,10 @@ theorem MyNat.add_zero
     n + 𝟘 = n := by
   have hbase : 𝟘 + 𝟘 = 𝟘 := by
     rw [MyNat.zero_add 𝟘]
-  have hind : ∀ (n : MyNat), n + 𝟘 = n → n++ + 𝟘 = n++ := by
-    intro n hn
+  have hind
+      (n : MyNat)
+      (hn : n + 𝟘 = n) :
+      n++ + 𝟘 = n++ := by
     rw [MyNat.succ_add n 𝟘]
     rw [hn]
   exact MyNat.induction (fun n => n + 𝟘 = n) hbase hind n
@@ -29,15 +31,16 @@ theorem MyNat.add_zero
 theorem MyNat.add_succ
     (n m : MyNat) :
     n + m++ = (n + m)++ := by
-  have hbase : ∀ (m : MyNat), 𝟘 + m++ = (𝟘 + m)++ := by
-    intro m
+  have hbase
+      (m : MyNat) :
+      𝟘 + m++ = (𝟘 + m)++ := by
     rw [MyNat.zero_add m]
     rw [MyNat.zero_add (m++)]
-  have hind : ∀ (n : MyNat),
-    (∀ (m : MyNat), n + m++ = (n + m)++) →
-    ∀ (m : MyNat), n++ + m++ = (n++ + m)++ := by
-    intro n hn
-    intro m
+  have hind
+      (n : MyNat)
+      (hn : ∀ (m : MyNat), n + m++ = (n + m)++)
+      (m : MyNat) :
+      n++ + m++ = (n++ + m)++ := by
     rw [MyNat.succ_add n m]
     rw [MyNat.succ_add n (m++)]
     rw [hn m]
@@ -47,15 +50,16 @@ theorem MyNat.add_succ
 theorem MyNat.add_comm
     (n m : MyNat) :
     n + m = m + n := by
-  have hbase : ∀ (m : MyNat), 𝟘 + m = m + 𝟘 := by
-    intro m
+  have hbase
+      (m : MyNat) :
+      𝟘 + m = m + 𝟘 := by
     rw [MyNat.zero_add m]
     rw [MyNat.add_zero m]
-  have hind : ∀ (n : MyNat),
-    (∀ (m : MyNat), n + m = m + n) →
-    ∀ (m : MyNat), n++ + m = m + n++ := by
-    intro n hn
-    intro m
+  have hind
+      (n : MyNat)
+      (hn : ∀ (m : MyNat), n + m = m + n)
+      (m : MyNat) :
+      n++ + m = m + n++ := by
     rw [MyNat.succ_add n m]
     rw [MyNat.add_succ m n]
     rw [hn m]
@@ -72,16 +76,19 @@ theorem MyNat.add_left_cancel
     (a b c : MyNat)
     (h : a + b = a + c) :
     b = c := by
-  have hbase : ∀ (b c : MyNat), 𝟘 + b = 𝟘 + c → b = c := by
-    intro b c h
+  have hbase
+      (b c : MyNat)
+      (h : 𝟘 + b = 𝟘 + c) :
+      b = c := by
     rw [MyNat.zero_add b] at h
     rw [MyNat.zero_add c] at h
     exact h
-  have hind : ∀ (a : MyNat),
-    (∀ (b c : MyNat), a + b = a + c → b = c) →
-    ∀ (b c : MyNat), a++ + b = a++ + c → b = c := by
-    intro a ha
-    intro b c h
+  have hind
+      (a : MyNat)
+      (ha : ∀ (b c : MyNat), a + b = a + c → b = c)
+      (b c : MyNat)
+      (h : a++ + b = a++ + c) :
+      b = c := by
     rw [MyNat.succ_add a b] at h
     rw [MyNat.succ_add a c] at h
     exact ha b c (MyNat.succ_inj (a + b) (a + c) h)
@@ -99,17 +106,19 @@ theorem MyNat.pos_add
     (ha : a.is_positive)
     (b : MyNat) :
     (a + b).is_positive := by
-  have hall : ∀ (b : MyNat), (a + b).is_positive := by
+  have hall
+      (b : MyNat) :
+      (a + b).is_positive := by
     have hbase : (a + 𝟘).is_positive := by
       rw [MyNat.add_zero a]
       exact ha
-    have hind : ∀ (b : MyNat),
-      (a + b).is_positive →
-      (a + b++).is_positive := by
-      intro b hb
+    have hind
+        (b : MyNat)
+        (hb : (a + b).is_positive) :
+        (a + b++).is_positive := by
       rw [MyNat.add_succ a b]
       exact MyNat.succ_ne_zero (a + b)
-    exact MyNat.induction (fun b => (a + b).is_positive) hbase hind
+    exact MyNat.induction (fun b => (a + b).is_positive) hbase hind b
   exact hall b
 
 theorem MyNat.pos_add'
@@ -221,11 +230,16 @@ theorem MyNat.order_trichotomy
     have heq : a = b :=
       MyNat.ge_antisymm a b (And.left h3) (And.left h1)
     exact And.right h3 heq
-  have h123 : ∀ (a b : MyNat), (a < b) ∨ (a = b) ∨ (a > b) := by
-    have hbase : ∀ (b : MyNat), (𝟘 < b) ∨ (𝟘 = b) ∨ (𝟘 > b) := by
-      have hle : ∀ (b : MyNat), 𝟘 ≤ b := by
+  have h123
+      (a b : MyNat) :
+      (a < b) ∨ (a = b) ∨ (a > b) := by
+    have hbase
+        (b : MyNat) :
+        (𝟘 < b) ∨ (𝟘 = b) ∨ (𝟘 > b) := by
+      have hle
+          (b : MyNat) :
+          𝟘 ≤ b := by
         sorry
-      intro b
       have heq_or_lt : 𝟘 = b ∨ 𝟘 < b := by
         by_cases h : 𝟘 = b
         · exact Or.inl h
@@ -234,11 +248,11 @@ theorem MyNat.order_trichotomy
       rcases heq_or_lt with (h1 | h2)
       · exact Or.inr (Or.inl h1)
       · exact Or.inl h2
-    have hind : ∀ (a : MyNat),
-      (∀ (b : MyNat), (a < b) ∨ (a = b) ∨ (a > b)) →
-      ∀ (b : MyNat), (a++ < b) ∨ (a++ = b) ∨ (a++ > b) := by
-      intro a ha
-      intro b
+    have hind
+        (a : MyNat)
+        (ha : ∀ (b : MyNat), (a < b) ∨ (a = b) ∨ (a > b))
+        (b : MyNat) :
+        (a++ < b) ∨ (a++ = b) ∨ (a++ > b) := by
       rcases ha b with (h1 | h2 | h3)
       · have hle : a++ ≤ b := Iff.mp (MyNat.lt_iff_succ_le a b) h1
         by_cases h : a++ = b
@@ -251,7 +265,7 @@ theorem MyNat.order_trichotomy
       · have hgt : a++ > b := by
           sorry
         exact Or.inr (Or.inr hgt)
-    exact MyNat.induction (fun a => ∀ (b : MyNat), (a < b) ∨ (a = b) ∨ (a > b)) hbase hind
+    exact MyNat.induction (fun a => ∀ (b : MyNat), (a < b) ∨ (a = b) ∨ (a > b)) hbase hind a b
   rcases h123 a b with (h1 | h2 | h3)
   · have h2 : ¬(a = b) := by
       rw [@not_and (a < b) (a = b)] at h12

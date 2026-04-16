@@ -121,8 +121,9 @@ example
     (A A' B : MySet α)
     (h : A = A') :
     A ∪ B = A' ∪ B := by
-  have hiff : ∀ (x : α), x ∈ A ∪ B ↔ x ∈ A' ∪ B := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ A ∪ B ↔ x ∈ A' ∪ B := by
     rw [MySet.mem_union A B]
     rw [MySet.mem_union A' B]
     rw [h]
@@ -132,8 +133,9 @@ example
     (A B B' : MySet α)
     (h : B = B') :
     A ∪ B = A ∪ B' := by
-  have hiff : ∀ (x : α), x ∈ A ∪ B ↔ x ∈ A ∪ B' := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ A ∪ B ↔ x ∈ A ∪ B' := by
     rw [MySet.mem_union A B]
     rw [MySet.mem_union A B']
     rw [h]
@@ -153,8 +155,9 @@ example
 example
     (A B : MySet α) :
     A ∪ B = B ∪ A := by
-  have hiff : ∀ (x : α), x ∈ A ∪ B ↔ x ∈ B ∪ A := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ A ∪ B ↔ x ∈ B ∪ A := by
     rw [MySet.mem_union A B]
     rw [MySet.mem_union B A]
     exact Or.comm
@@ -163,8 +166,9 @@ example
 example
     (A : MySet α) :
     A ∪ A = A := by
-  have hiff : ∀ (x : α), x ∈ A ∪ A ↔ x ∈ A := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ A ∪ A ↔ x ∈ A := by
     rw [MySet.mem_union A A]
     rw [or_self (x ∈ A)]
   exact Iff.mpr (@MySet.ext α (MySet α) (A ∪ A) A) hiff
@@ -209,9 +213,10 @@ example
 
 -- Proposition 3.1.17
 example
-    (A B C : MySet α) :
-    A ⊆ B → B ⊆ C → A ⊆ C := by
-  intro hAB hBC
+    (A B C : MySet α)
+    (hAB : A ⊆ B)
+    (hBC : B ⊆ C) :
+    A ⊆ C := by
   rw [MySet.subset] at hAB
   rw [MySet.subset] at hBC
   rw [MySet.subset]
@@ -221,9 +226,10 @@ example
   exact hBC x hxB
 
 example
-    (A B : MySet α) :
-    A ⊆ B → B ⊆ A → A = B := by
-  intro hAB hBA
+    (A B : MySet α)
+    (hAB : A ⊆ B)
+    (hBA : B ⊆ A) :
+    A = B := by
   rw [MySet.subset] at hAB
   rw [MySet.subset] at hBA
   rw [MySet.ext]
@@ -233,9 +239,10 @@ example
   · exact hBA x
 
 example
-    (A B C : MySet α) :
-    A ⊊ B → B ⊊ C → A ⊊ C := by
-  intro hAB hBC
+    (A B C : MySet α)
+    (hAB : A ⊊ B)
+    (hBC : B ⊊ C) :
+    A ⊊ C := by
   constructor
   · exact @MySet.subset_trans α A B C (And.left hAB) (And.left hBC)
   · intro hAC
@@ -898,11 +905,11 @@ example
     (∀ (x : α), x ∈ A →
       (∃ (y : β), P x y ∧ (∀ (z : β), P x z → y = z))) →
     (∃ (S : MySet β),
-      ∀ (y : β), y ∈ S ↔ ∃ (x : α), x ∈ A ∧ P x y)) :
-    ∀ (A : MySet α) (P : α → Prop),
+      ∀ (y : β), y ∈ S ↔ ∃ (x : α), x ∈ A ∧ P x y))
+    (A : MySet α)
+    (P : α → Prop) :
     ∃ (S : MySet α),
       ∀ (x : α), x ∈ S ↔ x ∈ A ∧ P x := by
-  intro A P
   by_cases h : ∃ (x : α), x ∈ A ∧ P x
   · rcases h with ⟨x', hx'A, hPx'⟩
     let P' : α → α → Prop :=
@@ -1032,8 +1039,12 @@ example
     ¬ (∃ (B : MySet α), B.nonempty ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
   constructor
   · intro h
-    have hh : ∀ (B : MySet α), B.nonempty → B ⊊ A → False :=
-      fun B hB hss => h ⟨B, hB, hss⟩
+    have hh
+        (B : MySet α)
+        (hB : B.nonempty)
+        (hss : B ⊊ A) :
+        False :=
+      h (Exists.intro B (And.intro hB hss))
     rcases @MySet.single_choice α A hA with ⟨x, hxA⟩
     use x
     have hnonempty : (⦃x⦄ : MySet α).nonempty := by

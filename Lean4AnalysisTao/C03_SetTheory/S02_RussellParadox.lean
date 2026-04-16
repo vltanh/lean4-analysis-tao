@@ -37,9 +37,10 @@ example :
   use Nat
   refine And.intro rfl ?_
   intro hself
-  have aux : ∀ (n : Nat),
-      (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) ∉ (⦃n⦄ : MySet Nat) := by
-    intro n hmem
+  have aux
+      (n : Nat)
+      (hmem : (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) ∈ (⦃n⦄ : MySet Nat)) :
+      False := by
     rw [MySet.mem_singleton_obj n (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat)] at hmem
     have htype : MySet Nat = Nat :=
       type_eq_of_heq hmem
@@ -61,8 +62,8 @@ end Axiom_3_9
 -- or is disjoint from A.
 axiom MySet.regularity
     {α : Type}
-    (A : MySet α) :
-    A.nonempty →
+    (A : MySet α)
+    (hA : A.nonempty) :
     (∃ (x : MySet α), x ∈ A ∧ MySet.disjoint x A)
     ∨ (∃ (ν : Type) (x : ν), x ∈ A ∧ ν ≠ MySet α)
 

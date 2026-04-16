@@ -42,14 +42,19 @@ theorem MySet.single_choice
     (h : A.nonempty) :
     ∃ (x : α), x ∈ A := by
   by_contra hxnA
-  have hxnA' : ∀ (x : α), ¬ (x ∈ A) :=
-    fun x hx => hxnA ⟨x, hx⟩
-  have hxnemp : ∀ (x : α), ¬x ∈ (∅ : MySet α) := by
-    intro x
-    exact MySet.not_mem_empty x
-  have hiff : ∀ (x : α), x ∈ A ↔ x ∈ (∅ : MySet α) := by
-    intro x
-    exact iff_of_false (hxnA' x) (hxnemp x)
+  have hxnA'
+      (x : α)
+      (hx : x ∈ A) :
+      False :=
+    hxnA ⟨x, hx⟩
+  have hxnemp
+      (x : α) :
+      ¬x ∈ (∅ : MySet α) :=
+    MySet.not_mem_empty x
+  have hiff
+      (x : α) :
+      x ∈ A ↔ x ∈ (∅ : MySet α) :=
+    iff_of_false (hxnA' x) (hxnemp x)
   have hAemp : A = ∅ :=
     Iff.mpr (MySet.ext A ∅) hiff
   exact h hAemp
@@ -82,8 +87,9 @@ axiom MySet.mem_pair
 -- Remarks 3.1.8
 example
     (a : α)
-    (S : MySet α) :
-    (∀ (y : α), y ∈ S ↔ y = a) → S = ⦃a⦄ := by
+    (S : MySet α)
+    (h : ∀ (y : α), y ∈ S ↔ y = a) :
+    S = ⦃a⦄ := by
   sorry
 
 
@@ -164,8 +170,9 @@ theorem MySet.union_comm
 theorem MySet.union_assoc
     (A B C : MySet α) :
     (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
-  have hiff : ∀ (x : α), x ∈ (A ∪ B) ∪ C ↔ x ∈ A ∪ (B ∪ C) := by
-    intro x
+  have hiff
+      (x : α) :
+      x ∈ (A ∪ B) ∪ C ↔ x ∈ A ∪ (B ∪ C) := by
     constructor
     · intro h
       rw [MySet.mem_union (A ∪ B) C x] at h
@@ -238,9 +245,10 @@ example
 
 -- Proposition 3.1.17
 theorem MySet.subset_trans
-    (A B C : MySet α) :
-    A ⊆ B → B ⊆ C → A ⊆ C := by
-  intro hAB hBC
+    (A B C : MySet α)
+    (hAB : A ⊆ B)
+    (hBC : B ⊆ C) :
+    A ⊆ C := by
   rw [MySet.subset] at hAB
   rw [MySet.subset] at hBC
   rw [MySet.subset]
@@ -252,13 +260,17 @@ theorem MySet.subset_trans
   exact hxC
 
 theorem MySet.subset_antisymm
-    (A B : MySet α) :
-    A ⊆ B → B ⊆ A → A = B := by
+    (A B : MySet α)
+    (hAB : A ⊆ B)
+    (hBA : B ⊆ A) :
+    A = B := by
   sorry
 
 theorem MySet.proper_ss_of_proper_ss_of_proper_ss
-    (A B C : MySet α) :
-    A ⊊ B → B ⊊ C → A ⊊ C := by
+    (A B C : MySet α)
+    (hAB : A ⊊ B)
+    (hBC : B ⊊ C) :
+    A ⊊ C := by
   sorry
 
 -- Axiom 3.6
@@ -466,10 +478,9 @@ def P
   y = x + (1 : MyNat)
 
 theorem hP
-    (x : MyNat) :
-    x ∈ A →
-    (∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y))) := by
-  intro hxA
+    (x : MyNat)
+    (hxA : x ∈ A) :
+    ∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y)) := by
   use (x + (1 : MyNat))
   constructor
   · rw [P]
@@ -496,10 +507,9 @@ def P
   y = (1 : MyNat)
 
 theorem hP
-    (x : MyNat) :
-    x ∈ A →
-    (∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y))) := by
-  intro hxA
+    (x : MyNat)
+    (hxA : x ∈ A) :
+    ∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y)) := by
   use 1
   constructor
   · rw [P]

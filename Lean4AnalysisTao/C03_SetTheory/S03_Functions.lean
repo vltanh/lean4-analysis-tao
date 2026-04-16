@@ -200,8 +200,9 @@ theorem MyFun.substitute
     (f : MyFun α β)
     (x x' : α)
     (hx : x ∈ f.domain)
-    (hx' : x' ∈ f.domain) :
-    x = x' → f.eval x hx = f.eval x' hx' := by
+    (hx' : x' ∈ f.domain)
+    (hxx' : x = x') :
+    f.eval x hx = f.eval x' hx' := by
   sorry
 
 -- Example 3.3.5
@@ -247,8 +248,10 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
     have hne' : (0 : MyNat) ≠ (1 : MyNat) :=
       fun heq => MyNat.succ_ne_zero (0 : MyNat) (Eq.symm heq)
     exact hne'
-  have hall : ∀ (a : α) (ha : a ∈ f.domain), f.eval a ha = (7 : MyNat) := by
-    intro a ha
+  have hall
+      (a : α)
+      (ha : a ∈ f.domain) :
+      f.eval a ha = (7 : MyNat) := by
     have h7 : (7 : MyNat) ∈ f.codomain := by
       dsimp only [f]
       exact MySet.Nat.is_nat (7 : MyNat)
@@ -363,10 +366,10 @@ noncomputable def empty_fun
 
 example
     (X : MySet β)
-    (g : MyFun α β) :
-    g.domain = ∅ → g.codomain = X →
+    (g : MyFun α β)
+    (hgdom : g.domain = ∅)
+    (hgcodom : g.codomain = X) :
     g ≃ empty_fun X := by
-  intro hgdom hgcodom
   dsimp only [MyFun.eq]
   constructor
   · dsimp only [empty_fun]
@@ -385,15 +388,19 @@ noncomputable def MyFun.comp
     (g : MyFun β γ)
     (hfg : f.codomain = g.domain) :
     MyFun α γ := by
-  have aux : ∀ (x : α) (hx : x ∈ f.domain), f.eval x hx ∈ g.domain := by
-    intro x hx
+  have aux
+      (x : α)
+      (hx : x ∈ f.domain) :
+      f.eval x hx ∈ g.domain := by
     rw [← hfg]
     exact MyFun.eval_codomain f x hx
   let gf : (x : α) → x ∈ f.domain → γ :=
     fun x h => g.eval (f.eval x h) (aux x h)
-  have aux' : ∀ (x : α) (hx : x ∈ f.domain), gf x hx ∈ g.codomain := by
-    intro x hx
-    exact MyFun.eval_codomain g (f.eval x hx) (aux x hx)
+  have aux'
+      (x : α)
+      (hx : x ∈ f.domain) :
+      gf x hx ∈ g.codomain :=
+    MyFun.eval_codomain g (f.eval x hx) (aux x hx)
   exact MyFun.from_fun f.domain g.codomain gf aux'
 
 theorem MyFun.comp.eval
@@ -640,11 +647,14 @@ namespace Example_3_3_21
 private def P : MyNat → MyNat → Prop :=
   fun x y => y = x ^ (𝟚 : MyNat)
 
-private theorem hP_unique : ∀ (x : MyNat), x ∈ MySet.Nat.set →
-    (∃ (y : MyNat), P x y ∧ (∀ (z : MyNat), P x z → z = y)) := by
-  intro x _hx
-  have huniq : ∀ (z : MyNat), P x z → z = x ^ (𝟚 : MyNat) := by
-    intro z hz
+private theorem hP_unique
+    (x : MyNat)
+    (_hx : x ∈ MySet.Nat.set) :
+    ∃ (y : MyNat), P x y ∧ (∀ (z : MyNat), P x z → z = y) := by
+  have huniq
+      (z : MyNat)
+      (hz : P x z) :
+      z = x ^ (𝟚 : MyNat) := by
     dsimp only [P] at hz
     exact hz
   exact Exists.intro (x ^ (𝟚 : MyNat)) (And.intro rfl huniq)
@@ -780,8 +790,10 @@ noncomputable def MyFun.inv
       (fun x => ∃ (hx : x ∈ f.domain), f.eval x hx = y ∧
         ∀ (x' : α) (hx' : x' ∈ f.domain), f.eval x' hx' = y → x = x')
       (MyFun.exists_unique_of_bijective f hf y hy)
-  let aux : ∀ (y : β) (hy : y ∈ X), finv y hy ∈ Y := by
-    intro y hy
+  let aux
+      (y : β)
+      (hy : y ∈ X) :
+      finv y hy ∈ Y := by
     dsimp only [Y]
     dsimp only [finv]
     rcases MyClassical.choose_spec
@@ -802,36 +814,45 @@ example
   sorry
 
 example
-    (f g : MyFun α β) :
-    (f ≃ g) → (g ≃ f) := by
+    (f g : MyFun α β)
+    (hfg : f ≃ g) :
+    g ≃ f := by
   sorry
 
 example
-    (f g h : MyFun α β) :
-    (f ≃ g) → (g ≃ h) → (f ≃ h) := by
+    (f g h : MyFun α β)
+    (hfg : f ≃ g)
+    (hgh : g ≃ h) :
+    f ≃ h := by
   sorry
 
 example
     (f f' : MyFun α β)
     (g g' : MyFun β γ)
     (hfg : f.codomain = g.domain)
-    (hf'g' : f'.codomain = g'.domain) :
-    (f ≃ f') → (g ≃ g') → (f.comp g hfg ≃ f'.comp g' hf'g') := by
+    (hf'g' : f'.codomain = g'.domain)
+    (hff' : f ≃ f')
+    (hgg' : g ≃ g') :
+    f.comp g hfg ≃ f'.comp g' hf'g' := by
   sorry
 
 -- Exercise 3.3.2
 example
     (f : MyFun α β)
     (g : MyFun β γ)
-    (hfg : f.codomain = g.domain) :
-    f.isInjective → g.isInjective → (f.comp g hfg).isInjective := by
+    (hfg : f.codomain = g.domain)
+    (hf : f.isInjective)
+    (hg : g.isInjective) :
+    (f.comp g hfg).isInjective := by
   sorry
 
 example
     (f : MyFun α β)
     (g : MyFun β γ)
-    (hfg : f.codomain = g.domain) :
-    f.isSurjective → g.isSurjective → (f.comp g hfg).isSurjective := by
+    (hfg : f.codomain = g.domain)
+    (hf : f.isSurjective)
+    (hg : g.isSurjective) :
+    (f.comp g hfg).isSurjective := by
   sorry
 
 -- Exercise 3.3.3
@@ -842,8 +863,10 @@ example
     (f f' : MyFun α β)
     (g : MyFun β γ)
     (hfg : f.codomain = g.domain)
-    (hf'g : f'.codomain = g.domain) :
-    (f.comp g hfg ≃ f'.comp g hf'g) → g.isInjective → f ≃ f' := by
+    (hf'g : f'.codomain = g.domain)
+    (hcomp : f.comp g hfg ≃ f'.comp g hf'g)
+    (hg : g.isInjective) :
+    f ≃ f' := by
   sorry
 
 -- TODO: Is the same statement true if g is not injective?
@@ -852,8 +875,10 @@ example
     (f : MyFun α β)
     (g g' : MyFun β γ)
     (hfg : f.codomain = g.domain)
-    (hfg' : f.codomain = g'.domain) :
-    (f.comp g hfg ≃ f.comp g' hfg') → f.isSurjective → g ≃ g' := by
+    (hfg' : f.codomain = g'.domain)
+    (hcomp : f.comp g hfg ≃ f.comp g' hfg')
+    (hf : f.isSurjective) :
+    g ≃ g' := by
   sorry
 
 -- TODO: Is the same statement true if f is not surjective?
@@ -862,8 +887,9 @@ example
 example
     (f : MyFun α β)
     (g : MyFun β γ)
-    (hfg : f.codomain = g.domain) :
-    (f.comp g hfg).isInjective → f.isInjective := by
+    (hfg : f.codomain = g.domain)
+    (hcomp : (f.comp g hfg).isInjective) :
+    f.isInjective := by
   sorry
 
 -- TODO: Is it true that g must also be injective?
@@ -871,8 +897,9 @@ example
 example
     (f : MyFun α β)
     (g : MyFun β γ)
-    (hfg : f.codomain = g.domain) :
-    (f.comp g hfg).isSurjective → g.isSurjective := by
+    (hfg : f.codomain = g.domain)
+    (hcomp : (f.comp g hfg).isSurjective) :
+    g.isSurjective := by
   sorry
 
 -- TODO: Is it true that f must also be surjective?
@@ -933,17 +960,22 @@ private def ι'
     MyFun α α := by
   let f : α → α :=
     fun x => x
-  have h : ∀ (x : α) (hx : x ∈ X), f x ∈ Y := by
-    intro x hx
-    exact hXY x hx
+  have h
+      (x : α)
+      (hx : x ∈ X) :
+      f x ∈ Y :=
+    hXY x hx
   exact MyFun.from_fun X Y (fun x _ => f x) h
 
 private theorem aux'
     {α : Type}
     (X : MySet α) :
     X ⊆ X := by
-  have h : ∀ (x : α), x ∈ X → x ∈ X :=
-    fun x hx => hx
+  have h
+      (x : α)
+      (hx : x ∈ X) :
+      x ∈ X :=
+    hx
   exact h
 
 private def ι_id'

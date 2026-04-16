@@ -16,9 +16,10 @@ example
     n * 𝟘 = 𝟘 := by
   have hbase : 𝟘 * 𝟘 = 𝟘 := by
     rw [MyNat.zero_mul 𝟘]
-  have hind : ∀ (n : MyNat),
-    n * 𝟘 = 𝟘 → n++ * 𝟘 = 𝟘 := by
-    intro n hn
+  have hind
+      (n : MyNat)
+      (hn : n * 𝟘 = 𝟘) :
+      n++ * 𝟘 = 𝟘 := by
     rw [MyNat.succ_mul n 𝟘]
     rw [hn]
     rw [MyNat.add_zero 𝟘]
@@ -27,16 +28,17 @@ example
 example
     (n m : MyNat) :
     n * m++ = n * m + n := by
-  have hbase : ∀ (m : MyNat), 𝟘 * m++ = 𝟘 * m + 𝟘 := by
-    intro m
+  have hbase
+      (m : MyNat) :
+      𝟘 * m++ = 𝟘 * m + 𝟘 := by
     rw [MyNat.zero_mul m]
     rw [MyNat.zero_mul (m++)]
     rw [MyNat.zero_add 𝟘]
-  have hind : ∀ (n : MyNat),
-    (∀ (m : MyNat), n * m++ = n * m + n) →
-    ∀ (m : MyNat), n++ * m++ = n++ * m + n++ := by
-    intro n hn
-    intro m
+  have hind
+      (n : MyNat)
+      (hn : ∀ (m : MyNat), n * m++ = n * m + n)
+      (m : MyNat) :
+      n++ * m++ = n++ * m + n++ := by
     rw [MyNat.succ_mul n m]
     rw [MyNat.succ_mul n (m++)]
     rw [hn m]
@@ -50,15 +52,16 @@ example
 example
     (n m : MyNat) :
     n * m = m * n := by
-  have hbase : ∀ (m : MyNat), 𝟘 * m = m * 𝟘 := by
-    intro m
+  have hbase
+      (m : MyNat) :
+      𝟘 * m = m * 𝟘 := by
     rw [MyNat.zero_mul m]
     rw [MyNat.mul_zero m]
-  have hind : ∀ (n : MyNat),
-    (∀ (m : MyNat), n * m = m * n) →
-    ∀ (m : MyNat), n++ * m = m * n++ := by
-    intro n hn
-    intro m
+  have hind
+      (n : MyNat)
+      (hn : ∀ (m : MyNat), n * m = m * n)
+      (m : MyNat) :
+      n++ * m = m * n++ := by
     rw [MyNat.succ_mul n m]
     rw [MyNat.mul_succ m n]
     rw [hn m]
@@ -70,27 +73,32 @@ example
     (hn : n.is_positive)
     (hm : m.is_positive) :
     (n * m).is_positive := by
-  have hall : ∀ (n : MyNat), n.is_positive →
-    ∀ (m : MyNat), m.is_positive → (n * m).is_positive := by
-    have hbase : 𝟘.is_positive →
-      ∀ (m : MyNat), m.is_positive → (𝟘 * m).is_positive := by
-      intro h
-      intro m hm
+  have hall
+      (n : MyNat)
+      (hn : n.is_positive)
+      (m : MyNat)
+      (hm : m.is_positive) :
+      (n * m).is_positive := by
+    have hbase
+        (h : 𝟘.is_positive)
+        (m : MyNat)
+        (hm : m.is_positive) :
+        (𝟘 * m).is_positive := by
       rw [MyNat.zero_mul m]
       exact h
-    have hind : ∀ (n : MyNat),
-      (n.is_positive →
-        ∀ (m : MyNat), m.is_positive → (n * m).is_positive) →
-      ((n++).is_positive →
-        ∀ (m : MyNat), m.is_positive → (n++ * m).is_positive) := by
-      intro n hn
-      intro hnspos
-      intro m hmpos
+    have hind
+        (n : MyNat)
+        (hn : n.is_positive →
+          ∀ (m : MyNat), m.is_positive → (n * m).is_positive)
+        (hnspos : (n++).is_positive)
+        (m : MyNat)
+        (hmpos : m.is_positive) :
+        (n++ * m).is_positive := by
       rw [MyNat.succ_mul n m]
       exact MyNat.pos_add' m hmpos (n * m)
     exact MyNat.induction
       (fun n => n.is_positive →
-        ∀ (m : MyNat), m.is_positive → (n * m).is_positive) hbase hind
+        ∀ (m : MyNat), m.is_positive → (n * m).is_positive) hbase hind n hn m hm
   exact hall n hn m hm
 
 example
@@ -117,16 +125,17 @@ example
 example
     (a b c : MyNat) :
     (a * b) * c = a * (b * c) := by
-  have hbase : ∀ (b c : MyNat), (𝟘 * b) * c = 𝟘 * (b * c) := by
-    intro b c
+  have hbase
+      (b c : MyNat) :
+      (𝟘 * b) * c = 𝟘 * (b * c) := by
     rw [MyNat.zero_mul b]
     rw [MyNat.zero_mul (b * c)]
     rw [MyNat.zero_mul c]
-  have hind : ∀ (a : MyNat),
-    (∀ (b c : MyNat), (a * b) * c = a * (b * c)) →
-    ∀ (b c : MyNat), (a++ * b) * c = a++ * (b * c) := by
-    intro a ha
-    intro b c
+  have hind
+      (a : MyNat)
+      (ha : ∀ (b c : MyNat), (a * b) * c = a * (b * c))
+      (b c : MyNat) :
+      (a++ * b) * c = a++ * (b * c) := by
     rw [MyNat.succ_mul a b]
     rw [MyNat.mul_distrib' c (a * b) b]
     rw [MyNat.succ_mul a (b * c)]
@@ -139,8 +148,9 @@ example
     (q : MyNat)
     (hqpos : q.is_positive) :
     ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r := by
-  have hall : ∀ (n : MyNat),
-    ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r := by
+  have hall
+      (n : MyNat) :
+      ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r := by
     have hbase : ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ 𝟘 = m * q + r := by
       use 𝟘, 𝟘
       constructor
@@ -156,10 +166,10 @@ example
           · exact hqpos
         · rw [MyNat.zero_mul q]
           rw [MyNat.zero_add 𝟘]
-    have hind : ∀ (n : MyNat),
-      (∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r) →
-      ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n++ = m * q + r := by
-      intro n hn
+    have hind
+        (n : MyNat)
+        (hn : ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r) :
+        ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n++ = m * q + r := by
       rcases hn with ⟨m, r, hr, hrq, h⟩
       rcases Iff.mp (MyNat.lt_iff_eq_add r q) hrq with ⟨d, hdpos, h'⟩
       by_cases h'' : d = 𝟙
@@ -222,7 +232,7 @@ example
           · rw [MyNat.add_succ (m * q) r]
             rw [h]
     exact MyNat.induction
-      (fun n => ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r) hbase hind
+      (fun n => ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r) hbase hind n
   exact hall n
 
 section Exercises

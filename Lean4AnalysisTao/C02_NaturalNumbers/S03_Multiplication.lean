@@ -45,21 +45,23 @@ theorem MyNat.mul_eq_zero
 theorem MyNat.mul_distrib
     (a b c : MyNat) :
     a * (b + c) = a * b + a * c := by
-  have hall : ∀ (c : MyNat), a * (b + c) = a * b + a * c := by
+  have hall
+      (c : MyNat) :
+      a * (b + c) = a * b + a * c := by
     have hbase : a * (b + 𝟘) = a * b + a * 𝟘 := by
       rw [MyNat.add_zero b]
       rw [MyNat.mul_zero a]
       rw [MyNat.add_zero (a * b)]
-    have hind : ∀ (c : MyNat),
-      a * (b + c) = a * b + a * c →
-      a * (b + c++) = a * b + a * (c++) := by
-      intro c hc
+    have hind
+        (c : MyNat)
+        (hc : a * (b + c) = a * b + a * c) :
+        a * (b + c++) = a * b + a * (c++) := by
       rw [MyNat.add_succ b c]
       rw [MyNat.mul_succ a (b + c)]
       rw [MyNat.mul_succ a c]
       rw [← MyNat.add_assoc (a * b) (a * c) a]
       rw [← hc]
-    exact MyNat.induction (fun c => a * (b + c) = a * b + a * c) hbase hind
+    exact MyNat.induction (fun c => a * (b + c) = a * b + a * c) hbase hind c
   exact hall c
 
 theorem MyNat.mul_distrib'
