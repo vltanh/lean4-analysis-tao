@@ -104,7 +104,7 @@ def MyNat.is_positive
 -- Proposition 2.2.8
 theorem MyNat.pos_add
     (a : MyNat)
-    (ha : (MyNat.is_positive a))
+    (ha : MyNat.is_positive a)
     (b : MyNat) :
     (MyNat.is_positive (a + b)) := by
   have hall
@@ -125,7 +125,7 @@ theorem MyNat.pos_add
 
 theorem MyNat.pos_add'
     (a : MyNat)
-    (ha : (MyNat.is_positive a))
+    (ha : MyNat.is_positive a)
     (b : MyNat) :
     (MyNat.is_positive (b + a)) := by
   rw [MyNat.add_comm b a]
@@ -147,7 +147,7 @@ theorem MyNat.zero_zero_of_add_zero
 -- Lemma 2.2.10
 theorem MyNat.unique_pred_of_pos
     (a : MyNat)
-    (ha : (MyNat.is_positive a)) :
+    (ha : MyNat.is_positive a) :
     ∃ (b : MyNat), b++ = a ∧ (∀ (c : MyNat), c++ = a → b = c) := by
   sorry
 
@@ -206,7 +206,7 @@ theorem MyNat.lt_iff_succ_le
 -- (f)
 theorem MyNat.lt_iff_eq_add
     (a b : MyNat) :
-    a < b ↔ ∃ (d : MyNat), (MyNat.is_positive d) ∧ b = a + d := by
+    a < b ↔ ∃ (d : MyNat), MyNat.is_positive d ∧ b = a + d := by
   sorry
 
 -- Proposition 2.2.13

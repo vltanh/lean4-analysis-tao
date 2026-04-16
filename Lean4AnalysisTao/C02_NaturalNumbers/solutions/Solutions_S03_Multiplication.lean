@@ -70,35 +70,35 @@ example
 -- Lemma 2.3.3
 example
     (n m : MyNat)
-    (hn : (MyNat.is_positive n))
-    (hm : (MyNat.is_positive m)) :
+    (hn : MyNat.is_positive n)
+    (hm : MyNat.is_positive m) :
     (MyNat.is_positive (n * m)) := by
   have hall
       (n : MyNat)
-      (hn : (MyNat.is_positive n))
+      (hn : MyNat.is_positive n)
       (m : MyNat)
-      (hm : (MyNat.is_positive m)) :
+      (hm : MyNat.is_positive m) :
       (MyNat.is_positive (n * m)) := by
     have hbase
         (h : 𝟘.is_positive)
         (m : MyNat)
-        (hm : (MyNat.is_positive m)) :
+        (hm : MyNat.is_positive m) :
         (MyNat.is_positive (𝟘 * m)) := by
       rw [MyNat.zero_mul m]
       exact h
     have hind
         (n : MyNat)
-        (hn : (MyNat.is_positive n) →
-          ∀ (m : MyNat), (MyNat.is_positive m) → (MyNat.is_positive (n * m)))
+        (hn : MyNat.is_positive n →
+          ∀ (m : MyNat), MyNat.is_positive m → (MyNat.is_positive (n * m)))
         (hnspos : (MyNat.is_positive (n++)))
         (m : MyNat)
-        (hmpos : (MyNat.is_positive m)) :
+        (hmpos : MyNat.is_positive m) :
         (MyNat.is_positive (n++ * m)) := by
       rw [MyNat.succ_mul n m]
       exact MyNat.pos_add' m hmpos (n * m)
     exact MyNat.induction
-      (fun n => (MyNat.is_positive n) →
-        ∀ (m : MyNat), (MyNat.is_positive m) → (MyNat.is_positive (n * m))) hbase hind n hn m hm
+      (fun n => MyNat.is_positive n →
+        ∀ (m : MyNat), MyNat.is_positive m → (MyNat.is_positive (n * m))) hbase hind n hn m hm
   exact hall n hn m hm
 
 example
@@ -146,7 +146,7 @@ example
 example
     (n : MyNat)
     (q : MyNat)
-    (hqpos : (MyNat.is_positive q)) :
+    (hqpos : MyNat.is_positive q) :
     ∃ (m r : MyNat), 𝟘 ≤ r ∧ r < q ∧ n = m * q + r := by
   have hall
       (n : MyNat) :
@@ -212,7 +212,7 @@ example
               rw [← MyNat.add_succ r r']
               rw [hr']
               exact h'
-            · have hexists : ∃ (d : MyNat), (MyNat.is_positive d) ∧ q = (r++) + d := by
+            · have hexists : ∃ (d : MyNat), MyNat.is_positive d ∧ q = (r++) + d := by
                 rcases MyNat.unique_pred_of_pos d hdpos with ⟨r', hr', huniq⟩
                 use r'
                 rw [MyNat.succ_add r r']

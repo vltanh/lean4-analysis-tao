@@ -1074,13 +1074,13 @@ example :
 -- Exercise 3.1.13
 example
     (A : MySet α)
-    (hA : (MySet.nonempty A)) :
-    ¬ (∃ (B : MySet α), (MySet.nonempty B) ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
+    (hA : MySet.nonempty A) :
+    ¬ (∃ (B : MySet α), MySet.nonempty B ∧ B ⊊ A) ↔ (∃ (x : α), A = ⦃x⦄) := by
   constructor
   · intro h
     have hh
         (B : MySet α)
-        (hB : (MySet.nonempty B))
+        (hB : MySet.nonempty B)
         (hss : B ⊊ A) :
         False :=
       h (Exists.intro B (And.intro hB hss))

@@ -55,7 +55,8 @@ theorem lt_of_lt_of_le
 theorem zero_lt_succ
     (n : MyNat) :
     𝟘 < n++ := by
-  dsimp only [MyNat.lt, MyNat.gt]
+  dsimp only [MyNat.lt]
+  dsimp only [MyNat.gt]
   constructor
   · refine Exists.intro (n++) ?_
     rw [MyNat.zero_add (n++)]
