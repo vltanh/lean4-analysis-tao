@@ -304,10 +304,8 @@ theorem MyNat.strong_induction
     (m₀ : MyNat)
     (P : MyNat → Prop)
     (hind : ∀ (m : MyNat), m ≥ m₀ →
-    ((∀ (m' : MyNat), m₀ ≤ m' → m' < m → P m') → P m))
-    (m : MyNat)
-    (hm : m ≥ m₀) :
-    P m := by
+    ((∀ (m' : MyNat), m₀ ≤ m' → m' < m → P m') → P m)) :
+    ∀ (m : MyNat), m ≥ m₀ → P m := by
   sorry
 
 section Exercises
@@ -317,10 +315,8 @@ example
     (n : MyNat)
     (P : MyNat → Prop)
     (hbase : P n)
-    (hind : ∀ (m : MyNat), P m++ → P m)
-    (m : MyNat)
-    (hmn : m ≤ n) :
-    P m := by
+    (hind : ∀ (m : MyNat), P m++ → P m) :
+    ∀ (m : MyNat), m ≤ n → P m := by
   sorry
 
 -- Exercise 2.2.7
@@ -328,10 +324,8 @@ example
     (n : MyNat)
     (P : MyNat → Prop)
     (hind : ∀ (m : MyNat), P m → P m++)
-    (hn : P n)
-    (m : MyNat)
-    (hmn : m ≥ n) :
-    P m := by
+    (hn : P n) :
+    ∀ (m : MyNat), m ≥ n → P m := by
   sorry
 
 end Exercises

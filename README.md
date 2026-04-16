@@ -71,7 +71,7 @@ Proofs decompose into a small uniform set of discrete named inference steps, so 
 Every binder, value, and identifier is spelled out; nothing is inferred silently.
 
 - Only `{α : Type}` / `{α : Sort u}` stay implicit. All other arguments become explicit `(x : T)` binders; `[Inst]` stays in bracket form.
-- Lift leading `∀` and `→` greedily into binders on every named binding (`axiom` / `theorem` / `def` / `lemma` / `example` / `instance` / `have` / `let`). `∀ x, P x → Q x` becomes `(x : T) (hp : P x) : Q x`.
+- Lift leading `∀` and `→` into binders on every named binding (`axiom` / `theorem` / `def` / `lemma` / `example` / `instance` / `have` / `let`): `∀ x, P x → Q x` becomes `(x : T) (hp : P x) : Q x`. Exception: keep `∀` in the conclusion of higher-order principles whose consumers unify against the `∀`-shape (induction schemes, choice, pointwise-equality lemmas fed to `rw` / `congrArg`).
 - Always annotate `have` with a type: `have hfoo : T := …`.
 - No `_` in applied or type-hole positions: spell `congrArg P h`, `Exists.intro a h`, `Eq.trans h₁ h₂`. Reach for `@` only when unification genuinely can't resolve a type implicit; prefer dropping `@` and passing arguments positionally. `_` is allowed only to discard names in binding patterns; `?_` only as a `refine` hole.
 - Numeric literals carry type ascriptions (`(3 : MyNat)`).

@@ -31,6 +31,5 @@ axiom MyNat.succ_inj'
 axiom MyNat.induction
     (P : MyNat → Prop)
     (hbase : P 𝟘)
-    (hind : ∀ (n : MyNat), P n → P n++)
-    (n : MyNat) :
-    P n
+    (hind : ∀ (n : MyNat), P n → P n++) :
+    ∀ (n : MyNat), P n

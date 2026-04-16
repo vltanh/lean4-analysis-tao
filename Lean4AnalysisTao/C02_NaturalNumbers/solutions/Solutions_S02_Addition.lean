@@ -315,10 +315,9 @@ example
     (n : MyNat)
     (P : MyNat → Prop)
     (hbase : P n)
-    (hind : ∀ (m : MyNat), P m++ → P m)
-    (m : MyNat)
-    (hmn : m ≤ n) :
-    P m := by
+    (hind : ∀ (m : MyNat), P m++ → P m) :
+    ∀ (m : MyNat), m ≤ n → P m := by
+  intro m hmn
   have hmain
       (n : MyNat)
       (hpn : P n)
@@ -378,10 +377,9 @@ example
     (n : MyNat)
     (P : MyNat → Prop)
     (hind : ∀ (m : MyNat), P m → P m++)
-    (hn : P n)
-    (m : MyNat)
-    (hmn : m ≥ n) :
-    P m := by
+    (hn : P n) :
+    ∀ (m : MyNat), m ≥ n → P m := by
+  intro m hmn
   have hmain
       (m : MyNat)
       (hmn : m ≥ n) :
