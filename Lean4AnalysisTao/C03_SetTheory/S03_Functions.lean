@@ -147,7 +147,7 @@ end Example_3_3_3_a
 namespace Example_3_3_3_b
 
 noncomputable def X : MySet MyNat :=
-  MySet.Nat.set \ ⦃(0 : MyNat)⦄
+  MySet.Nat.set \ ⦃𝟘⦄
 
 noncomputable def Y : MySet MyNat :=
   MySet.Nat.set
@@ -161,8 +161,8 @@ noncomputable def f : MyFun MyNat MyNat where
     dsimp only [X] at hx
     rw [MySet.diff] at hx
     rw [MySet.mem_spec MySet.Nat.set
-      (fun z => ¬ (z ∈ (⦃(0 : MyNat)⦄ : MySet MyNat))) x] at hx
-    rw [MySet.mem_singleton (0 : MyNat) x] at hx
+      (fun z => ¬ (z ∈ (⦃𝟘⦄ : MySet MyNat))) x] at hx
+    rw [MySet.mem_singleton 𝟘 x] at hx
     have hxpos :
         (MyNat.is_positive (x : MyNat)) :=
       fun heq => And.right hx heq
@@ -177,28 +177,28 @@ noncomputable def f : MyFun MyNat MyNat where
         exact huniq y' hP
 
 theorem aux :
-    (4 : MyNat) ∈ X := by
+    𝟜 ∈ X := by
   dsimp only [X]
   rw [MySet.diff]
   rw [MySet.mem_spec MySet.Nat.set
-    (fun z => ¬ (z ∈ (⦃(0 : MyNat)⦄ : MySet MyNat))) (4 : MyNat)]
+    (fun z => ¬ (z ∈ (⦃𝟘⦄ : MySet MyNat))) 𝟜]
   constructor
-  · exact MySet.Nat.is_nat (4 : MyNat)
-  · rw [MySet.mem_singleton (0 : MyNat) (4 : MyNat)]
+  · exact MySet.Nat.is_nat 𝟜
+  · rw [MySet.mem_singleton 𝟘 𝟜]
     intro h4eq0
-    exact MyNat.succ_ne_zero (3 : MyNat) h4eq0
+    exact MyNat.succ_ne_zero 𝟛 h4eq0
 
 example :
-    MyFun.eval f (4 : MyNat) aux = (3 : MyNat) := by
+    MyFun.eval f 𝟜 aux = 𝟛 := by
   have h :
-      (3 : MyNat) ∈ Y := by
+      𝟛 ∈ Y := by
     dsimp only [Y]
-    exact MySet.Nat.is_nat (3 : MyNat)
+    exact MySet.Nat.is_nat 𝟛
   have hprop :
-      MyFun.prop f (4 : MyNat) (3 : MyNat) := by
+      MyFun.prop f 𝟜 𝟛 := by
     dsimp only [f]
     rfl
-  rw [← MyFun.def f (4 : MyNat) (3 : MyNat) aux h] at hprop
+  rw [← MyFun.def f 𝟜 𝟛 aux h] at hprop
   exact Eq.symm hprop
 
 end Example_3_3_3_b
@@ -227,12 +227,12 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
     {
     domain := MySet.Nat.set
     codomain := MySet.Nat.set
-    prop := fun _x y => y = (7 : MyNat)
+    prop := fun _x y => y = 𝟟
     isValidProp := by
       intro x _hx
-      use (7 : MyNat)
+      use 𝟟
       constructor
-      · exact MySet.Nat.is_nat (7 : MyNat)
+      · exact MySet.Nat.is_nat 𝟟
       · constructor
         · dsimp only [MyFun.prop]
         · intro y' _hy' hP
@@ -240,18 +240,18 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
   }
   let x :
       α :=
-    (0 : MyNat)
+    𝟘
   let x' : α :=
-    (1 : MyNat)
+    𝟙
   let hx :
       x ∈ MyFun.domain f := by
     dsimp only [x]
     dsimp only [f]
-    exact MySet.Nat.is_nat (0 : MyNat)
+    exact MySet.Nat.is_nat 𝟘
   let hx' : x' ∈ MyFun.domain f := by
     dsimp only [x']
     dsimp only [f]
-    exact MySet.Nat.is_nat (1 : MyNat)
+    exact MySet.Nat.is_nat 𝟙
   use α, β
   use f
   use x, x', hx, hx'
@@ -260,21 +260,21 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
       x ≠ x' := by
     dsimp only [x]
     dsimp only [x']
-    have hne' : (0 : MyNat) ≠ (1 : MyNat) :=
-      fun heq => MyNat.succ_ne_zero (0 : MyNat) (Eq.symm heq)
+    have hne' : 𝟘 ≠ 𝟙 :=
+      fun heq => MyNat.succ_ne_zero 𝟘 (Eq.symm heq)
     exact hne'
   have hall
       (a : α)
       (ha : a ∈ MyFun.domain f) :
-      MyFun.eval f a ha = (7 : MyNat) := by
+      MyFun.eval f a ha = 𝟟 := by
     have h7 :
-        (7 : MyNat) ∈ MyFun.codomain f := by
+        𝟟 ∈ MyFun.codomain f := by
       dsimp only [f]
-      exact MySet.Nat.is_nat (7 : MyNat)
+      exact MySet.Nat.is_nat 𝟟
     have hPa :
-        MyFun.prop f a (7 : MyNat) := by
+        MyFun.prop f a 𝟟 := by
       dsimp only [f]
-    rw [← MyFun.def f a (7 : MyNat) ha h7] at hPa
+    rw [← MyFun.def f a 𝟟 ha h7] at hPa
     exact Eq.symm hPa
   have heval :
       MyFun.eval f x hx = MyFun.eval f x' hx' := by
@@ -310,7 +310,7 @@ theorem aux
   exact MySet.Nat.is_nat (f x)
 
 private noncomputable def _f_fn : (x : MyNat) → x ∈ X → MyNat :=
-  fun n _h => n ^ 𝟚 + (𝟚 : MyNat) * n + (1 : MyNat)
+  fun n _h => n ^ 𝟚 + 𝟚 * n + 𝟙
 
 private theorem _f_mem
     (x : MyNat)
@@ -322,7 +322,7 @@ noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun X Y _f_fn _f_mem
 
 private noncomputable def _g_fn : (x : MyNat) → x ∈ X → MyNat :=
-  fun n _h => (n + (1 : MyNat)) ^ 𝟚
+  fun n _h => (n + 𝟙) ^ 𝟚
 
 private theorem _g_mem
     (x : MyNat)
@@ -335,25 +335,16 @@ noncomputable def g : MyFun MyNat MyNat :=
 
 private theorem sq_eq
     (n : MyNat) :
-    n ^ 𝟚 + (𝟚 : MyNat) * n + (1 : MyNat) = (n + (1 : MyNat)) ^ 𝟚 := by
-  have hone :
-      (1 : MyNat) = 𝟘++ :=
-    rfl
-  rw [hone]
-  rw [MyNat.add_succ n 𝟘]
-  rw [MyNat.add_zero n]
-  rw [MyNat.exp_two n]
-  rw [MyNat.exp_two (n++)]
-  rw [MyNat.succ_mul (𝟘++) n]
-  rw [MyNat.succ_mul 𝟘 n]
-  rw [MyNat.zero_mul n]
-  rw [MyNat.zero_add n]
-  rw [MyNat.succ_mul n (n++)]
-  rw [MyNat.mul_succ n n]
-  rw [MyNat.add_succ (n * n + (n + n)) 𝟘]
-  rw [MyNat.add_zero (n * n + (n + n))]
-  rw [MyNat.add_succ (n * n + n) n]
-  rw [MyNat.add_assoc (n * n) n n]
+    n ^ 𝟚 + 𝟚 * n + 𝟙 = (n + 𝟙) ^ 𝟚 := by
+  rw [Exercise_2_3_4 n 𝟙]
+  dsimp only [MyNat.one]
+  rw [MyNat.mul_succ (𝟚 * n) 𝟘]
+  rw [MyNat.mul_zero (𝟚 * n)]
+  rw [MyNat.zero_add (𝟚 * n)]
+  rw [MyNat.exp_two (𝟘++)]
+  rw [MyNat.succ_mul 𝟘 (𝟘++)]
+  rw [MyNat.zero_mul (𝟘++)]
+  rw [MyNat.zero_add (𝟘++)]
 
 example :
     f ≃ g := by
@@ -461,10 +452,10 @@ theorem MyFun.comp.eval.codomain
 namespace Example_3_3_14
 
 noncomputable def _f : MyNat → MyNat :=
-  fun n => (2 : MyNat) * n
+  fun n => 𝟚 * n
 
 noncomputable def _g : MyNat → MyNat :=
-  fun n => n + (3 : MyNat)
+  fun n => n + 𝟛
 
 noncomputable def X : MySet MyNat :=
   MySet.Nat.set
@@ -495,7 +486,7 @@ noncomputable def gf : MyFun MyNat MyNat :=
 
 example
     (x : MyNat) :
-    MyFun.eval gf x (MySet.Nat.is_nat x) = (2 : MyNat) * x + (3 : MyNat) := by
+    MyFun.eval gf x (MySet.Nat.is_nat x) = 𝟚 * x + 𝟛 := by
   dsimp only [gf]
   have hfxg :
       MyFun.eval f x (MySet.Nat.is_nat x) ∈ MyFun.domain g :=
@@ -515,7 +506,7 @@ noncomputable def fg : MyFun MyNat MyNat :=
 
 example
     (x : MyNat) :
-    MyFun.eval fg x (MySet.Nat.is_nat x) = (2 : MyNat) * x + (6 : MyNat) := by
+    MyFun.eval fg x (MySet.Nat.is_nat x) = 𝟚 * x + 𝟞 := by
   dsimp only [fg]
   have hgxf :
       MyFun.eval g x (MySet.Nat.is_nat x) ∈ MyFun.domain f :=
@@ -529,17 +520,17 @@ example
     x (MySet.Nat.is_nat x)]
   dsimp only [_f]
   dsimp only [_g]
-  rw [MyNat.mul_distrib (2 : MyNat) x (3 : MyNat)]
+  rw [MyNat.mul_distrib 𝟚 x 𝟛]
   have h23 :
-      (2 : MyNat) * (3 : MyNat) = (6 : MyNat) := by
+      𝟚 * 𝟛 = 𝟞 := by
     have h2 :
-        (2 : MyNat) = (𝟘++)++ :=
+        𝟚 = (𝟘++)++ :=
       rfl
     have h3 :
-        (3 : MyNat) = ((𝟘++)++)++ :=
+        𝟛 = ((𝟘++)++)++ :=
       rfl
     have h6 :
-        (6 : MyNat) = ((((((𝟘++)++)++)++)++)++) :=
+        𝟞 = ((((((𝟘++)++)++)++)++)++) :=
       rfl
     rw [h2]
     rw [h3]
@@ -651,7 +642,7 @@ theorem MyFun.isInjective_iff
 namespace Example_3_3_18
 
 private noncomputable def _f_fn : (x : MyNat) → x ∈ MySet.Nat.set → MyNat :=
-  fun n _h => n ^ (𝟚 : MyNat)
+  fun n _h => n ^ 𝟚
 
 private theorem _f_mem
     (x : MyNat)
@@ -680,7 +671,7 @@ def MyFun.isSurjective
 namespace Example_3_3_21
 
 private def P : MyNat → MyNat → Prop :=
-  fun x y => y = x ^ (𝟚 : MyNat)
+  fun x y => y = x ^ 𝟚
 
 private theorem hP_unique
     (x : MyNat)
@@ -689,10 +680,10 @@ private theorem hP_unique
   have huniq
       (z : MyNat)
       (hz : P x z) :
-      z = x ^ (𝟚 : MyNat) := by
+      z = x ^ 𝟚 := by
     dsimp only [P] at hz
     exact hz
-  exact Exists.intro (x ^ (𝟚 : MyNat)) (And.intro rfl huniq)
+  exact Exists.intro (x ^ 𝟚) (And.intro rfl huniq)
 
 noncomputable def Y : MySet MyNat :=
   ⦃ MySet.Nat.set ← hP_unique ⦄
@@ -700,13 +691,13 @@ noncomputable def Y : MySet MyNat :=
 private theorem _f_mem
     (x : MyNat)
     (hx : x ∈ MySet.Nat.set) :
-    x ^ (𝟚 : MyNat) ∈ Y := by
+    x ^ 𝟚 ∈ Y := by
   dsimp only [Y]
-  rw [MySet.mem_replace MySet.Nat.set P hP_unique (x ^ (𝟚 : MyNat))]
+  rw [MySet.mem_replace MySet.Nat.set P hP_unique (x ^ 𝟚)]
   exact Exists.intro x (And.intro (MySet.Nat.is_nat x) rfl)
 
 noncomputable def f : MyFun MyNat MyNat :=
-  MyFun.from_fun MySet.Nat.set Y (fun x _ => x ^ (𝟚 : MyNat)) _f_mem
+  MyFun.from_fun MySet.Nat.set Y (fun x _ => x ^ 𝟚) _f_mem
 
 example :
     MyFun.isSurjective f := by
@@ -721,7 +712,7 @@ example :
   have hfxeq :
       MyFun.eval f x (MySet.Nat.is_nat x) = y := by
     dsimp only [f]
-    rw [MyFun.from_fun.eval MySet.Nat.set Y (fun x _ => x ^ (𝟚 : MyNat)) _f_mem
+    rw [MyFun.from_fun.eval MySet.Nat.set Y (fun x _ => x ^ 𝟚) _f_mem
       x (MySet.Nat.is_nat x)]
     exact Eq.symm hPxy
   exact Exists.intro x (Exists.intro (MySet.Nat.is_nat x) hfxeq)
@@ -741,7 +732,7 @@ noncomputable def X : MySet MyNat :=
   MySet.Nat.set
 
 noncomputable def Y : MySet MyNat :=
-  MySet.Nat.set \ ⦃(𝟘 : MyNat)⦄
+  MySet.Nat.set \ ⦃𝟘⦄
 
 private noncomputable def _f_fn : (x : MyNat) → x ∈ X → MyNat :=
   fun n _h => n++
@@ -753,11 +744,11 @@ private theorem _f_mem
   dsimp only [Y]
   dsimp only [_f_fn]
   rw [MySet.diff]
-  rw [MySet.mem_spec MySet.Nat.set (fun z => z ∉ ⦃(𝟘 : MyNat)⦄) (x++)]
+  rw [MySet.mem_spec MySet.Nat.set (fun z => z ∉ ⦃𝟘⦄) (x++)]
   constructor
   · exact MySet.Nat.is_nat (x++)
   · intro h
-    rw [MySet.mem_singleton (γ := MySet MyNat) (𝟘 : MyNat) (x++)] at h
+    rw [MySet.mem_singleton (γ := MySet MyNat) 𝟘 (x++)] at h
     exact MyNat.succ_ne_zero x h
 
 noncomputable def f : MyFun MyNat MyNat :=
@@ -781,10 +772,10 @@ example :
     dsimp only [Y] at hy
     rw [MySet.diff] at hy
     have hmem :
-        y ∈ MySet.Nat.set ∧ ¬y ∈ ⦃(𝟘 : MyNat)⦄ :=
-      Iff.mp (MySet.mem_spec MySet.Nat.set (fun z => ¬z ∈ ⦃(𝟘 : MyNat)⦄) y) hy
+        y ∈ MySet.Nat.set ∧ ¬y ∈ ⦃𝟘⦄ :=
+      Iff.mp (MySet.mem_spec MySet.Nat.set (fun z => ¬z ∈ ⦃𝟘⦄) y) hy
     rcases hmem with ⟨_hy, hny⟩
-    rw [MySet.mem_singleton (γ := MySet MyNat) (𝟘 : MyNat) y] at hny
+    rw [MySet.mem_singleton (γ := MySet MyNat) 𝟘 y] at hny
     have hpos :
         MyNat.is_positive y :=
       hny

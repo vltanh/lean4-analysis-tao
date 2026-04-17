@@ -1040,12 +1040,12 @@ example
 example :
     ∃ (A B A' B' : MySet MyNat),
     A' ⊆ A ∧ B' ⊆ B ∧ ¬ (A' \ B' ⊆ A \ B) := by
-  use ⦃(1 : MyNat), (2 : MyNat)⦄, ⦃(1 : MyNat)⦄, ⦃(1 : MyNat)⦄, ∅
+  use ⦃𝟙, 𝟚⦄, ⦃𝟙⦄, ⦃𝟙⦄, ∅
   constructor
   · rw [MySet.subset]
     intro x hx
-    rw [MySet.mem_pair (1 : MyNat) (2 : MyNat)]
-    rw [MySet.mem_singleton (1 : MyNat) x] at hx
+    rw [MySet.mem_pair 𝟙 𝟚]
+    rw [MySet.mem_singleton 𝟙 x] at hx
     exact Or.inl hx
   · constructor
     · rw [MySet.subset]
@@ -1054,23 +1054,23 @@ example :
     · intro h
       rw [MySet.subset] at h
       have h1 :
-          (1 : MyNat) ∈ (⦃(1 : MyNat)⦄ : MySet MyNat) \ ∅ := by
+          𝟙 ∈ (⦃𝟙⦄ : MySet MyNat) \ ∅ := by
         rw [MySet.diff]
-        rw [MySet.mem_spec ⦃(1 : MyNat)⦄ (fun x => x ∉ ∅)]
+        rw [MySet.mem_spec ⦃𝟙⦄ (fun x => x ∉ ∅)]
         constructor
-        · rw [MySet.mem_singleton (1 : MyNat) 1]
+        · rw [MySet.mem_singleton 𝟙 𝟙]
         · intro h'
-          exact False.elim (@MySet.not_mem_empty MyNat (MySet MyNat) 1 h')
-      have h2 : (1 : MyNat)
-          ∉ (⦃(1 : MyNat), (2 : MyNat)⦄ : MySet MyNat) \ ⦃(1 : MyNat)⦄ := by
+          exact False.elim (@MySet.not_mem_empty MyNat (MySet MyNat) 𝟙 h')
+      have h2 : 𝟙
+          ∉ (⦃𝟙, 𝟚⦄ : MySet MyNat) \ ⦃𝟙⦄ := by
         rw [MySet.diff]
-        rw [MySet.mem_spec ⦃(1 : MyNat), (2 : MyNat)⦄ (fun x => x ∉ ⦃(1 : MyNat)⦄)]
+        rw [MySet.mem_spec ⦃𝟙, 𝟚⦄ (fun x => x ∉ ⦃𝟙⦄)]
         intro hmem
         have h1mem :
-            (1 : MyNat) ∈ (⦃(1 : MyNat)⦄ : MySet MyNat) := by
-          rw [MySet.mem_singleton (1 : MyNat) 1]
+            𝟙 ∈ (⦃𝟙⦄ : MySet MyNat) := by
+          rw [MySet.mem_singleton 𝟙 𝟙]
         exact And.right hmem h1mem
-      exact h2 (h 1 h1)
+      exact h2 (h 𝟙 h1)
 
 -- Exercise 3.1.13
 example

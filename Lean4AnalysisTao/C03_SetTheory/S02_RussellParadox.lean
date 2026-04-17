@@ -26,26 +26,26 @@ noncomputable def P
   fun x => ∃ (α : Type), (γ = MySet α) ∧ x ∉ x
 
 example :
-    P (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) := by
-  use Nat
+    P (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat) := by
+  use MyNat
   refine And.intro rfl ?_
   intro hself
   have aux
-      (n : Nat)
-      (hmem : (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat) ∈ (⦃n⦄ : MySet Nat)) :
+      (n : MyNat)
+      (hmem : (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat) ∈ (⦃n⦄ : MySet MyNat)) :
       False := by
-    rw [MySet.mem_singleton_obj n (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat)] at hmem
+    rw [MySet.mem_singleton_obj n (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat)] at hmem
     have htype :
-        MySet Nat = Nat :=
+        MySet MyNat = MyNat :=
       type_eq_of_heq hmem
-    exact MySet.type_ne Nat htype
-  rw [MySet.mem_union (⦃2⦄ ∪ ⦃3⦄) ⦃4⦄ (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat)] at hself
+    exact MySet.type_ne MyNat htype
+  rw [MySet.mem_union (⦃𝟚⦄ ∪ ⦃𝟛⦄) ⦃𝟜⦄ (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat)] at hself
   rcases hself with h12 | h4
-  · rw [MySet.mem_union (⦃2⦄ : MySet Nat) ⦃3⦄ (⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ : MySet Nat)] at h12
+  · rw [MySet.mem_union (⦃𝟚⦄ : MySet MyNat) ⦃𝟛⦄ (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat)] at h12
     rcases h12 with h2 | h3
-    · exact aux 2 h2
-    · exact aux 3 h3
-  · exact aux 4 h4
+    · exact aux 𝟚 h2
+    · exact aux 𝟛 h3
+  · exact aux 𝟜 h4
 
 end Example
 

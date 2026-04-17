@@ -1,6 +1,5 @@
 import Lean4AnalysisTao.Util
 import Lean4AnalysisTao.C02_NaturalNumbers.S02_Addition_Extras
-import Lean4AnalysisTao.C03_SetTheory.Util
 
 -- Definition 3.1.1
 axiom MySet.mem
@@ -305,19 +304,19 @@ theorem MySet.spec_eq_spec_of_eq
 namespace Example_3_1_21
 
 noncomputable def S : MySet MyNat :=
-  ⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ ∪ ⦃4⦄ ∪ ⦃5⦄
+  ⦃𝟙⦄ ∪ ⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ ∪ ⦃𝟝⦄
 
 example :
-    ⦃S | fun (x : MyNat) => x < 4⦄
-    = ⦃1⦄ ∪ ⦃2⦄ ∪ ⦃3⦄ := by
+    ⦃S | fun (x : MyNat) => x < 𝟜⦄
+    = ⦃𝟙⦄ ∪ ⦃𝟚⦄ ∪ ⦃𝟛⦄ := by
   sorry
 
 example :
-    ⦃S | fun (x : MyNat) => x < 7⦄ = S := by
+    ⦃S | fun (x : MyNat) => x < 𝟟⦄ = S := by
   sorry
 
 example :
-    ⦃S | fun (x : MyNat) => x < 1⦄ = ∅ := by
+    ⦃S | fun (x : MyNat) => x < 𝟙⦄ = ∅ := by
   sorry
 
 end Example_3_1_21
@@ -449,19 +448,19 @@ axiom MySet.mem_replace
 namespace Example_3_1_30
 
 noncomputable def A : MySet MyNat :=
-  ⦃(3 : MyNat)⦄ ∪ ⦃(5 : MyNat)⦄ ∪ ⦃(9 : MyNat)⦄
+  ⦃𝟛⦄ ∪ ⦃𝟝⦄ ∪ ⦃𝟡⦄
 
 def P
     (x : MyNat)
     (y : MyNat) :
     Prop :=
-  y = x + (1 : MyNat)
+  y = x + 𝟙
 
 theorem hP
     (x : MyNat)
     (hxA : x ∈ A) :
     ∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y)) := by
-  use (x + (1 : MyNat))
+  use (x + 𝟙)
   constructor
   · rw [P]
   · intro z hz
@@ -469,7 +468,7 @@ theorem hP
     rw [hz]
 
 example :
-    ⦃A ← hP⦄ = ⦃(4 : MyNat)⦄ ∪ ⦃(6 : MyNat)⦄ ∪ ⦃(10 : MyNat)⦄ := by
+    ⦃A ← hP⦄ = ⦃𝟜⦄ ∪ ⦃𝟞⦄ ∪ ⦃𝟙𝟘⦄ := by
   sorry
 
 end Example_3_1_30
@@ -478,19 +477,19 @@ end Example_3_1_30
 namespace Example_3_1_31
 
 noncomputable def A : MySet MyNat :=
-  ⦃(3 : MyNat)⦄ ∪ ⦃(5 : MyNat)⦄ ∪ ⦃(9 : MyNat)⦄
+  ⦃𝟛⦄ ∪ ⦃𝟝⦄ ∪ ⦃𝟡⦄
 
 def P
     (x : MyNat)
     (y : MyNat) :
     Prop :=
-  y = (1 : MyNat)
+  y = 𝟙
 
 theorem hP
     (x : MyNat)
     (hxA : x ∈ A) :
     ∃ (y : MyNat), (P x y ∧ (∀ (z : MyNat), P x z → z = y)) := by
-  use 1
+  use 𝟙
   constructor
   · rw [P]
   · intro z hz
@@ -498,23 +497,23 @@ theorem hP
     rw [hz]
 
 example :
-    ⦃A ← hP⦄ = ⦃(1 : MyNat)⦄ := by
-  rw [MySet.ext (α := MyNat) (γ := MySet MyNat) ⦃A ← hP⦄ ⦃(1 : MyNat)⦄]
+    ⦃A ← hP⦄ = ⦃𝟙⦄ := by
+  rw [MySet.ext (α := MyNat) (γ := MySet MyNat) ⦃A ← hP⦄ ⦃𝟙⦄]
   intro y
   rw [MySet.mem_replace A P hP y]
-  rw [MySet.mem_singleton (γ := MySet MyNat) (1 : MyNat) y]
+  rw [MySet.mem_singleton (γ := MySet MyNat) 𝟙 y]
   constructor
   · intro h
     rcases h with ⟨x, hxA, hPxy⟩
     rw [P] at hPxy
     exact hPxy
   · intro h
-    use 9
+    use 𝟡
     constructor
     · rw [A]
-      rw [MySet.mem_union (⦃(3 : MyNat)⦄ ∪ ⦃(5 : MyNat)⦄)
-          ⦃(9 : MyNat)⦄ (9 : MyNat)]
-      rw [MySet.mem_singleton (γ := MySet MyNat) (9 : MyNat) 9]
+      rw [MySet.mem_union (⦃𝟛⦄ ∪ ⦃𝟝⦄)
+          ⦃𝟡⦄ 𝟡]
+      rw [MySet.mem_singleton (γ := MySet MyNat) 𝟡 𝟡]
       exact Or.inr rfl
     · rw [P]
       exact h
