@@ -1,5 +1,5 @@
 import Lean4AnalysisTao.Util
-import Lean4AnalysisTao.C02_NaturalNumbers.S02_Addition_Extras
+import Lean4AnalysisTao.C02_NaturalNumbers.S02_Addition
 
 -- Definition 3.1.1
 axiom MySet.mem
