@@ -142,8 +142,10 @@ axiom MyNat.exp_succ
 theorem MyNat.exp_one
     (x : MyNat) :
     x ^ 𝟙 = x := by
+  dsimp only [MyNat.one]
   rw [MyNat.exp_succ x 𝟘]
   rw [MyNat.exp_zero x]
+  dsimp only [MyNat.one]
   rw [MyNat.succ_mul 𝟘 x]
   rw [MyNat.zero_mul x]
   rw [MyNat.zero_add x]
@@ -151,13 +153,14 @@ theorem MyNat.exp_one
 theorem MyNat.exp_two
     (x : MyNat) :
     x ^ 𝟚 = x * x := by
+  dsimp only [MyNat.two]
   rw [MyNat.exp_succ x 𝟙]
   rw [MyNat.exp_one x]
 
 section Exercises
 
 -- Exercise 2.3.4
-example
+theorem Exercise_2_3_4
     (a b : MyNat) :
     (a + b) ^ 𝟚 = a ^ 𝟚 + 𝟚 * a * b + b ^ 𝟚 := by
   sorry

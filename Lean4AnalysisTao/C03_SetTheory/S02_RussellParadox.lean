@@ -21,16 +21,17 @@ namespace Example
 
 -- Russell's predicate.
 noncomputable def P
-    {γ : Type} :
-    γ → Prop :=
-  fun x => ∃ (α : Type), (γ = MySet α) ∧ x ∉ x
+    {γ : Type}
+    (x : γ) :
+    Prop :=
+  ∃ (α : Type), (γ = MySet α) ∧ x ∉ x
 
 example :
     P (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat) := by
   use MyNat
   refine And.intro rfl ?_
   intro hself
-  have aux
+  have haux
       (n : MyNat)
       (hmem : (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat) ∈ (⦃n⦄ : MySet MyNat)) :
       False := by
@@ -43,9 +44,9 @@ example :
   rcases hself with h12 | h4
   · rw [MySet.mem_union (⦃𝟚⦄ : MySet MyNat) ⦃𝟛⦄ (⦃𝟚⦄ ∪ ⦃𝟛⦄ ∪ ⦃𝟜⦄ : MySet MyNat)] at h12
     rcases h12 with h2 | h3
-    · exact aux 𝟚 h2
-    · exact aux 𝟛 h3
-  · exact aux 𝟜 h4
+    · exact haux 𝟚 h2
+    · exact haux 𝟛 h3
+  · exact haux 𝟜 h4
 
 end Example
 

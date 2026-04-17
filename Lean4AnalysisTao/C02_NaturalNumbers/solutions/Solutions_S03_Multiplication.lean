@@ -1,15 +1,5 @@
 import Lean4AnalysisTao.C02_NaturalNumbers.S03_Multiplication
 
-/-!
-Solutions for the `sorry`-stubbed theorems in `S03_Multiplication.lean`.
-
-Each solution is given as an `example` block restating the goal; the
-canonical names live in `S03_Multiplication` (currently with `sorry`
-placeholders), and downstream files import that module. The statements
-here mirror the `sorry` versions so the reader can compare problem and
-solution side-by-side.
--/
-
 -- Lemma 2.3.2
 example
     (n : MyNat) :
@@ -192,6 +182,7 @@ example
             rw [h]
             rw [h']
             rw [MyNat.mul_distrib m r 𝟙]
+            dsimp only [MyNat.one]
             rw [MyNat.add_succ r 𝟘]
             rw [MyNat.add_zero r]
             rw [MyNat.add_succ (m * r + m * 𝟘++) r]
@@ -250,7 +241,9 @@ example
   rw [← MyNat.add_assoc (a * b) (a * b) (b * b)]
   rw [MyNat.exp_two a]
   rw [MyNat.exp_two b]
+  dsimp only [MyNat.two]
   rw [MyNat.succ_mul 𝟙 a]
+  dsimp only [MyNat.one]
   rw [MyNat.succ_mul 𝟘 a]
   rw [MyNat.zero_mul a]
   rw [MyNat.zero_add a]

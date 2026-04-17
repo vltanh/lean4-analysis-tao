@@ -136,9 +136,9 @@ theorem MyNat.zero_zero_of_add_zero
     (a b : MyNat)
     (hab : a + b = 𝟘) :
     a = 𝟘 ∧ b = 𝟘 := by
-  by_contra h
-  rw [not_and_or (a = 𝟘) (b = 𝟘)] at h
-  rcases h with (ha | hb)
+  by_contra hne
+  rw [not_and_or (a = 𝟘) (b = 𝟘)] at hne
+  rcases hne with (ha | hb)
   · have hpos : (MyNat.is_positive (a + b)) := MyNat.pos_add a ha b
     exact hpos hab
   · have hpos : (MyNat.is_positive (a + b)) := MyNat.pos_add' b hb a
@@ -152,20 +152,28 @@ theorem MyNat.unique_pred_of_pos
   sorry
 
 -- Definition 2.2.11
-def MyNat.ge : MyNat → MyNat → Prop :=
-  fun n m => ∃ (a : MyNat), n = m + a
+def MyNat.ge
+    (n m : MyNat) :
+    Prop :=
+  ∃ (a : MyNat), n = m + a
 infixl:50 " ≥ " => MyNat.ge
 
-def MyNat.le : MyNat → MyNat → Prop :=
-  fun n m => m ≥ n
+def MyNat.le
+    (n m : MyNat) :
+    Prop :=
+  m ≥ n
 infixl:50 " ≤ " => MyNat.le
 
-def MyNat.gt : MyNat → MyNat → Prop :=
-  fun n m => n ≥ m ∧ n ≠ m
+def MyNat.gt
+    (n m : MyNat) :
+    Prop :=
+  n ≥ m ∧ n ≠ m
 infixl:50 " > " => MyNat.gt
 
-def MyNat.lt : MyNat → MyNat → Prop :=
-  fun n m => m > n
+def MyNat.lt
+    (n m : MyNat) :
+    Prop :=
+  m > n
 infixl:50 " < " => MyNat.lt
 
 -- Proposition 2.2.12
@@ -213,8 +221,8 @@ theorem MyNat.lt_iff_eq_add
 theorem MyNat.order_trichotomy
     (a b : MyNat) :
     ((a < b) ∧ ¬(a = b) ∧ ¬(a > b))
-  ∨ (¬(a < b) ∧ (a = b) ∧ ¬(a > b))
-  ∨ (¬(a < b) ∧ ¬(a = b) ∧ (a > b)) := by
+    ∨ (¬(a < b) ∧ (a = b) ∧ ¬(a > b))
+    ∨ (¬(a < b) ∧ ¬(a = b) ∧ (a > b)) := by
   have h12 :
       ¬((a < b) ∧ (a = b)) := by
     intro ⟨h1, h2⟩
@@ -248,10 +256,10 @@ theorem MyNat.order_trichotomy
         sorry
       have heq_or_lt :
           𝟘 = b ∨ 𝟘 < b := by
-        by_cases h : 𝟘 = b
-        · exact Or.inl h
-        · rw [← Ne.eq_def] at h
-          exact Or.inr (And.intro (hle b) (Ne.symm h))
+        by_cases heq : 𝟘 = b
+        · exact Or.inl heq
+        · rw [← Ne.eq_def] at heq
+          exact Or.inr (And.intro (hle b) (Ne.symm heq))
       rcases heq_or_lt with (h1 | h2)
       · exact Or.inr (Or.inl h1)
       · exact Or.inl h2
@@ -262,10 +270,10 @@ theorem MyNat.order_trichotomy
         (a++ < b) ∨ (a++ = b) ∨ (a++ > b) := by
       rcases ha b with (h1 | h2 | h3)
       · have hle : a++ ≤ b := Iff.mp (MyNat.lt_iff_succ_le a b) h1
-        by_cases h : a++ = b
-        · exact Or.inr (Or.inl h)
-        · rw [← Ne.eq_def] at h
-          exact Or.inl (And.intro hle (Ne.symm h))
+        by_cases heq : a++ = b
+        · exact Or.inr (Or.inl heq)
+        · rw [← Ne.eq_def] at heq
+          exact Or.inl (And.intro hle (Ne.symm heq))
       · have hgt : a++ > b := by
           sorry
         exact Or.inr (Or.inr hgt)

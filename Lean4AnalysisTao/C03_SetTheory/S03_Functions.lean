@@ -12,6 +12,7 @@ structure MyFun (α β : Type) where
       (∀ (y' : β), y' ∈ codomain → prop x y' → y = y')
 
 noncomputable def MyFun.eval
+    {α β : Type}
     (f : MyFun α β) :
     (x : α) → x ∈ MyFun.domain f → β :=
   fun x hx => MyClassical.choose
@@ -20,6 +21,7 @@ noncomputable def MyFun.eval
     ((MyFun.isValidProp f) x hx)
 
 theorem MyFun.eval_codomain
+    {α β : Type}
     (f : MyFun α β)
     (x : α)
     (hx : x ∈ MyFun.domain f) :
@@ -105,13 +107,13 @@ namespace Example_3_3_3
 
 namespace Example_3_3_3_a
 
-noncomputable def X : MySet MyNat :=
+private noncomputable def X : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def Y : MySet MyNat :=
+private noncomputable def Y : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def f : MyFun MyNat MyNat where
+private noncomputable def f : MyFun MyNat MyNat where
   domain := X
   codomain := Y
   prop := fun x y => y = (x++)
@@ -146,13 +148,13 @@ end Example_3_3_3_a
 
 namespace Example_3_3_3_b
 
-noncomputable def X : MySet MyNat :=
+private noncomputable def X : MySet MyNat :=
   MySet.Nat.set \ ⦃𝟘⦄
 
-noncomputable def Y : MySet MyNat :=
+private noncomputable def Y : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def f : MyFun MyNat MyNat where
+private noncomputable def f : MyFun MyNat MyNat where
   domain := X
   codomain := Y
   prop := fun x y => y++ = x
@@ -176,7 +178,7 @@ noncomputable def f : MyFun MyNat MyNat where
       · intro y' _hy' hP
         exact huniq y' hP
 
-theorem aux :
+private theorem aux :
     𝟜 ∈ X := by
   dsimp only [X]
   rw [MySet.diff]
@@ -197,7 +199,7 @@ example :
   have hprop :
       MyFun.prop f 𝟜 𝟛 := by
     dsimp only [f]
-    rfl
+    dsimp only [MyNat.four]
   rw [← MyFun.def f 𝟜 𝟛 aux h] at hprop
   exact Eq.symm hprop
 
@@ -206,6 +208,7 @@ end Example_3_3_3_b
 end Example_3_3_3
 
 theorem MyFun.substitute
+    {α β : Type}
     (f : MyFun α β)
     (x x' : α)
     (hx : x ∈ MyFun.domain f)
@@ -215,9 +218,10 @@ theorem MyFun.substitute
   sorry
 
 -- Example 3.3.5
-example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
-  (hx : x ∈ MyFun.domain f) (hx' : x' ∈ MyFun.domain f),
-  ¬ ((x ≠ x') → (MyFun.eval f x hx ≠ MyFun.eval f x' hx')) := by
+example :
+    ∃ (α β : Type) (f : MyFun α β) (x x' : α)
+      (hx : x ∈ MyFun.domain f) (hx' : x' ∈ MyFun.domain f),
+      ¬ ((x ≠ x') → (MyFun.eval f x hx ≠ MyFun.eval f x' hx')) := by
   let α :=
     MyNat
   let β :=
@@ -241,14 +245,16 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
   let x :
       α :=
     𝟘
-  let x' : α :=
+  let x' :
+      α :=
     𝟙
   let hx :
       x ∈ MyFun.domain f := by
     dsimp only [x]
     dsimp only [f]
     exact MySet.Nat.is_nat 𝟘
-  let hx' : x' ∈ MyFun.domain f := by
+  let hx' :
+      x' ∈ MyFun.domain f := by
     dsimp only [x']
     dsimp only [f]
     exact MySet.Nat.is_nat 𝟙
@@ -285,7 +291,8 @@ example : ∃ (α β : Type) (f : MyFun α β) (x x' : α)
 -- Definition 3.3.8
 def MyFun.eq
     {α β : Type}
-    (f g : MyFun α β) :=
+    (f g : MyFun α β) :
+    Prop :=
   MyFun.domain f = MyFun.domain g
   ∧ MyFun.codomain f = MyFun.codomain g
   ∧ ∀ (x : α) (hxf : x ∈ MyFun.domain f) (hxg : x ∈ MyFun.domain g),
@@ -295,16 +302,16 @@ notation f " ≃ " g => MyFun.eq f g
 -- Example 3.3.10
 namespace Example_3_3_10
 
-noncomputable def X : MySet MyNat :=
+private noncomputable def X : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def Y : MySet MyNat :=
+private noncomputable def Y : MySet MyNat :=
   MySet.Nat.set
 
-theorem aux
+private theorem aux
     (f : MyNat → MyNat)
     (x : MyNat)
-    (hx : x ∈ X) :
+    (_hx : x ∈ X) :
     f x ∈ Y := by
   dsimp only [Y]
   exact MySet.Nat.is_nat (f x)
@@ -318,7 +325,7 @@ private theorem _f_mem
     _f_fn x hx ∈ Y :=
   MySet.Nat.is_nat (_f_fn x hx)
 
-noncomputable def f : MyFun MyNat MyNat :=
+private noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun X Y _f_fn _f_mem
 
 private noncomputable def _g_fn : (x : MyNat) → x ∈ X → MyNat :=
@@ -330,7 +337,7 @@ private theorem _g_mem
     _g_fn x hx ∈ Y :=
   MySet.Nat.is_nat (_g_fn x hx)
 
-noncomputable def g : MyFun MyNat MyNat :=
+private noncomputable def g : MyFun MyNat MyNat :=
   MyFun.from_fun X Y _g_fn _g_mem
 
 private theorem sq_eq
@@ -346,7 +353,7 @@ private theorem sq_eq
   rw [MyNat.zero_mul (𝟘++)]
   rw [MyNat.zero_add (𝟘++)]
 
-example :
+private example :
     f ≃ g := by
   dsimp only [MyFun.eq]
   refine And.intro rfl (And.intro rfl ?_)
@@ -359,7 +366,8 @@ example :
       MyFun.eval g x hxg = _g_fn x hxg := by
     dsimp only [g]
     rw [MyFun.from_fun.eval X Y _g_fn _g_mem x hxg]
-  rw [hfeval, hgeval]
+  rw [hfeval]
+  rw [hgeval]
   dsimp only [_f_fn]
   dsimp only [_g_fn]
   exact sq_eq x
@@ -451,37 +459,37 @@ theorem MyFun.comp.eval.codomain
 -- Example 3.3.14
 namespace Example_3_3_14
 
-noncomputable def _f : MyNat → MyNat :=
+private noncomputable def _f : MyNat → MyNat :=
   fun n => 𝟚 * n
 
-noncomputable def _g : MyNat → MyNat :=
+private noncomputable def _g : MyNat → MyNat :=
   fun n => n + 𝟛
 
-noncomputable def X : MySet MyNat :=
+private noncomputable def X : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def Y : MySet MyNat :=
+private noncomputable def Y : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def Z : MySet MyNat :=
+private noncomputable def Z : MySet MyNat :=
   MySet.Nat.set
 
-theorem aux
+private theorem aux
     (f : MyNat → MyNat)
     (X : MySet MyNat)
     (x : MyNat)
-    (hx : x ∈ X) :
+    (_hx : x ∈ X) :
     f x ∈ Y := by
   dsimp only [Y]
   exact MySet.Nat.is_nat (f x)
 
-noncomputable def f : MyFun MyNat MyNat :=
+private noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun X Y (fun x _ => _f x) (fun x hx => aux _f X x hx)
 
-noncomputable def g : MyFun MyNat MyNat :=
+private noncomputable def g : MyFun MyNat MyNat :=
   MyFun.from_fun Y Z (fun x _ => _g x) (fun x hx => aux _g Y x hx)
 
-noncomputable def gf : MyFun MyNat MyNat :=
+private noncomputable def gf : MyFun MyNat MyNat :=
   MyFun.comp f g rfl
 
 example
@@ -501,7 +509,7 @@ example
   dsimp only [_f]
   dsimp only [_g]
 
-noncomputable def fg : MyFun MyNat MyNat :=
+private noncomputable def fg : MyFun MyNat MyNat :=
   MyFun.comp g f rfl
 
 example
@@ -593,7 +601,9 @@ theorem MyFun.comp_assoc
           (MyFun.eval (MyFun.comp h g hgh)) x hxh = MyFun.eval g (MyFun.eval h x hxh) hhxg := by
         rw [MyFun.comp.eval h g hgh x hxh hhxg hxh]
       rw [MyFun.substitute f
-        ((MyFun.eval (MyFun.comp h g hgh)) x hxh) (MyFun.eval g (MyFun.eval h x hxh) hhxg) hghxf hg_hxf hcompeval]
+        ((MyFun.eval (MyFun.comp h g hgh)) x hxh)
+        (MyFun.eval g (MyFun.eval h x hxh) hhxg)
+        hghxf hg_hxf hcompeval]
 
       have hfg_h :
           MyFun.codomain h = (MyFun.domain (MyFun.comp g f hfg)) := by
@@ -611,13 +621,15 @@ theorem MyFun.comp_assoc
 -- Definition 3.3.17
 def MyFun.isInjective
     {α β : Type}
-    (f : MyFun α β) :=
+    (f : MyFun α β) :
+    Prop :=
   ∀ (x x' : α) (hx : x ∈ MyFun.domain f) (hx' : x' ∈ MyFun.domain f),
     x ≠ x' → MyFun.eval f x hx ≠ MyFun.eval f x' hx'
 
 def MyFun.isInjective'
     {α β : Type}
-    (f : MyFun α β) :=
+    (f : MyFun α β) :
+    Prop :=
   ∀ (x x' : α) (hx : x ∈ MyFun.domain f) (hx' : x' ∈ MyFun.domain f),
     MyFun.eval f x hx = MyFun.eval f x' hx' → x = x'
 
@@ -650,12 +662,11 @@ private theorem _f_mem
     _f_fn x hx ∈ MySet.Nat.set :=
   MySet.Nat.is_nat (_f_fn x hx)
 
-noncomputable def f : MyFun MyNat MyNat :=
+private noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun MySet.Nat.set MySet.Nat.set _f_fn _f_mem
 
 example :
     MyFun.isInjective f := by
-  -- TODO: port; needs strict monotonicity of squaring on MyNat.
   sorry
 
 end Example_3_3_18
@@ -663,15 +674,18 @@ end Example_3_3_18
 -- Definition 3.3.20
 def MyFun.isSurjective
     {α β : Type}
-    (f : MyFun α β) :=
+    (f : MyFun α β) :
+    Prop :=
   ∀ (y : β), y ∈ MyFun.codomain f →
     ∃ (x : α) (hx : x ∈ MyFun.domain f), MyFun.eval f x hx = y
 
 -- Example 3.3.21
 namespace Example_3_3_21
 
-private def P : MyNat → MyNat → Prop :=
-  fun x y => y = x ^ 𝟚
+private def P
+    (x y : MyNat) :
+    Prop :=
+  y = x ^ 𝟚
 
 private theorem hP_unique
     (x : MyNat)
@@ -685,18 +699,18 @@ private theorem hP_unique
     exact hz
   exact Exists.intro (x ^ 𝟚) (And.intro rfl huniq)
 
-noncomputable def Y : MySet MyNat :=
+private noncomputable def Y : MySet MyNat :=
   ⦃ MySet.Nat.set ← hP_unique ⦄
 
 private theorem _f_mem
     (x : MyNat)
-    (hx : x ∈ MySet.Nat.set) :
+    (_hx : x ∈ MySet.Nat.set) :
     x ^ 𝟚 ∈ Y := by
   dsimp only [Y]
   rw [MySet.mem_replace MySet.Nat.set P hP_unique (x ^ 𝟚)]
   exact Exists.intro x (And.intro (MySet.Nat.is_nat x) rfl)
 
-noncomputable def f : MyFun MyNat MyNat :=
+private noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun MySet.Nat.set Y (fun x _ => x ^ 𝟚) _f_mem
 
 example :
@@ -722,16 +736,17 @@ end Example_3_3_21
 -- Definition 3.3.23
 def MyFun.isBijective
     {α β : Type}
-    (f : MyFun α β) :=
+    (f : MyFun α β) :
+    Prop :=
   MyFun.isInjective f ∧ MyFun.isSurjective f
 
 -- Example 3.3.25
 namespace Example_3_3_25
 
-noncomputable def X : MySet MyNat :=
+private noncomputable def X : MySet MyNat :=
   MySet.Nat.set
 
-noncomputable def Y : MySet MyNat :=
+private noncomputable def Y : MySet MyNat :=
   MySet.Nat.set \ ⦃𝟘⦄
 
 private noncomputable def _f_fn : (x : MyNat) → x ∈ X → MyNat :=
@@ -751,7 +766,7 @@ private theorem _f_mem
     rw [MySet.mem_singleton (γ := MySet MyNat) 𝟘 (x++)] at h
     exact MyNat.succ_ne_zero x h
 
-noncomputable def f : MyFun MyNat MyNat :=
+private noncomputable def f : MyFun MyNat MyNat :=
   MyFun.from_fun X Y _f_fn _f_mem
 
 example :
@@ -761,8 +776,8 @@ example :
   · dsimp only [MyFun.isInjective]
     intro x x' hx hx' hxx'
     dsimp only [f]
-    rw [MyFun.from_fun.eval X Y _f_fn _f_mem x hx,
-      MyFun.from_fun.eval X Y _f_fn _f_mem x' hx']
+    rw [MyFun.from_fun.eval X Y _f_fn _f_mem x hx]
+    rw [MyFun.from_fun.eval X Y _f_fn _f_mem x' hx']
     dsimp only [_f_fn]
     exact MyNat.succ_inj' x x' hxx'
   · dsimp only [MyFun.isSurjective]
@@ -836,7 +851,7 @@ noncomputable def MyFun.inv
     rcases MyClassical.choose_spec
       (fun x => ∃ (hx : x ∈ MyFun.domain f), MyFun.eval f x hx = y ∧
         ∀ (x' : α) (hx' : x' ∈ MyFun.domain f), MyFun.eval f x' hx' = y → x = x')
-      (MyFun.exists_unique_of_bijective f hf y hy) with ⟨hx, h⟩
+      (MyFun.exists_unique_of_bijective f hf y hy) with ⟨hx, _hspec⟩
     exact hx
   exact MyFun.from_fun X Y finv aux
 
@@ -1014,7 +1029,8 @@ private theorem aux'
 
 private def ι_id'
     {α : Type}
-    (X : MySet α) :=
+    (X : MySet α) :
+    MyFun α α :=
   ι' X X (aux' X)
 
 example

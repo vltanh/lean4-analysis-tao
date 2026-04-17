@@ -3,8 +3,10 @@ import Lean4AnalysisTao.C02_NaturalNumbers.S02_Addition_Extras
 
 -- Definition 3.1.1
 axiom MySet.mem
-    {α γ : Type} :
-    γ → α → Prop
+    {α γ : Type}
+    (S : γ)
+    (x : α) :
+    Prop
 notation:50 x:50 " ∈ " S:50 => MySet.mem S x
 notation:50 x:50 " ∉ " S:50 => ¬ (x ∈ S)
 
@@ -217,7 +219,8 @@ theorem MySet.empty_union
 -- Definition 3.1.14
 def MySet.subset
     {α : Type}
-    (A B : MySet α) :=
+    (A B : MySet α) :
+    Prop :=
   ∀ (x : α), x ∈ A → x ∈ B
 infix:50 " ⊆ " => MySet.subset
 notation A:50 " ⊊ " B:50 => A ⊆ B ∧ A ≠ B
@@ -540,7 +543,7 @@ example
 example
     (A B : MySet α) :
     ((A ⊆ B) ↔ (A ∪ B = B))
-  ∧ ((A ⊆ B) ↔ (A ∩ B = A)) := by
+    ∧ ((A ⊆ B) ↔ (A ∩ B = A)) := by
   sorry
 
 -- Exercise 3.1.7
@@ -652,8 +655,9 @@ example
   sorry
 
 -- (b)
-example : ∃ (A B A' B' : MySet MyNat),
-  A' ⊆ A ∧ B' ⊆ B ∧ ¬ (A' \ B' ⊆ A \ B) := by
+example :
+    ∃ (A B A' B' : MySet MyNat),
+      A' ⊆ A ∧ B' ⊆ B ∧ ¬ (A' \ B' ⊆ A \ B) := by
   sorry
 
 -- Exercise 3.1.13
