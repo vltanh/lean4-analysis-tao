@@ -23,41 +23,32 @@ example
     A ∉ A := by
   intro hAA
   have hA_mem_SA :
-      A ∈ (@MySet.singleton (MySet MyNat) (MySet MyNat) A) := by
-    rw [@MySet.mem_singleton_obj
-        (MySet MyNat) (MySet MyNat) A (MySet MyNat) A]
+      A ∈ (⦃A⦄ : MySet MyNat) := by
+    rw [@MySet.mem_singleton (MySet MyNat) (MySet MyNat) A A]
   have hnonempty :
-      (MySet.nonempty (@MySet.singleton (MySet MyNat) (MySet MyNat) A :
-        MySet MyNat)) := by
+      MySet.nonempty (⦃A⦄ : MySet MyNat) := by
     intro hemp
     rw [hemp] at hA_mem_SA
     exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_mem_SA
   have hreg :
-      (∃ (x : MySet MyNat), x ∈ (@MySet.singleton (MySet MyNat) (MySet MyNat) A)
-          ∧ MySet.disjoint x (@MySet.singleton (MySet MyNat) (MySet MyNat) A))
+      (∃ (x : MySet MyNat),
+          x ∈ (⦃A⦄ : MySet MyNat)
+          ∧ MySet.disjoint x (⦃A⦄ : MySet MyNat))
         ∨ (∃ (ν : Type) (x : ν),
-            x ∈ (@MySet.singleton (MySet MyNat) (MySet MyNat) A)
-            ∧ ν ≠ MySet MyNat) :=
-    @MySet.regularity MyNat
-      (@MySet.singleton (MySet MyNat) (MySet MyNat) A) hnonempty
+            x ∈ (⦃A⦄ : MySet MyNat) ∧ ν ≠ MySet MyNat) :=
+    @MySet.regularity MyNat (⦃A⦄ : MySet MyNat) hnonempty
   rcases hreg with ⟨x, hxmem, hdisj⟩ | ⟨ν, x, hxmem, hνne⟩
-  · rw [@MySet.mem_singleton_obj
-        (MySet MyNat) (MySet MyNat) A (MySet MyNat) x] at hxmem
-    have hxA :
-        x = A :=
-      eq_of_heq hxmem
-    rw [hxA] at hdisj
+  · rw [@MySet.mem_singleton (MySet MyNat) (MySet MyNat) A x] at hxmem
+    rw [hxmem] at hdisj
     rw [MySet.disjoint] at hdisj
     have hA_inter :
-        A ∈ A ∩ (@MySet.singleton (MySet MyNat) (MySet MyNat) A) := by
+        A ∈ A ∩ (⦃A⦄ : MySet MyNat) := by
       rw [@MySet.mem_inter_obj MyNat A
-          (@MySet.singleton (MySet MyNat) (MySet MyNat) A)
-          (MySet MyNat) A]
+          (⦃A⦄ : MySet MyNat) (MySet MyNat) A]
       exact And.intro hAA hA_mem_SA
     rw [hdisj] at hA_inter
     exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_inter
-  · rw [@MySet.mem_singleton_obj
-        (MySet MyNat) (MySet MyNat) A ν x] at hxmem
+  · rw [@MySet.mem_singleton_obj (MySet MyNat) (MySet MyNat) A ν x] at hxmem
     exact hνne (type_eq_of_heq hxmem)
 
 -- Exercise 3.2.2 (second half), via regularity applied to ⦃A, B⦄.
@@ -65,60 +56,50 @@ example
     (A B : MySet MyNat) :
     A ∉ B ∨ B ∉ A := by
   have hA_mem_PAB :
-      A ∈ (@MySet.pair (MySet MyNat) (MySet MyNat) A B) := by
-    rw [@MySet.mem_pair_obj
-        (MySet MyNat) (MySet MyNat) A B (MySet MyNat) A]
-    exact Or.inl HEq.rfl
+      A ∈ (⦃A, B⦄ : MySet MyNat) := by
+    rw [@MySet.mem_pair (MySet MyNat) (MySet MyNat) A B A]
+    exact Or.inl rfl
   have hB_mem_PAB :
-      B ∈ (@MySet.pair (MySet MyNat) (MySet MyNat) A B) := by
-    rw [@MySet.mem_pair_obj
-        (MySet MyNat) (MySet MyNat) A B (MySet MyNat) B]
-    exact Or.inr HEq.rfl
+      B ∈ (⦃A, B⦄ : MySet MyNat) := by
+    rw [@MySet.mem_pair (MySet MyNat) (MySet MyNat) A B B]
+    exact Or.inr rfl
   have hnonempty :
-      (MySet.nonempty (@MySet.pair (MySet MyNat) (MySet MyNat) A B :
-        MySet MyNat)) := by
+      MySet.nonempty (⦃A, B⦄ : MySet MyNat) := by
     intro hemp
     rw [hemp] at hA_mem_PAB
     exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_mem_PAB
   have hreg :
-      (∃ (x : MySet MyNat), x ∈ (@MySet.pair (MySet MyNat) (MySet MyNat) A B)
-          ∧ MySet.disjoint x (@MySet.pair (MySet MyNat) (MySet MyNat) A B))
+      (∃ (x : MySet MyNat),
+          x ∈ (⦃A, B⦄ : MySet MyNat)
+          ∧ MySet.disjoint x (⦃A, B⦄ : MySet MyNat))
         ∨ (∃ (ν : Type) (x : ν),
-            x ∈ (@MySet.pair (MySet MyNat) (MySet MyNat) A B)
-            ∧ ν ≠ MySet MyNat) :=
-    @MySet.regularity MyNat
-      (@MySet.pair (MySet MyNat) (MySet MyNat) A B) hnonempty
+            x ∈ (⦃A, B⦄ : MySet MyNat) ∧ ν ≠ MySet MyNat) :=
+    @MySet.regularity MyNat (⦃A, B⦄ : MySet MyNat) hnonempty
   rcases hreg with ⟨x, hxmem, hdisj⟩ | ⟨ν, x, hxmem, hνne⟩
-  · rw [@MySet.mem_pair_obj
-        (MySet MyNat) (MySet MyNat) A B (MySet MyNat) x] at hxmem
+  · rw [@MySet.mem_pair (MySet MyNat) (MySet MyNat) A B x] at hxmem
     rw [MySet.disjoint] at hdisj
     rcases hxmem with hxA | hxB
-    · have hxA' : x = A := eq_of_heq hxA
-      rw [hxA'] at hdisj
+    · rw [hxA] at hdisj
       refine Or.inr ?_
       intro hBA
       have hB_inter :
-          B ∈ A ∩ (@MySet.pair (MySet MyNat) (MySet MyNat) A B) := by
+          B ∈ A ∩ (⦃A, B⦄ : MySet MyNat) := by
         rw [@MySet.mem_inter_obj MyNat A
-            (@MySet.pair (MySet MyNat) (MySet MyNat) A B)
-            (MySet MyNat) B]
+            (⦃A, B⦄ : MySet MyNat) (MySet MyNat) B]
         exact And.intro hBA hB_mem_PAB
       rw [hdisj] at hB_inter
       exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) B hB_inter
-    · have hxB' : x = B := eq_of_heq hxB
-      rw [hxB'] at hdisj
+    · rw [hxB] at hdisj
       refine Or.inl ?_
       intro hAB
       have hA_inter :
-          A ∈ B ∩ (@MySet.pair (MySet MyNat) (MySet MyNat) A B) := by
+          A ∈ B ∩ (⦃A, B⦄ : MySet MyNat) := by
         rw [@MySet.mem_inter_obj MyNat B
-            (@MySet.pair (MySet MyNat) (MySet MyNat) A B)
-            (MySet MyNat) A]
+            (⦃A, B⦄ : MySet MyNat) (MySet MyNat) A]
         exact And.intro hAB hA_mem_PAB
       rw [hdisj] at hA_inter
       exact @MySet.not_mem_empty (MySet MyNat) (MySet MyNat) A hA_inter
-  · rw [@MySet.mem_pair_obj
-        (MySet MyNat) (MySet MyNat) A B ν x] at hxmem
+  · rw [@MySet.mem_pair_obj (MySet MyNat) (MySet MyNat) A B ν x] at hxmem
     rcases hxmem with hxA | hxB
     · exact False.elim (hνne (type_eq_of_heq hxA))
     · exact False.elim (hνne (type_eq_of_heq hxB))

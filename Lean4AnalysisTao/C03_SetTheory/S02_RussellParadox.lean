@@ -1,12 +1,5 @@
 import Lean4AnalysisTao.C03_SetTheory.S01_Fundamentals
 
-/-!
-Scaffolding for §3.2. Tao's membership axioms quantify over every object in
-one informal universe; the typed §3.1 versions only handle same-type
-elements. §3.2 needs the cross-type reading, so we add object-level forms
-here (via `HEq`) plus the type-hierarchy fact `MySet α ≠ α`.
--/
-
 namespace MySet
 
 -- Axiom 3.4 (singleton), stated "for every object y".

@@ -136,28 +136,18 @@ theorem Proposition_2_1_16
       ∧ (∀ (a' : MyNat → MyNat),
           a' 𝟘 = c → (∀ (n : MyNat), a' (n++) = f n (a' n)) →
           ∀ (n : MyNat), a' n = a n) := by
-  -- The "procedure" is captured as the graph `G n v`: `v` belongs to every
-  -- relation `R` that holds at `(𝟘, c)` and is closed under `R m w → R (m++) (f m w)`.
   let G : MyNat → MyNat → Prop :=
     fun n v =>
       ∀ (R : MyNat → MyNat → Prop),
         R 𝟘 c → (∀ (m w : MyNat), R m w → R (m++) (f m w)) → R n v
-  -- We use induction to show the procedure gives a single value to `a n` at each `n`.
   have hexuniq :
       ∀ (n : MyNat), ∃ (v : MyNat), G n v ∧ (∀ (w : MyNat), G n w → w = v) := by
     refine MyNat.induction
       (fun n => ∃ (v : MyNat), G n v ∧ (∀ (w : MyNat), G n w → w = v)) ?_ ?_
-    · -- Base: the procedure gives a single value to `a 𝟘`, namely `c`. None of
-      -- the clauses `a (m++) := f m (a m)` redefines `a 𝟘`, because that would
-      -- require `m++ = 𝟘`, contradicting Axiom 2.3.
-      refine Exists.intro c (And.intro ?_ ?_)
-      · -- `c` is in the graph at `𝟘`: trivial, just use the base clause of `R`.
-        intro R hR0 _hRs
+    · refine Exists.intro c (And.intro ?_ ?_)
+      · intro R hR0 _hRs
         exact hR0
-      · -- Uniqueness at `𝟘`: any `w` in the graph must equal `c`. We restrict to
-        -- the relation `R m v := (m = 𝟘 → v = c)`, which satisfies the base and
-        -- step clauses (the step is vacuous because `m++ ≠ 𝟘`), so `w = c`.
-        intro w hGw
+      · intro w hGw
         let R : MyNat → MyNat → Prop :=
           fun m v => m = 𝟘 → v = c
         have hR0 : R 𝟘 c :=
@@ -166,21 +156,12 @@ theorem Proposition_2_1_16
           intro m _w _hRmw hsucc
           exact False.elim (MyNat.succ_ne_zero m hsucc)
         exact hGw R hR0 hRs rfl
-    · -- Step: suppose inductively that the procedure gives a single value `v` to
-      -- `a n`. Then it gives a single value to `a (n++)`, namely `f n v`. None of
-      -- the other clauses `a (m++) := f m (a m)` redefines `a (n++)`, because
-      -- `m++ = n++` forces `m = n` by Axiom 2.4, making the clause the same one.
-      intro n ihn
+    · intro n ihn
       rcases ihn with ⟨v, hGv, huniq⟩
       refine Exists.intro (f n v) (And.intro ?_ ?_)
-      · -- `f n v` is in the graph at `n++`: apply the step clause of `R` to `G n v`.
-        intro R hR0 hRs
+      · intro R hR0 hRs
         exact hRs n v (hGv R hR0 hRs)
-      · -- Uniqueness at `n++`: any `w` in the graph at `n++` must equal `f n v`.
-        -- We restrict to `R m u := G m u ∧ (m = n++ → u = f n v)`. Closure under
-        -- the step clause uses Axiom 2.4: if `m++ = n++` then `m = n`, so the
-        -- inductive uniqueness of `v` pins `u = v` and hence `f m u = f n v`.
-        intro w hGw
+      · intro w hGw
         let R : MyNat → MyNat → Prop :=
           fun m u => G m u ∧ (m = n++ → u = f n v)
         have hR0 : R 𝟘 c := by
@@ -202,8 +183,6 @@ theorem Proposition_2_1_16
             rw [hmn]
             rw [hun]
         exact And.right (hGw R hR0 hRs) rfl
-  -- The induction is complete: `a n` is defined for each `n`, with a single value.
-  -- Extract the function `a` from the pointwise unique existence using choice.
   let a : MyNat → MyNat :=
     fun n => MyClassical.choose (fun v => G n v ∧ (∀ (w : MyNat), G n w → w = v))
       (hexuniq n)
@@ -214,17 +193,12 @@ theorem Proposition_2_1_16
         (fun v => G n v ∧ (∀ (w : MyNat), G n w → w = v))
         (hexuniq n)
   refine Exists.intro a (And.intro ?_ (And.intro ?_ ?_))
-  · -- `a 𝟘 = c`: the uniqueness clause at `𝟘` applied to `c` gives `c = a 𝟘`.
-    exact Eq.symm ((And.right (ha_spec 𝟘)) c (fun _ hR0 _ => hR0))
-  · -- `a (n++) = f n (a n)`: `f n (a n)` is in the graph at `n++`, and the
-    -- uniqueness clause at `n++` identifies it with `a (n++)`.
-    intro n
+  · exact Eq.symm ((And.right (ha_spec 𝟘)) c (fun _ hR0 _ => hR0))
+  · intro n
     have hGsucc : G (n++) (f n (a n)) :=
       fun R hR0 hRs => hRs n (a n) (And.left (ha_spec n) R hR0 hRs)
     exact Eq.symm ((And.right (ha_spec (n++))) (f n (a n)) hGsucc)
-  · -- Any other assignment `a'` agreeing on the base and step clauses also lies
-    -- in the graph at every `n`, hence coincides with `a`.
-    intro a' ha'0 ha'succ n
+  · intro a' ha'0 ha'succ n
     have hGa'n : ∀ (m : MyNat), G m (a' m) := by
       refine MyNat.induction (fun m => G m (a' m)) ?_ ?_
       · intro R hR0 _hRs
